@@ -169,8 +169,9 @@ class Performance {
 }
 
 class Parser {
-  Metadata _metadata = Metadata();
-  List<Movement> _movements = [];
+  Metadata metadata = Metadata();
+  List<Movement> movements = [];
+
   Scanner _scanner;
 
   Parser(this._scanner);
@@ -192,7 +193,7 @@ class Parser {
       }
     }
 
-    _metadata.addKVP(key.toString().trimRight(), value.toString().trimRight());
+    metadata.addKVP(key.toString().trimRight(), value.toString().trimRight());
   }
 
   void _handleMovement(TokenLiteral initial) {
@@ -205,7 +206,7 @@ class Parser {
     while (!_scanner.eof) {
       var tokenLiteral = _scanner.scan();
       
-      // Eventually need to support line breaks in movements...
+      // TODO: Eventually need to support line breaks in movements...
       if (tokenLiteral.token == Token.LINEBREAK) { break; }
       if (tokenLiteral.token == Token.WHITESPACE) {
         if (currentUnit != null) {
@@ -231,7 +232,6 @@ class Parser {
         break;
       }
 
-      // Just continue for now...
       if (tokenLiteral.token == Token.UNIT) {
         currentUnit = tokenLiteral.literal;
         mustUnit = false;
@@ -245,8 +245,6 @@ class Parser {
       }
 
       if (tokenLiteral.token == Token.IDENT) {
-        // Movement not yet set = build name.
-        // Movement set, get set vs rep;
         if (movement == null) {
           name.write("${tokenLiteral.literal} ");
           continue;
@@ -262,7 +260,7 @@ class Parser {
       }
     }
 
-    _movements.add(movement);
+    movements.add(movement);
   }
 
   void _handleNote() {
@@ -276,7 +274,7 @@ class Parser {
       if (tokenLiteral.token != Token.WHITESPACE) { note.write("${tokenLiteral.literal} "); }
     }
 
-    _metadata.addNote(note.toString().trimRight());
+    metadata.addNote(note.toString().trimRight());
   }
 
   void parse() {
@@ -290,18 +288,33 @@ class Parser {
       else { _handleMovement(tokenLiteral); }
     }
   }
+}
 
-  @override String toString() {
+abstract class ParserPresenter {
+  Parser _parser;
+  ParserPresenter(this._parser);
+  String call();
+}
+
+class ConsolePresenter implements ParserPresenter {
+  Parser _parser;
+  ConsolePresenter(this._parser);
+
+  Map get kvps => _parser.metadata.kvps;
+  List<Movement> get movements => _parser.movements;
+  List<String> get notes => _parser.metadata.notes;
+
+  String call() {
     var string = StringBuffer("** Metadata **\n");
-    for (var mapEntry in _metadata.kvps.entries) {
+    for (var mapEntry in kvps.entries) {
       string.write("${mapEntry.key}: ${mapEntry.value}\n");
     }
     string.write("\n\n** Notes **\n");
-    for (var note in _metadata.notes) {
+    for (var note in notes) {
       string.write(" - $note\n");
     }
     string.write("\n\n** Movements **\n");
-    for (var movement in _movements) {
+    for (var movement in movements) {
       string.write("$movement\n");
     }
 
@@ -312,6 +325,7 @@ class Parser {
 void main() {
   var scanner = Scanner("./test.traindown");
   var parser = Parser(scanner);
+  var presenter = ConsolePresenter(parser);
   parser.parse();
-  print(parser);
+  print(presenter.call());
 }
