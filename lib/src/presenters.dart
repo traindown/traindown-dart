@@ -3,17 +3,7 @@ import "./parser.dart";
 
 abstract class ParserPresenter {
   Parser _parser;
-  ParserPresenter(this._parser);
-  String call();
-  void _writeMetadata(StringBuffer s);
-  void _writeMovements(StringBuffer s);
-  void _writeNotes(StringBuffer s);
-}
-
-class ConsolePresenter implements ParserPresenter {
-  Parser _parser;
-  ConsolePresenter(this._parser);
-
+  
   Map get kvps => _parser.metadata.kvps;
   List<Movement> get movements => _parser.movements;
   List<String> get notes => _parser.metadata.notes;
@@ -28,6 +18,16 @@ class ConsolePresenter implements ParserPresenter {
     return string.toString();
   }
 
+  void _writeMetadata(StringBuffer s) => throw "Must implement _writeMetadata.";
+  void _writeMovements(StringBuffer s) => throw "Must implement _writeMovements.";
+  void _writeNotes(StringBuffer s) => throw "Must implement _writeNotes";
+}
+
+class ConsolePresenter extends ParserPresenter {
+  Parser _parser;
+  ConsolePresenter(this._parser);
+
+  @override
   void _writeMetadata(StringBuffer s) {
     s.write("** Metadata **\n");
 
@@ -41,6 +41,7 @@ class ConsolePresenter implements ParserPresenter {
     }
   }
 
+  @override
   void _writeMovements(StringBuffer s) {
     s.write("\n\n** Movements **\n");
 
@@ -49,6 +50,7 @@ class ConsolePresenter implements ParserPresenter {
     }
   }
 
+  @override
   void _writeNotes(StringBuffer s) {
     s.write("\n\n** Notes **\n");
 
