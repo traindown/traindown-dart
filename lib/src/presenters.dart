@@ -5,6 +5,9 @@ abstract class ParserPresenter {
   Parser _parser;
   ParserPresenter(this._parser);
   String call();
+  void _writeMetadata(StringBuffer s);
+  void _writeMovements(StringBuffer s);
+  void _writeNotes(StringBuffer s);
 }
 
 class ConsolePresenter implements ParserPresenter {
@@ -16,19 +19,46 @@ class ConsolePresenter implements ParserPresenter {
   List<String> get notes => _parser.metadata.notes;
 
   String call() {
-    var string = StringBuffer("** Metadata **\n");
-    for (var mapEntry in kvps.entries) {
-      string.write("${mapEntry.key}: ${mapEntry.value}\n");
-    }
-    string.write("\n\n** Notes **\n");
-    for (var note in notes) {
-      string.write(" - $note\n");
-    }
-    string.write("\n\n** Movements **\n");
-    for (var movement in movements) {
-      string.write("$movement\n");
-    }
+    var string = StringBuffer();
+
+    _writeMetadata(string);
+    _writeNotes(string);
+    _writeMovements(string);
 
     return string.toString();
+  }
+
+  void _writeMetadata(StringBuffer s) {
+    s.write("** Metadata **\n");
+
+    if (kvps.entries.isEmpty) {
+      s.write("No metadata for this session.");
+      return;
+    }
+
+    for (var mapEntry in kvps.entries) {
+      s.write("${mapEntry.key}: ${mapEntry.value}\n");
+    }
+  }
+
+  void _writeMovements(StringBuffer s) {
+    s.write("\n\n** Movements **\n");
+
+    for (var movement in movements) {
+      s.write("$movement\n");
+    }
+  }
+
+  void _writeNotes(StringBuffer s) {
+    s.write("\n\n** Notes **\n");
+
+    if (notes.isEmpty) {
+      s.write(" - No notes for this session");
+      return;
+    }
+
+    for (var note in notes) {
+      s.write(" - $note\n");
+    }
   }
 }
