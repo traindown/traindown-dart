@@ -18,9 +18,9 @@ abstract class ParserPresenter {
     return string.toString();
   }
 
-  void _writeMetadata(StringBuffer s) => throw "Must implement _writeMetadata.";
-  void _writeMovements(StringBuffer s) => throw "Must implement _writeMovements.";
-  void _writeNotes(StringBuffer s) => throw "Must implement _writeNotes";
+  void _writeMetadata(StringBuffer s);
+  void _writeMovements(StringBuffer s);
+  void _writeNotes(StringBuffer s);
 }
 
 class ConsolePresenter extends ParserPresenter {
