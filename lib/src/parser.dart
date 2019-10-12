@@ -4,7 +4,9 @@ import "./performance.dart";
 import "./scanner.dart";
 import "./token.dart";
 
+/// Parser uses the provided Scanner to create an intermediate representation of the training session.
 class Parser {
+  bool hasParsed = false;
   Metadata metadata = Metadata();
   List<Movement> movements = [];
 
@@ -113,7 +115,16 @@ class Parser {
     metadata.addNote(note.toString().trimRight());
   }
 
+  void set scanner(Scanner newScanner) {
+    hasParsed = false;
+    metadata = Metadata();
+    movements = [];
+    _scanner = newScanner;
+  }
+
+  /// parse runs the provided Scanner until eof signal and stores the metadata and movements.
   void parse() {
+    if (hasParsed) { return; }
     if (_scanner == null) { throw "Needs a scanner, dummy"; }
 
     while (!_scanner.eof) {
@@ -123,5 +134,6 @@ class Parser {
       else if (tokenLiteral.token == Token.STAR) { _handleNote(); }
       else { _handleMovement(tokenLiteral); }
     }
+    hasParsed = true;
   }
 }
