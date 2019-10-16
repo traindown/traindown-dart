@@ -1,7 +1,7 @@
 import "dart:convert";
 import "dart:io";
 
-import "./token.dart";
+import "package:traindown/src/token.dart";
 
 class Scanner {
   List<int> _bytes;

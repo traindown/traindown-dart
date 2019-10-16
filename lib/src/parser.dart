@@ -1,8 +1,8 @@
-import "./metadata.dart";
-import "./movement.dart";
-import "./performance.dart";
-import "./scanner.dart";
-import "./token.dart";
+import "package:traindown/src/metadata.dart";
+import "package:traindown/src/movement.dart";
+import "package:traindown/src/performance.dart";
+import "package:traindown/src/scanner.dart";
+import "package:traindown/src/token.dart";
 
 /// Parser uses the provided Scanner to create an intermediate representation of the training session.
 class Parser {

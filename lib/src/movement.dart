@@ -1,4 +1,4 @@
-import "./performance.dart";
+import "package:traindown/src/performance.dart";
 
 class Movement {
   String name;
