@@ -12,7 +12,10 @@ class Parser {
 
   Scanner _scanner;
 
-  Parser(this._scanner);
+  Parser(Scanner scanner) {
+    if (scanner == null) { throw "Needs a scanner, dummy"; }
+    _scanner = scanner;
+  }
 
   void _handleKVP() {
     var endKVP = false;

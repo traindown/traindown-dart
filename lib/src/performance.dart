@@ -4,5 +4,11 @@ class Performance {
   int reps = 1;
   String unit = "";
 
-  @override String toString() => "$load $unit for $repeat sets of $reps reps.";
+  @override String toString() {
+    if (unit.length > 0) {
+      return "$load $unit for $repeat sets of $reps reps.";
+    } else {
+      return "$load for $repeat sets of $reps reps.";
+    }
+  }
 }
