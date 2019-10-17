@@ -6,13 +6,25 @@ import "package:traindown/src/token.dart";
 class Scanner {
   List<int> _bytes;
   Utf8Decoder _decoder;
-  File _file;
   int _index = -1;
 
-  Scanner(String filename) {
+  Scanner({String filename, String string}) {
+    if (filename != null && string != null) {
+      throw "You may only pass a filename OR a string";
+    }
+
     _decoder = new Utf8Decoder();
-    _file = new File(filename);
-    _bytes = _file.readAsBytesSync();
+
+    if (filename != null) {
+      var file = new File(filename);
+      _bytes = file.readAsBytesSync();
+      return;
+    } else if (string != null) {
+      _bytes = utf8.encode(string.trim());
+      return;
+    }
+
+    throw "You must pass either filename or string";
   }
 
   String get _current {
