@@ -13,6 +13,8 @@ Soooo, me being a plain text kind of guy (I am typing this in Vim), I created **
 
 ```traindown
 # Unit: lbs
+# Unit for Kettlebell pullover: kg
+# Unit for Plank: seconds
 # Day: 20190919
 # Time: 9am
 
@@ -27,8 +29,8 @@ Squat: 365 3r 4s;
 Row: 245 6r 3s;
 Bench: 305 3r 4s;
 One arm barbel curl: 3s 8r 55;
-+ Kettlebell pullover: 44 3s 10r;
-Plank: 0:30t; 0:40t; 0:35t;
++ Kettlebell pullover: 20 3s 10r;
+Plank: 30; 40; 35;
 ```
 
 ### Syntax
@@ -41,5 +43,10 @@ Below is the basic syntax for Traindown:
 * **;** marks a change in load.
 * Currently, a linebreak marks the change of movment.
 * A **+** denotes a super set (currently not supported).
-* A **t** denotes a measure of time (currently not supported).
 
+### TODO
+- [ ] Movement specific unit overrides--e.g., "Unit for" or some other means
+- [ ] Better handling of supersets--i.e., more direct linkage between movements as well as validation
+- [ ] Complete test suite
+- [ ] Publish to Pub
+- [ ] Stand up webpage
