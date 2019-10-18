@@ -42,7 +42,7 @@ Below is the basic syntax for Traindown:
 * A number after a colon or semicolon is the load. If a number is followed by an **s** that marks a set count. **r** marks a rep count. You may omit either the s or the r (or both), which defaults to 1 for the value.
 * **;** marks a change in load.
 * Currently, a linebreak marks the change of movment.
-* A **+** denotes a super set (currently not supported).
+* A **+** denotes a super set (currently partially supported).
 
 ### TODO
 - [ ] Movement specific unit overrides--e.g., "Unit for" or some other means
