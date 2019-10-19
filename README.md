@@ -33,6 +33,25 @@ One arm barbel curl: 3s 8r 55;
 Plank: 30; 40; 35;
 ```
 
+**Another example source file using the "pretty format"**
+```traindown
+# Unit: lbs
+# Day: 20190920
+# Time: 9am
+
+Squat:
+  135 5r;
+  225 5r;
+  315 5r;
+  405 5r;
+  455 5r 5s;
+
+Press:
+  135 5r;
+  165 5r;
+  190 5r 3s;
+```
+
 ### Syntax
 
 Below is the basic syntax for Traindown:
