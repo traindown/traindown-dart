@@ -9,7 +9,7 @@ Soooo, me being a plain text kind of guy (I am typing this in Vim), I created **
 
 ### Example
 
-**The Traindown source file**
+**The Traindown session file**
 
 ```traindown
 # Unit: lbs
@@ -33,8 +33,9 @@ One arm barbel curl: 3s 8r 55;
 Plank: 30; 40; 35;
 ```
 
-**Another example source file using the "pretty format"**
-```traindown
+**Another example session using more of a YAML format**
+*Note: You can place notes and metadata wherever makes sense to you.*
+```traindow
 # Unit: lbs
 # Day: 20190920
 # Time: 9am
@@ -46,10 +47,37 @@ Squat:
   405 5r;
   455 5r 5s;
 
+* Presumably a note about the above squats.
+
 Press:
   135 5r;
   165 5r;
-  190 5r 3s;
+  190 5r;
+
+# Unit for Something: kg
+Something: 100 5s;
+
+* Some note for something.
+```
+
+**Same session expressed another way (the possibilites!)**
+```traindown
+# Unit: lbs
+# Day: 20190920
+# Time: 9am
+
+Squat:
+  135 5r; 225 5r; 315 5r; 405 5r;
+  455 5r 5s;
+
+* Presumably a note about the above squats.
+
+Press: 135 5r; 165 5r; 190 5r 3s;
+
+# Unit for Something: kg
+Something: 100 5s;
+
+* Some note for something.
 ```
 
 ### Syntax
@@ -64,8 +92,6 @@ Below is the basic syntax for Traindown:
 
 ### TODO
 - [x] Add support for linebreaks in movements
-- [ ] Movement specific unit overrides--e.g., "Unit for" or some other means
-- [ ] Better handling of supersets--i.e., more direct linkage between movements as well as validation
 - [ ] Complete test suite
 - [ ] Publish to Pub
 - [ ] Stand up webpage

@@ -3,13 +3,14 @@
 # Time: 9am
 
 Squat:
-  135 5r;
-  225 5r;
-  315 5r;
-  405 5r;
+  135 5r; 225 5r; 315 5r; 405 5r;
   455 5r 5s;
 
-Press:
-  135 5r;
-  165 5r;
-  190 5r;
+* Presumably a note about the above squats.
+
+Press: 135 5r; 165 5r; 190 5r;
+
+# Unit for Something: kg
+Something: 100 5s;
+
+* Some note for something.
