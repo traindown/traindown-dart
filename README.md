@@ -41,10 +41,10 @@ Below is the basic syntax for Traindown:
 * Words followed by **:** denote the name of a movement.
 * A number after a colon or semicolon is the load. If a number is followed by an **s** that marks a set count. **r** marks a rep count. You may omit either the s or the r (or both), which defaults to 1 for the value.
 * **;** marks a change in load.
-* Currently, a linebreak marks the change of movment.
 * A **+** denotes a super set (currently partially supported).
 
 ### TODO
+- [x] Add support for linebreaks in movements
 - [ ] Movement specific unit overrides--e.g., "Unit for" or some other means
 - [ ] Better handling of supersets--i.e., more direct linkage between movements as well as validation
 - [ ] Complete test suite
