@@ -34,6 +34,7 @@ Plank: 30; 40; 35;
 ```
 
 **Another example session using more of a YAML format**
+
 *Note: You can place notes and metadata wherever makes sense to you.*
 ```traindow
 # Unit: lbs
