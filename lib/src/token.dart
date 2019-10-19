@@ -31,5 +31,7 @@ class TokenLiteral {
     token = Token.ILLEGAL;
   }
 
+  bool get isEmpty => token == Token.LINEBREAK || token == Token.WHITESPACE;
+
   @override String toString() => "$token: $literal";
 }

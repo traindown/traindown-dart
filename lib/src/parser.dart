@@ -46,10 +46,8 @@ class Parser {
 
     while (!_scanner.eof) {
       var tokenLiteral = _scanner.scan();
-      
-      // TODO: Eventually need to support line breaks in movements...
-      if (tokenLiteral.token == Token.LINEBREAK) { break; }
-      if (tokenLiteral.token == Token.WHITESPACE) {
+
+      if (tokenLiteral.isEmpty) {
         if (currentUnit != null) {
           performance.load = num.tryParse(currentUnit);
           currentUnit = null;
@@ -70,6 +68,7 @@ class Parser {
 
       // This should indicate end of movement...
       if (mustUnit && tokenLiteral.token != Token.UNIT) {
+        _scanner.unscan();
         break;
       }
 
@@ -83,6 +82,7 @@ class Parser {
         movement = Movement(name.toString().trimRight());
         mustUnit = true;
         performance = Performance();
+        continue;
       }
 
       if (tokenLiteral.token == Token.IDENT) {
@@ -97,6 +97,7 @@ class Parser {
             performance.reps = num.tryParse(currentUnit);
           }
           currentUnit = null;
+          continue;
         }
       }
     }
@@ -132,10 +133,12 @@ class Parser {
 
     while (!_scanner.eof) {
       var tokenLiteral = _scanner.scan();
+
+      if (tokenLiteral.isEmpty) { continue; }
       
       if (tokenLiteral.token == Token.POUND) { _handleKVP(); }
       else if (tokenLiteral.token == Token.STAR) { _handleNote(); }
-      else { _handleMovement(tokenLiteral); }
+      else if (tokenLiteral.token == Token.IDENT) { _handleMovement(tokenLiteral); }
     }
     hasParsed = true;
   }

@@ -13,6 +13,7 @@ void main() {
   var presenter = ConsolePresenter(parser);
 
   parser.parse();
+  print(parser.movements);
   print(presenter.call());
 
   parser.scanner = scanner1;

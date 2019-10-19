@@ -52,7 +52,7 @@ class ConsolePresenter extends ParserPresenter {
 
   @override
   void _writeNotes(StringBuffer s) {
-    s.write("\n\n** Notes **\n");
+    s.write("\n** Notes **\n");
 
     if (notes.isEmpty) {
       s.write(" - No notes for this session");

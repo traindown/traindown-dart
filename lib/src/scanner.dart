@@ -7,6 +7,7 @@ class Scanner {
   List<int> _bytes;
   Utf8Decoder _decoder;
   int _index = -1;
+  int _lastIndex = -1;
 
   Scanner({String filename, String string}) {
     if (filename != null && string != null) {
@@ -56,6 +57,7 @@ class Scanner {
 
   TokenLiteral scan() {
     var literal = _next();
+    _lastIndex = _index - 1;
 
     if (_isColon) {
       return TokenLiteral(Token.COLON, literal);
@@ -115,6 +117,10 @@ class Scanner {
     while (_isWhitespace) { _next(); }
     _prev();
     return new TokenLiteral(Token.WHITESPACE, "");
+  }
+
+  void unscan() {
+    _index = _lastIndex;
   }
 }
 
