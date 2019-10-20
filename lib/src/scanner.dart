@@ -21,11 +21,15 @@ class Scanner {
       _bytes = file.readAsBytesSync();
       return;
     } else if (string != null) {
-      _bytes = utf8.encode(string.trim());
+      var trimmedString = string.trim();
+      if (trimmedString.length == 0) {
+        trimmedString = string;
+      }
+      _bytes = utf8.encode(trimmedString);
       return;
     }
 
-    throw "You must pass either filename or string";
+    throw "You must pass either a filename or string";
   }
 
   String get _current {
@@ -56,6 +60,8 @@ class Scanner {
   void reset() => _index = -1;
 
   TokenLiteral scan() {
+    if (eof) { return TokenLiteral.eof(); }
+
     var literal = _next();
     _lastIndex = _index - 1;
 
@@ -66,9 +72,6 @@ class Scanner {
       return _scanDigit();
     }
     if (_isLinebreak) {
-      if (eof) {
-        return TokenLiteral.eof();
-      }
       return _scanLinebreak();
     }
     if (_isPound) {
@@ -89,33 +92,45 @@ class Scanner {
 
   TokenLiteral _scanIdentifier() {
     var identifier = "";
-    while (_isCharacter) {
+    while (_isCharacter && !eof) {
       identifier += _current;
       _next();
     }
+    identifier += _current;
     _prev();
     return new TokenLiteral(Token.IDENT, identifier);
   }
 
   TokenLiteral _scanDigit() {
     var digits = "";
-    while (_isDigit) {
+    while (_isDigit && !eof) {
       digits += _current;
       _next();
     }
+    digits += _current;
     _prev();
     return new TokenLiteral(Token.UNIT, digits);
   }
 
   TokenLiteral _scanLinebreak() {
-    while (_isLinebreak) { _next(); }
-    _prev();
+    var hasNexted = false;
+    while (_isLinebreak && !eof) {
+      hasNexted = true;
+      _next();
+    }
+    if (hasNexted) { _prev(); }
+
     return new TokenLiteral(Token.LINEBREAK, "");
   }
 
   TokenLiteral _scanWhitespace() {
-    while (_isWhitespace) { _next(); }
-    _prev();
+    var hasNexted = false;
+    while (_isWhitespace && !eof) {
+      hasNexted = true;
+      _next();
+    }
+    if (hasNexted) { _prev(); }
+
     return new TokenLiteral(Token.WHITESPACE, "");
   }
 

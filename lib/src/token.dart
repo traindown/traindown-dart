@@ -29,5 +29,9 @@ class TokenLiteral {
 
   bool get isEmpty => token == Token.LINEBREAK || token == Token.WHITESPACE;
 
-  @override String toString() => "$token: $literal";
+  @override
+  bool operator ==(tl) => tl.token == token && tl.literal == literal;
+
+  @override
+  String toString() => "$token: $literal";
 }

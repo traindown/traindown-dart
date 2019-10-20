@@ -1,4 +1,4 @@
-import 'package:mockito/mockito.dart';
+import "package:mockito/mockito.dart";
 import "package:test/test.dart";
 
 import "package:traindown/src/movement.dart";
