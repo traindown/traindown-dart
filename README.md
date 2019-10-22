@@ -93,6 +93,7 @@ Below is the basic syntax for Traindown:
 
 ### TODO
 - [x] Add support for linebreaks in movements
+- [ ] Add support for decimal units
 - [ ] Complete test suite
 - [ ] Publish to Pub
 - [ ] Stand up webpage
