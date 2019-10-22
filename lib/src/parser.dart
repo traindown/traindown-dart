@@ -119,7 +119,7 @@ class Parser {
     metadata.addNote(note.toString().trimRight());
   }
 
-  void set scanner(Scanner newScanner) {
+  set scanner(Scanner newScanner) {
     hasParsed = false;
     metadata = Metadata();
     movements = [];

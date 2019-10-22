@@ -5,7 +5,7 @@ class Performance {
   String unit = "";
 
   @override String toString() {
-    if (unit.length > 0) {
+    if (unit.isNotEmpty) {
       return "$load $unit for $repeat sets of $reps reps.";
     } else {
       return "$load for $repeat sets of $reps reps.";

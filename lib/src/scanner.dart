@@ -14,15 +14,15 @@ class Scanner {
       throw "You may only pass a filename OR a string";
     }
 
-    _decoder = new Utf8Decoder();
+    _decoder = Utf8Decoder();
 
     if (filename != null) {
-      var file = new File(filename);
+      var file = File(filename);
       _bytes = file.readAsBytesSync();
       return;
     } else if (string != null) {
       var trimmedString = string.trim();
-      if (trimmedString.length == 0) {
+      if (trimmedString.isEmpty) {
         trimmedString = string;
       }
       _bytes = utf8.encode(trimmedString);
@@ -98,7 +98,7 @@ class Scanner {
     }
     identifier += _current;
     _prev();
-    return new TokenLiteral(Token.IDENT, identifier);
+    return TokenLiteral(Token.IDENT, identifier);
   }
 
   TokenLiteral _scanDigit() {
@@ -109,7 +109,7 @@ class Scanner {
     }
     digits += _current;
     _prev();
-    return new TokenLiteral(Token.UNIT, digits);
+    return TokenLiteral(Token.UNIT, digits);
   }
 
   TokenLiteral _scanLinebreak() {
@@ -120,7 +120,7 @@ class Scanner {
     }
     if (hasNexted) { _prev(); }
 
-    return new TokenLiteral(Token.LINEBREAK, "");
+    return TokenLiteral(Token.LINEBREAK, "");
   }
 
   TokenLiteral _scanWhitespace() {
@@ -131,7 +131,7 @@ class Scanner {
     }
     if (hasNexted) { _prev(); }
 
-    return new TokenLiteral(Token.WHITESPACE, "");
+    return TokenLiteral(Token.WHITESPACE, "");
   }
 
   void unscan() {

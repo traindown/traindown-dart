@@ -1,5 +1,6 @@
 name: traindown
 dependencies:
 dev_dependencies:
+  pedantic:
   mockito:
   test:
