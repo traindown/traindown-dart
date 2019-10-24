@@ -61,7 +61,7 @@ class Parser {
           currentUnit = null;
         }
         movement.performances.add(performance);
-        performance = Performance();
+        performance = _newPerformance(movement.name);
         mustUnit = true;
         continue;
       }
@@ -81,7 +81,7 @@ class Parser {
       if (tokenLiteral.token == Token.COLON) {
         movement = Movement(name.toString().trimRight());
         mustUnit = true;
-        performance = Performance();
+        performance = _newPerformance(movement.name);
         continue;
       }
 
@@ -117,6 +117,18 @@ class Parser {
     }
 
     metadata.addNote(note.toString().trimRight());
+  }
+
+  Performance _newPerformance(String movementName) {
+    if (movementName.startsWith("+")) {
+      movementName = movementName.split("+").last.trim();
+    }
+    var unit = metadata.kvps["Unit for $movementName"]
+      ?? metadata.kvps["unit for $movementName"]
+      ?? metadata.kvps["Unit"]
+      ?? metadata.kvps["unit"]
+      ?? "unknown unit";
+    return Performance(unit: unit);
   }
 
   set scanner(Scanner newScanner) {

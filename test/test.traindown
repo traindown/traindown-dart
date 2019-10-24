@@ -13,5 +13,6 @@ Squat: 245 3r 4s;
 Row: 245 6r 3s;
 Bench: 205 3r 4s;
 One arm barbel curl: 3s 8r 45;
+# Unit for Kettlebell pullover: kg
 + Kettlebell pullover: 20 3s 10r;
 Plank: 0:30t; 0:40t; 0:35t;

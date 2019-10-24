@@ -1,5 +1,7 @@
-import "./movement.dart";
-import "./parser.dart";
+import "dart:convert";
+
+import "package:traindown/src/movement.dart";
+import "package:traindown/src/parser.dart";
 
 abstract class ParserPresenter {
   Parser _parser;
@@ -63,4 +65,41 @@ class ConsolePresenter extends ParserPresenter {
       s.write(" - $note\n");
     }
   }
+}
+
+class JSONPresenter extends ParserPresenter {
+  Parser _parser;
+  JSONPresenter(this._parser);
+
+  @override
+  String call() {
+    return jsonEncode({
+      "metadata": _parser.metadata.kvps,
+      "movements": _movementsHash(),
+      "notes": _parser.metadata.notes
+    });
+  }
+
+  List _movementsHash() {
+    return _parser.movements.fold(List(), (acc, movement) {
+      acc.add({
+        "name": movement.name,
+        "performances": movement.performances.fold(List(), (pacc, performance) {
+          pacc.add({
+            "load": performance.load,
+            "reps": performance.reps,
+            "sets": performance.repeat,
+            "unit": performance.unit
+          });
+          return pacc;
+        })
+      });
+      return acc;
+    });
+  }
+
+  // TODO: Probably get rid of the abstract class...
+  void _writeMetadata(StringBuffer s) {}
+  void _writeMovements(StringBuffer s) {}
+  void _writeNotes(StringBuffer s) {}
 }

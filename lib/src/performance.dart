@@ -1,8 +1,10 @@
 class Performance {
-  int load = 0;
-  int repeat = 1;
-  int reps = 1;
-  String unit = "";
+  int load;
+  int repeat;
+  int reps;
+  String unit;
+
+  Performance({this.load = 0, this.repeat = 1, this.reps = 1, this.unit = ""});
 
   @override String toString() {
     if (unit.isNotEmpty) {

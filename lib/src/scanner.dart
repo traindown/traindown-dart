@@ -86,8 +86,11 @@ class Scanner {
     if (_isWhitespace) {
       return _scanWhitespace();
     }
+    if (_isCharacter) {
+      return _scanIdentifier();
+    }
 
-    return _scanIdentifier();
+    return TokenLiteral.illegal();
   }
 
   TokenLiteral _scanIdentifier() {
@@ -96,8 +99,11 @@ class Scanner {
       identifier += _current;
       _next();
     }
-    identifier += _current;
-    _prev();
+    if (_isCharacter && eof) {
+      identifier += _current;
+    } else {
+      _prev();
+    }
     return TokenLiteral(Token.IDENT, identifier);
   }
 
@@ -107,8 +113,11 @@ class Scanner {
       digits += _current;
       _next();
     }
-    digits += _current;
-    _prev();
+    if (_isDigit && eof) {
+      digits += _current;
+    } else {
+      _prev();
+    }
     return TokenLiteral(Token.UNIT, digits);
   }
 
