@@ -1,4 +1,4 @@
-// import "dart:io";
+import "dart:io";
 
 import "package:args/args.dart";
 import "package:traindown/src/parser.dart";
@@ -13,12 +13,6 @@ void main(List<String> arguments) {
       defaultsTo: false,
       help: "Displays the handy dandy help, ahem, man page you are likely reading RIGHT NOW",
       negatable: false)
-    ..addFlag(
-      "verbose",
-      abbr: "v",
-      defaultsTo: false,
-      help: "Logs literally everything to stdout",
-      negatable: false)
     ..addOption(
       "format",
       abbr: "f",
@@ -29,7 +23,7 @@ void main(List<String> arguments) {
     ..addOption(
       "output",
       abbr: "o",
-      help: "File into which you would like to write the result. Default is to send to stdout.",
+      help: "File into which you would like to write the result if you can't just pipe it. Default is to send to stdout.",
       valueHelp: "filename")
     ..addOption(
       "source",
@@ -39,19 +33,21 @@ void main(List<String> arguments) {
 
   var results = parser.parse(arguments);
 
-  bool verbose = results["verbose"];
-
   // TODO: Better man page
-  if (results["help"]) { return print(parser.usage); }
-
-  // TODO: Pull into class...
-  if (verbose) { print("Initializing scanner..."); }
+  if (results["help"]) {
+    stdout.write("** Traindown CLI v1.0 **\n\n");
+    return stdout.write(parser.usage);
+  }
 
   Scanner scanner;
-  if (results["source"] != null) {
-    scanner = Scanner(filename: results["source"]);
-  } else {
-    scanner = Scanner(string: results.rest.join(" "));
+  try {
+    if (results["source"] != null) {
+      scanner = Scanner(filename: results["source"]);
+    } else {
+      scanner = Scanner(string: results.rest.join(" "));
+    }
+  } catch(FileSystemException) {
+    return stderr.write("Traindown file does not exist. Are you sure ${results["source"]} is there?");
   }
 
   var tParser = Parser(scanner);
@@ -59,12 +55,18 @@ void main(List<String> arguments) {
 
   ParserPresenter presenter;
   if (results["format"] == "html") {
-    presenter = ConsolePresenter(tParser);
+    presenter = HTMLPresenter(tParser);
   } else if (results["format"] == "json") {
     presenter = JSONPresenter(tParser);
   } else {
     presenter = ConsolePresenter(tParser);
   }
 
-  print(presenter.call());
+  var output = presenter.call();
+
+  if (results["output"] == null) {
+    stdout.write(output);
+  } else {
+    File(results["output"]).writeAsStringSync(output, mode: FileMode.write);
+  }
 }
