@@ -1,0 +1,255 @@
+ <!DOCTYPE html>
+<html>
+<head>
+  <title>Traindown</title>
+<style>
+/*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */html{line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0}main{display:block}h1{font-size:2em;margin:.67em 0}hr{box-sizing:content-box;height:0;overflow:visible}pre{font-family:monospace,monospace;font-size:1em}a{background-color:transparent}abbr[title]{border-bottom:none;text-decoration:underline;text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,samp{font-family:monospace,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}img{border-style:none}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,input{overflow:visible}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}[type=button]::-moz-focus-inner,[type=reset]::-moz-focus-inner,[type=submit]::-moz-focus-inner,button::-moz-focus-inner{border-style:none;padding:0}[type=button]:-moz-focusring,[type=reset]:-moz-focusring,[type=submit]:-moz-focusring,button:-moz-focusring{outline:1px dotted ButtonText}fieldset{padding:.35em .75em .625em}legend{box-sizing:border-box;color:inherit;display:table;max-width:100%;padding:0;white-space:normal}progress{vertical-align:baseline}textarea{overflow:auto}[type=checkbox],[type=radio]{box-sizing:border-box;padding:0}[type=number]::-webkit-inner-spin-button,[type=number]::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}[type=search]::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}details{display:block}summary{display:list-item}template{display:none}[hidden]{display:none}
+/*# sourceMappingURL=normalize.min.css.map */
+
+*,
+*:after,
+*:before {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 62.5%;
+}
+
+body {
+  margin: 1em auto;
+  max-width: 960px;
+  color: #606c76;
+  font-family: 'Roboto', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
+  font-size: 1.6em;
+  font-weight: 300;
+  letter-spacing: .01em;
+  line-height: 1.6;
+  padding: .5rem;
+}
+
+hr {
+  border: 0;
+  border-top: 0.1rem solid #f4f5f6;
+  margin: 3.0rem 0;
+}
+
+hr.flat-top {
+  margin-top: 1rem;
+}
+
+pre {
+  background: #f4f5f6;
+  border-left: 0.3rem solid #666;
+  padding: 1.25rem 1.5rem;
+  overflow-y: hidden;
+  white-space: pre-wrap;
+}
+
+pre.wrong {
+  border-left: 0.3rem solid #ff0000;
+  margin-bottom: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 300;
+  letter-spacing: -.1rem;
+  margin-bottom: 2.0rem;
+  margin-top: 0;
+}
+
+h1 {
+  font-size: 4.6rem;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+h2 {
+  font-size: 3.6rem;
+  line-height: 1.25;
+}
+
+h3 {
+  font-size: 2.8rem;
+  line-height: 1.3;
+}
+
+h4 {
+  font-size: 2rem;
+}
+
+</style>
+</head>
+
+<body>
+  <h1>Traindown</h1>
+  <strong>A language to help athletes express their training inspired by <a href="https://daringfireball.net/projects/markdown/" target="_blank">Markdown.</a></strong>
+  <hr class="flat-top"/>
+  <p>Traindown was created to help you easily capture all the things you do in a training session. It aims to provide you with a flexible, easy to remember language for expressing your training for record keeping purposes.</p>
+  <p>The easiest way to explain what that all means is by showing you. If you've never written a line of code in your life, don't worry! Writing out your training in <strong>Traindown</strong> is as easy as using a hashtag.
+  <h3>The Basics</h3>
+  <p>The minimum viable <strong>Traindown</strong> file could be expressed as
+  <pre>Squat: 500</pre>
+  <p>This is saying "I did <strong>one</strong> rep of <strong>500</strong> in the <strong>Squat</strong>." 500 of what, you may ask? Well, that brings us to the next section!</p>
+  <h3>Metadata</h3>
+  <p><strong>Traindown</strong> provides tools for recording units (and any other data you can imagine) with <strong>metadata</strong>. Metadata are just <strong>key value pairs</strong> that begin with a <strong>#</strong>. You can have as much or as little metadata as you prefer, but the more the better in my opinion!
+  <p>Let's add some metadata to the session from above to help us understand more about what happened that day.</p>
+  <pre># Unit: lbs
+Squat: 500</pre>
+  <p>Ah, that's better. So this session used pounds for the unit of weight. That squat was 500 <em>pounds</em>.</p>
+  <p>Metadata allows you to express facts about the context of your training. Some common keys are date, time, duration, day/week of training cycle, and if you have any injuries you are working through. Some folks capture things like their weight that day or even what they eat leading into it. Let's go ahead and some more data to our example session.</p>
+  <pre># Date: Dec 25 2019
+# Time: 8am
+# Burritos: 3
+# Unit: lbs
+
+Squat: 500</pre>
+  <p>By adding more details in the metadata, you can make more sense of the <em>why</em> in your training. Metadata is also very searchable, so if you choose to use a <strong>Traindown</strong> enabled analysis tool, you can really start to make sense of the big picture.</p>
+  <h3>Sets and Reps</h3>
+  <p>Now, our example is pretty unrealistic. Cold squatting 500 pounds, three burritos or none, is not common. Let's assume this is a more mortal trainee and fill in some of the details of the day.</p>
+  <pre># Date: Dec 25 2019
+# Time: 8am
+# Burritos: 3
+# Unit: lbs
+
+Squat: 135 10r 2s 225 5r 315 5r 405 2r 455 500 3s</pre>
+  <p>That's more realistic. So what was added here? It should read intuitively but to be sure, let's dive into the details.</p>
+  <p>Looking at</p>
+  <pre>135 10r 2s</pre>
+  <p>we can read this as "I did two <strong>sets</strong> of ten <strong>reps</strong> at 135 pounds on the Squat." As you can see, we denote sets with an <strong>s</strong> and reps with an <strong>r</strong>.</p>
+  <p>Further on down the day, we can see</p>
+  <pre>225 5r</pre>
+  <p>which can be read as "I did one set of five reps at 225 pounds on the Squat." If we omit either an r or and s, the default is 1. So circling back to the original 500, it <em>could</em> be expressed as
+  <pre class="wrong">500 1r 1s</pre>
+  <small><em>Note: Don't do this. Save yourself the 1r / 1s shenanigans.</em></small>
+  <p>but the whole point of <strong>Traindown</strong> is to make recording your training easy, not annoying.</p>
+  <h3>Formatting for Reading</h3>
+  <p>Back to the example...I personally like how succinct it looks but it is difficult to read, especially after three burritos. The same training could be expressed in a more reader-friendly format like</p>
+  <pre># Date: Dec 25 2019
+# Time: 8am
+# Burritos: 3
+# Unit: lbs
+
+Squat:
+  135 10r 2s
+  225 5r
+  315 5r
+  405 2r
+  455
+  500 3s</pre>
+  <p>I dunnno about you, but that is <em>much</em> easier on my eyes.</p>
+  <h3>Notes</h3>
+  <p>So now we have a good idea of what happened on that day, but I'd imagine after eating three burritos, they may have been some...issues along the way. Lucky for us, <strong>Traindown</strong> provides tools for capturing notes. Let's add some!</p>
+  <pre># Date: Dec 25 2019
+# Time: 8am
+# Burritos: 3
+# Unit: lbs
+
+* Definitely should have stopped at two burritos.
+
+Squat:
+  135 10r 2s
+  225 5r
+  315 5r
+  405 2r
+  455
+  500 3s</pre>
+  <p>What we just added was a <strong>session note</strong>. This is a note that applies to the entire training session. These notes are helpful for painting a landscape of your training. Let's add some fine details!
+  <pre># Date: Dec 25 2019
+# Time: 8am
+# Burritos: 3
+# Unit: lbs
+
+* Definitely should have stopped at two burritos.
+
+Squat:
+  135 10r 2s
+  225 5r
+  315 5r
+  405 2r
+    * Had to stop at two reps to run to the bathroom.
+  455
+  500 3s
+    * Surprisingly easy singles given that episode at 405.
+    * Consider going up in weight next week.</pre>
+  <p>Each combination of a load for sets and reps is considered a <strong>performance</strong> of a given movement. Notes that appear <em>after</em> a performance are called...you guessed it, <strong>performance notes</strong>. You can apply to whatever granularity of work you like to capture. For example, the three singles at 500 could look something like
+  <pre>  500
+    * Surprisingly easy single given that episode at 405.
+  500
+    * Whoops. Spoke too soon. Clenching!
+  500
+    * Another easy rep.</pre>
+  <p>It's entirely up to you how you want to record your training and I recommend trying out different strategies to see what feels best for you.</p>
+  <h3>FAQs</h3>
+  <h4>What if part of my training is done in a different unit?</h4>
+  <p>Ah, a true connoisseur of units, I see. This is well supported using metadata and the "Unit for" key. For example, lets say we needed to add some kettlebell swings to our session from above.</p>
+  <pre># Date: Dec 25 2019
+# Time: 8am
+# Burritos: 3
+# Unit: lbs
+
+* Definitely should have stopped at two burritos.
+
+Squat:
+  135 10r 2s
+  225 5r
+  315 5r
+  405 2r
+    * Had to stop at two reps to run to the bathroom.
+  455
+  500 3s
+    * Surprisingly easy singles given that episode at 405.
+    * Consider going up in weight next week.
+
+# Unit for Kettlebell swings: kg
+Kettlebell swings: 24 10r 4s
+</pre>
+  <p>Metadata can be injected into any spot in a <strong>Traindown</strong> file. Here, we added it right above the movement. We could have just as easily added it to the metadata at the top of the file. I find adding it right above the exercise helpful, but feel free to do it wherever.</p>
+  <h4>What if I happen to miss a lift?</h4>
+  <p>Bummer. But it happens to everyone. If you are training and need to capture failed attempts, <strong>Traindown</strong> allows you to do that with the "zero rep"
+  <pre># Unit for Snatch: kg
+Snatch:
+  60 3s
+  80 2s
+  100
+  110
+  120 0r
+    * Shoe came off.
+  120
+</pre>
+  <p>Here we can see that the lifter was successful up until the 120 at which point they happened to miss the first attempt there due to a footwear malfunction. They appear to have been able to locate the errant shoe and rally to successfully hoist 120.</p>
+  <h4>How do I capture the concept of a superset?</h4>
+  <p>Blasting your bis and tris, I see? Well, suns outs, guns out! <strong>Traindown</strong> supports chaining movements together using the <strong>+</strong> modifier prepended to the names of the subsequent movments. Let's try it out
+  <pre>Bi Blaster 9000: 100 20r 3s
+  * This blasted my arms.
+
++ Tri Destroyer Supreme:
+  90 10r
+  100 10r
+  110 10r
+    * I finally ascended to 110. BRB posting to Instagram.</pre>
+  <p>You can chain as many movements together as you feel like doing. The number of sets <em>should</em> match but if you happen to want another set on the Tri Destroyer Supreme, go for it.</p>
+  <h4>Does Traindown support non-weight based training?</h4>
+  <p>Sadly, we can't lift weights all the time. Sometimes we wind up doing things like cardio or maybe even compete in sports that don't involve weights. <strong>Traindown</strong> is flexible enough to help you record all kinds of training. Let's see an example&mdash;this one is for a sprinter.
+  <pre># Date: 12/25/19
+
+Warmup drills: 3s
+
+# Unit for 60m sprints: seconds
+60m sprints: 7.12 7.03 7.01
+
+# Unit for Jog: meters
+Jog: 1600</pre>
+  <p>Units in <strong>Traindown</strong> can really be <em>anything</em>, so whatever it is you are doing, you likely can record it with <strong>Traindown</strong>.
+  <hr>
+  <footer>
+    <p style="text-align: center;"><small>Made with 😠. &copy; 2019 Greater Scott</small></p>
+    <p style="text-align: center;"><small>Free for use under the MIT license.</small></p>
+</body>
+</html> 
