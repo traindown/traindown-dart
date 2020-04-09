@@ -95,8 +95,7 @@ h4 {
   <h1>Traindown</h1>
   <strong>A language to help athletes express their training. Inspired by <a href="https://daringfireball.net/projects/markdown/" target="_blank">Markdown.</a></strong>
   <hr class="flat-top"/>
-  <p>Traindown was created to help you easily capture all the things you do in a training session. It aims to provide you with a flexible, easy to remember language for expressing your training for record keeping purposes.</p>
-  <p>The easiest way to explain what that all means is by showing you. If you've never written a line of code in your life, don't worry! Writing out your training in <strong>Traindown</strong> is as easy as using a hashtag.
+  <p>Traindown was created to help you easily capture all the things you do in a training session. It aims to provide you with a flexible, easy to remember language for expressing your training for record keeping purposes. As you will learn, writing out your training in <strong>Traindown</strong> is as simple as using a hashtag.
   <h3>The Basics</h3>
   <p>The minimum viable <strong>Traindown</strong> file could be expressed as
   <pre>Squat: 500</pre>
@@ -107,18 +106,47 @@ h4 {
   <pre># Unit: lbs
 Squat: 500</pre>
   <p>Ah, that's better. So this session used pounds for the unit of weight. That squat was 500 <em>pounds</em>.</p>
-  <p>Metadata allows you to express facts about the context of your training. Some common keys are date, time, duration, day/week of training cycle, and if you have any injuries you are working through. Some folks capture things like their weight that day or even what they eat leading into it. Let's go ahead and some more data to our example session.</p>
-  <pre># Date: Dec 25 2019
-# Time: 8am
+  <p>Metadata allows you to express facts about the context of your training. Some common keys are duration, day/week of training cycle, and if you have any injuries you are working through. Some folks capture things like their weight that day or even what they eat leading into it. Let's go ahead and some more data to our example session.</p>
+  <pre>
+# Week: 2
+# Day: 4
 # Burritos: 3
 # Unit: lbs
 
 Squat: 500</pre>
-  <p>By adding more details in the metadata, you can make more sense of the <em>why</em> in your training. Metadata is also very searchable, so if you choose to use a <strong>Traindown</strong> enabled analysis tool, you can really start to make sense of the big picture.</p>
+  <p>All the metadata we just added to the top of the file is called <strong>session metadata</strong>. This information applies to the entire session. <strong>Traindown</strong> also supports the concept of <strong>performance metadata</strong>.</p>
+  <p>Each combination of a load for sets and reps is considered a <strong>performance</strong> of a given movement. So in our example, lets assume this trainee likes to capture their "reps in reserve" for their top sets. 
+   <pre>
+# Week: 2
+# Day: 4
+# Burritos: 3
+# Unit: lbs
+
+Squat: 500
+  # RIR: 2</pre>
+  <p>This is saying "For the single squat at 500, I had 2 reps in reserve." Unlike the burrito count, the reps in reserve are applied to only the performance.</p>
+  <p>By adding more details in the metadata, you can make more sense of the <em>why</em> in your training at both the session and perofmrance level. Metadata is also very searchable, so if you choose to use a <strong>Traindown</strong> enabled analysis tool, you can really start to make sense of the big picture.</p>
+  <p>But wait...one key pieces is missing. <em>When</em> did this happen?
+  <h3>Date and Time</h3>
+  <p>The date and time when your training occurs is similar to metadata but is special enough to warrant it's own symbol. To specify the date and/or time that you trained, just use <strong>@</strong>, typically as the first thing in your <strong>Traindown</strong> file. To build on our example, it would look like</p>
+  <pre>
+@ Dec 25 2019 8:03am
+
+# Week: 2
+# Day: 4
+# Burritos: 3
+# Unit: lbs
+
+Squat: 500
+  # RIR: 2</pre>
+  <p>The format for the date and time is entirely up to you. Keep in mind if you are using a <strong>Traindown</strong> analytics tool, there may be a preferred format or formats, so be sure to read up on your particular tool.</p>
   <h3>Sets and Reps</h3>
   <p>Now, our example is pretty unrealistic. Cold squatting 500 pounds, three burritos or none, is not common. Let's assume this is a more mortal trainee and fill in some of the details of the day.</p>
-  <pre># Date: Dec 25 2019
-# Time: 8am
+  <pre>
+@ Dec 25 2019 8:03am
+
+# Week: 2
+# Day: 4
 # Burritos: 3
 # Unit: lbs
 
@@ -133,11 +161,44 @@ Squat: 135 10r 2s 225 5r 315 5r 405 2r 455 500 3s</pre>
   <pre class="wrong">500 1r 1s</pre>
   <small><em>Note: Don't do this. Save yourself the 1r / 1s shenanigans.</em></small>
   <p>but the whole point of <strong>Traindown</strong> is to make recording your training easy, not annoying.</p>
-  <p>The order of the reps and sets does not matter&mdash;we'll leave that debate to be settled on another date.</p>
-  <h3>Formatting for Reading</h3>
-  <p>Back to the example...I personally like how succinct it looks but it is difficult to read, especially after three burritos. The same training could be expressed in a more reader-friendly format like</p>
-  <pre># Date: Dec 25 2019
-# Time: 8am
+  <p>The order of the reps and sets does not matter&mdash;we'll leave that debate to be settled on another date. However, you should <em>always</em> lead a performance with the load.</p>
+  <p>There is one piece missing with our story so far. It's a dark thing. Not to be spoken of. That's right, I am talking about missed lifts.</p>
+  <p>If you are training and need to capture failed attempts, <strong>Traindown</strong> allows you to do that with the "failed rep" symbol <strong>f</strong>.</p>
+  <p>To keep our burrito powered example free of the scourage known as missed lifts, let's use a simple example to illustrate</p>
+  <pre>Snatch:
+  60 3s
+  80 2s
+  100
+  110
+  120 1f
+  120
+</pre>
+  <p>Here we can see that the lifter was successful up until the 120 at which point they happened to miss the first attempt there. They appear to have been able to correct and rally to successfully hoist that 120.</p>
+  <p>The <strong>failed rep</strong> allows you to capture the deficit in what you originally planned on hitting when used in conjunction with the rep symbol. This can be used to capture multiple failed reps, as well. For example
+  <pre>Glute bench raise:
+  1000 10r
+  1000 10r 6f
+</pre>
+  <p>In the literal "butt blaster" example above, the trainee would be credited with 4 completed reps and 6 missed reps. The reason we use <strong>10r</strong> is to indicate the <em>reps attempted</em>. In the first example, the implied <strong>1r</strong> is considered and the trainee is credited with no completed lifts. 1 - 1 = 0.</p>
+  <p>Another tool in your quest to capture all the sets and reps you've done is the <strong>+</strong> operator. This symbol allows you to link together movements to record your supersets or rounds.</p>
+  <p>Blasting your bis and tris? Well, sun's outs, guns out! Let's try it out</p>
+  <pre>Bi Blaster 9000: 100 20r 3s
++ Tri Destroyer Supreme: 90 10r 100 10r 110 10r</pre>
+  <p>You can chain as many movements together as you feel like doing. The number of sets <em>should</em> match but if you happen to want another set on the Tri Destroyer Supreme, go for it.</p>
+  <p>For recording rounds, an example could be 20.4 from the Crossfit Open</p>
+  <pre>Deadlift: 255 21r 255 15r 255 9r
++ Handstand Push-Up: 21r 15r 9r
+
+Deadlift: 315 21r 315 15r 315 9r
++ Handstand Walk: 50 50 50</pre>
+  <p>No matter how metconned you get, <strong>Traindown</strong> can support your recording of it!
+  <h3>Formatting for Easy Reading</h3>
+  <p>Back to the burrito example...I personally like how succinct it looks but it is difficult to read, especially after three burritos. The same training could be expressed in a more reader-friendly format like</p>
+  <pre>
+@ Dec 25 2019 8:03am
+
+# Week: 2
+# Day: 4
 # Burritos: 3
 # Unit: lbs
 
@@ -148,11 +209,14 @@ Squat:
   405 2r
   455
   500 3s</pre>
-  <p>I dunnno about you, but that is <em>much</em> easier on my eyes.</p>
+  <p>I dunnno about you, but that is <em>much</em> easier on my eyes. Since <strong>Traindown</strong> doesn't specify rules around whitespace, you are free to really do whatever in terms of layout. Just be careful not to assert the superiority of spaces over tabs...</p>
   <h3>Notes</h3>
   <p>So now we have a good idea of what happened on that day, but I'd imagine after eating three burritos, they may have been some...issues along the way. Lucky for us, <strong>Traindown</strong> provides tools for capturing notes. Let's add some!</p>
-  <pre># Date: Dec 25 2019
-# Time: 8am
+  <pre>
+@ Dec 25 2019 8:03am
+
+# Week: 2
+# Day: 4
 # Burritos: 3
 # Unit: lbs
 
@@ -165,9 +229,12 @@ Squat:
   405 2r
   455
   500 3s</pre>
-  <p>What we just added was a <strong>session note</strong>. This is a note that applies to the entire training session. These notes are helpful for painting a landscape of your training. Let's add some fine details!
-  <pre># Date: Dec 25 2019
-# Time: 8am
+  <p>What we just added was a <strong>session note</strong>. This is a note that applies to the entire training session and we know that because it came before any movements, right below the session metadata. These notes are helpful for painting a landscape of your training. Let's add some fine details!
+  <pre>
+@ Dec 25 2019 8:03am
+
+# Week: 2
+# Day: 4
 # Burritos: 3
 # Unit: lbs
 
@@ -183,19 +250,43 @@ Squat:
   500 3s
     * Surprisingly easy singles given that episode at 405.
     * Consider going up in weight next week.</pre>
-  <p>Each combination of a load for sets and reps is considered a <strong>performance</strong> of a given movement. Notes that appear <em>after</em> a performance are called...you guessed it, <strong>performance notes</strong>. You can apply to whatever granularity of work you like to capture. For example, the three singles at 500 could look something like
+  <p>Remember that each combination of a load for sets and reps is considered a <strong>performance</strong> of a given movement. Notes that appear <em>after</em> a performance are called...you guessed it, <strong>performance notes</strong>. You can apply to whatever granularity of work you like to capture. For example, the three singles at 500 could look something like
   <pre>  500
     * Surprisingly easy single given that episode at 405.
   500
     * Whoops. Spoke too soon. Clenching!
   500
     * Another easy rep.</pre>
-  <p>It's entirely up to you how you want to record your training and I recommend trying out different strategies to see what feels best for you.</p>
+  <p>There is a third kind of note available to you called the <strong>movement note</strong>. This note is useful for capturing information about the entire movement such as stance, grip placement, etc. A movement note is declared after the movement name and before any performances. For example
+  <pre>Squat:
+
+  * Worked on trying to increase interabdominal pressure, but not too much considering the burritos.
+  * Grip was pinky on the rings.
+
+  135 10r 2s
+  225 5r
+  315 5r
+  405 2r
+    * Had to stop at two reps to run to the bathroom.
+  455
+  500 3s
+    * Surprisingly easy singles given that episode at 405.
+    * Consider going up in weight next week.</pre>
+  <p>The notes about pressure and hand placement apply to <em>all the performances</em> of the movement.</p>
+  <h3>Recap</h3>
+  <p>You now know all there is to know about <strong>Traindown</strong>.</p>
+  <p>Each session has many performances as well as a date and time on which it occurred. Sessions and performances both can have notes and metadata. Movements can have notes. The layout of your file doesn't really matter in so far as you can read it years from now or the tool you use to analyze your training can read it.</p>
+  <p>It's entirely up to you how you want to record your training and I recommend trying out different strategies to see what feels best for you. If you happen to have any questions, please feel free to email me at <a href="mailto: tyler@liftwhat.com">tyler at liftwhat dot com</a>. Kick ass!</p>
   <h3>FAQs</h3>
+  <h4>What is the preferred file extension for Traindown?</h4>
+  <p>This will likely depend on your analysis tool of choice, but the standard file extension is <strong>.traindown</strong>&mdash;e.g., <em>20190101.traindown</em>. You could just as easily save your files as plain text files, if you prefer.</p>
   <h4>What if part of my training is done in a different unit?</h4>
-  <p>Ah, a true connoisseur of units, I see. This is well supported using metadata and the "Unit for" key. For example, lets say we needed to add some kettlebell swings to our session from above.</p>
-  <pre># Date: Dec 25 2019
-# Time: 8am
+  <p>Ah, a true connoisseur of units, I see. This is well supported using performance metadata and the "Unit" key. For example, lets say we needed to add some kettlebell swings to our session from above.</p>
+  <pre>
+@ Dec 25 2019 8:03am
+
+# Week: 2
+# Day: 4
 # Burritos: 3
 # Unit: lbs
 
@@ -212,49 +303,25 @@ Squat:
     * Surprisingly easy singles given that episode at 405.
     * Consider going up in weight next week.
 
-# Unit for Kettlebell swings: kg
 Kettlebell swings: 24 10r 4s
+  # Unit: kg
 </pre>
-  <p>Metadata can be injected into any spot in a <strong>Traindown</strong> file. Here, we added it right above the movement. We could have just as easily added it to the metadata at the top of the file. I find adding it right above the exercise helpful, but feel free to do it wherever.</p>
-  <h4>What if I happen to miss a lift?</h4>
-  <p>Bummer. But it happens to everyone. If you are training and need to capture failed attempts, <strong>Traindown</strong> allows you to do that with the "zero rep"
-  <pre># Unit for Snatch: kg
-Snatch:
-  60 3s
-  80 2s
-  100
-  110
-  120 0r
-    * Shoe came off.
-  120
-</pre>
-  <p>Here we can see that the lifter was successful up until the 120 at which point they happened to miss the first attempt there due to a footwear malfunction. They appear to have been able to locate the errant shoe and rally to successfully hoist 120.</p>
-  <h4>How do I capture the concept of a superset?</h4>
-  <p>Blasting your bis and tris? Well, sun's outs, guns out! <strong>Traindown</strong> supports chaining movements together using the <strong>+</strong> modifier prepended to the names of the subsequent movments. Let's try it out
-  <pre>Bi Blaster 9000: 100 20r 3s
-  * This blasted my arms.
-
-+ Tri Destroyer Supreme:
-  90 10r
-  100 10r
-  110 10r
-    * I finally ascended to 110. BRB posting to Instagram.</pre>
-  <p>You can chain as many movements together as you feel like doing. The number of sets <em>should</em> match but if you happen to want another set on the Tri Destroyer Supreme, go for it.</p>
-  <h4>Does Traindown support non-weight based training?</h4>
+ <h4>Does Traindown support non-weight based training?</h4>
   <p>Sadly, we can't lift weights all the time. Sometimes we wind up doing things like cardio or maybe even compete in sports that don't involve weights. <strong>Traindown</strong> is flexible enough to help you record all kinds of training. Let's see an example&mdash;this one is for a sprinter.
   <pre># Date: 12/25/19
 
 Warmup drills: 3s
 
-# Unit for 60m sprints: seconds
 60m sprints: 7.12 7.03 7.01
+  # Unit: seconds
 
-# Unit for Jog: meters
-Jog: 1600</pre>
+Jog: 1600
+  # Unit: meters
+</pre>
   <p>Units in <strong>Traindown</strong> can really be <em>anything</em>, so whatever it is you are doing, you likely can record it with <strong>Traindown</strong>.
   <hr>
   <footer>
-    <p style="text-align: center;"><small>Made with &#x1F92C;. &copy; | 2019 Greater Scott | All rights reserved.</small></p>
+    <p style="text-align: center;"><small>Made with &#x1F92C;. &copy; | 2020 Greater Scott | All rights reserved.</small></p>
     <p style="text-align: center;"><small>Free for use under the MIT license.</small></p>
 </body>
 </html> 
