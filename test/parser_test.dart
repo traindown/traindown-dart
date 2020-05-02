@@ -76,8 +76,9 @@ class ScannerMock extends Fake implements Scanner {
 void main() {
   group("Constructor", () {
     test("An instance of Scanner is required for init", () {
-      try { Parser(null); }
-      catch(e) {
+      try {
+        Parser(null);
+      } catch (e) {
         expect(e, "Needs a scanner, dummy");
         return;
       }
@@ -87,12 +88,12 @@ void main() {
 
   group("parse()", () {
     var parser = Parser(ScannerMock());
- 
+
     group("After calling", () {
       setUp(() => parser.parse());
 
       test("Metadata is correctly captured", () {
-        expect(parser.metadata.kvps, { "Key Key": "Value Value" });
+        expect(parser.metadata.kvps, {"Key Key": "Value Value"});
       });
 
       test("Notes are correctly captured", () {
@@ -106,22 +107,22 @@ void main() {
         expect(movement.performances.length, 4);
 
         var ps = movement.performances;
-        expect(ps[0].toString(), "100 for 1 sets of 1 reps.");
-        expect(ps[1].toString(), "200 for 1 sets of 2 reps.");
-        expect(ps[2].toString(), "300 for 2 sets of 1 reps.");
-        expect(ps[3].toString(), "400 for 2 sets of 2 reps.");
+        expect(ps[0].toString(), "100 unknown unit for 1 sets of 1 reps.");
+        expect(ps[1].toString(), "200 unknown unit for 1 sets of 2 reps.");
+        expect(ps[2].toString(), "300 unknown unit for 2 sets of 1 reps.");
+        expect(ps[3].toString(), "400 unknown unit for 2 sets of 2 reps.");
       });
     });
 
     test("An instance of Scanner is required for parsing", () {
       parser.scanner = null;
-      try { parser.parse(); }
-      catch(e) {
+      try {
+        parser.parse();
+      } catch (e) {
         expect(e, "Needs a scanner, dummy");
         return;
       }
       throw "Should have failed init";
     });
-
   });
 }

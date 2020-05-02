@@ -10,99 +10,161 @@ class Parser {
   Metadata metadata = Metadata();
   List<Movement> movements = [];
 
+  Movement _currentMovement;
+  Performance _currentPerformance;
   Scanner _scanner;
 
   Parser(Scanner scanner) {
-    if (scanner == null) { throw "Needs a scanner, dummy"; }
+    if (scanner == null) {
+      throw "Needs a scanner, dummy";
+    }
     _scanner = scanner;
   }
 
-  void _handleKVP() {
-    var endKVP = false;
-    var key = StringBuffer("");
-    var keyComplete = false;
-    var value = StringBuffer("");
+  Metadatable get _lastEntity {
+    if (_currentPerformance != null) {
+      return _currentPerformance;
+    } else {
+      return _currentMovement;
+    }
+  }
 
-    while (!_scanner.eof && !endKVP) {
+  void _handleDate() {
+    var dateBuffer = "";
+    var endDate = false;
+
+    while (!_scanner.eof && !endDate) {
       var tokenLiteral = _scanner.scan();
 
-      if (tokenLiteral.token == Token.LINEBREAK) { endKVP = true; }
-      if (tokenLiteral.token == Token.COLON) { keyComplete = true; continue; }
-      if (tokenLiteral.token != Token.WHITESPACE) {
-        var buffer = !keyComplete ? key : value;
+      if (tokenLiteral.token == Token.LINEBREAK) {
+        endDate = true;
+      }
+      if (tokenLiteral.token == Token.STAR ||
+          tokenLiteral.token == Token.POUND) {
+        _scanner.unscan();
+        endDate = true;
+      }
+
+      dateBuffer += tokenLiteral.literal;
+    }
+
+    metadata.addKVP("Occurred", dateBuffer.trimRight());
+  }
+
+  void _handleKVP() {
+    bool endKVP = false;
+    StringBuffer key = StringBuffer("");
+    bool keyComplete = false;
+    StringBuffer value = StringBuffer("");
+
+    while (!_scanner.eof && !endKVP) {
+      TokenLiteral tokenLiteral = _scanner.scan();
+
+      if (tokenLiteral.isLinebreak) {
+        endKVP = true;
+      }
+      if (tokenLiteral.isColon) {
+        keyComplete = true;
+        continue;
+      }
+      if (!tokenLiteral.isWhitespace) {
+        StringBuffer buffer = !keyComplete ? key : value;
         buffer.write("${tokenLiteral.literal} ");
       }
     }
 
-    metadata.addKVP(key.toString().trimRight(), value.toString().trimRight());
+    (_lastEntity != null ? _lastEntity.metadata : metadata)
+        .addKVP(key.toString().trimRight(), value.toString().trimRight());
   }
 
+  // TODO: Break this up
   void _handleMovement(TokenLiteral initial) {
-    String currentUnit;
-    var mustUnit = false;
-    Movement movement;
-    var name = StringBuffer("${initial.literal} ");
-    Performance performance;
+    bool mustAmount = false;
+    StringBuffer nameBuffer = StringBuffer("${initial.literal} ");
+
+    _currentMovement = Movement(null);
+    _currentPerformance = null;
 
     while (!_scanner.eof) {
-      var tokenLiteral = _scanner.scan();
+      TokenLiteral tokenLiteral = _scanner.scan();
 
-      if (tokenLiteral.isEmpty) {
-        if (currentUnit != null) {
-          performance.load = num.tryParse(currentUnit);
-          currentUnit = null;
+      // We check for metadata and notes prior to any amount so that we
+      // may support Movement meta/notes.
+      if (tokenLiteral.isStar) {
+        _handleNote();
+      }
+      if (tokenLiteral.isPound) {
+        _handleKVP();
+      }
+
+      // If we must have an amount but we see empty spaces, keep going
+      if (mustAmount && tokenLiteral.isEmpty) {
+        continue;
+      }
+
+      // If we must have an amount, we must have an amount
+      if (mustAmount && !tokenLiteral.isAmount) {
+        throw "Failed to receive an amount";
+      }
+
+      // If we see an amount, create current Performance and push the value
+      // there.
+      // TODO: Rescue failed parse
+      if (tokenLiteral.isAmount) {
+        if (_currentPerformance != null) {
+          _currentMovement.performances.add(_currentPerformance);
         }
+        _currentPerformance = _newPerformance(_currentMovement.name);
+        _currentPerformance.load = num.tryParse(tokenLiteral.literal);
+        mustAmount = false;
         continue;
       }
 
-      if (tokenLiteral.token == Token.SEMICOLON) {
-        if (currentUnit != null) {
-          performance.load = num.tryParse(currentUnit);
-          currentUnit = null;
-        }
-        movement.performances.add(performance);
-        performance = _newPerformance(movement.name);
-        mustUnit = true;
+      // If we see fails...
+      if (tokenLiteral.isFails) {
+        _currentPerformance.fails = num.tryParse(tokenLiteral.literal);
         continue;
       }
 
-      // This should indicate end of movement...
-      if (mustUnit && tokenLiteral.token != Token.UNIT) {
-        _scanner.unscan();
-        break;
-      }
-
-      if (tokenLiteral.token == Token.UNIT) {
-        currentUnit = tokenLiteral.literal;
-        mustUnit = false;
+      // If we see reps...
+      if (tokenLiteral.isReps) {
+        _currentPerformance.reps = num.tryParse(tokenLiteral.literal);
         continue;
       }
 
-      if (tokenLiteral.token == Token.COLON) {
-        movement = Movement(name.toString().trimRight());
-        mustUnit = true;
-        performance = _newPerformance(movement.name);
+      // If we see sets...
+      if (tokenLiteral.isSets) {
+        _currentPerformance.repeat = num.tryParse(tokenLiteral.literal);
         continue;
       }
 
-      if (tokenLiteral.token == Token.IDENT) {
-        if (movement == null) {
-          name.write("${tokenLiteral.literal} ");
+      // End of the Movement name. We now bootstrap the data and we must now
+      // see an amount next, thus
+      if (tokenLiteral.isColon) {
+        _currentMovement = Movement(nameBuffer.toString().trimRight());
+        mustAmount = true;
+        continue;
+      }
+
+      // We are currently seeing a word. If there is a name for our current
+      // Movement, then we must have hit another Movement, so we need to move
+      // on. If not, collect the word for the name.
+      if (tokenLiteral.isWord) {
+        if (_currentMovement.name == null) {
+          nameBuffer.write("${tokenLiteral.literal} ");
           continue;
         } else {
-          if (tokenLiteral.literal == "s") {
-            performance.repeat = num.tryParse(currentUnit);
-          }
-          if (tokenLiteral.literal == "r") {
-            performance.reps = num.tryParse(currentUnit);
-          }
-          currentUnit = null;
-          continue;
+          _scanner.unscan();
+          break;
         }
       }
     }
 
-    movements.add(movement);
+    if (_currentPerformance != null) {
+      _currentMovement.performances.add(_currentPerformance);
+    }
+
+    movements.add(_currentMovement);
   }
 
   void _handleNote() {
@@ -112,22 +174,27 @@ class Parser {
     while (!_scanner.eof && !endNote) {
       var tokenLiteral = _scanner.scan();
 
-      if (tokenLiteral.token == Token.LINEBREAK) { endNote = true; }
-      if (tokenLiteral.token != Token.WHITESPACE) { note.write("${tokenLiteral.literal} "); }
+      if (tokenLiteral.token == Token.LINEBREAK) {
+        endNote = true;
+      }
+      if (tokenLiteral.token != Token.WHITESPACE) {
+        note.write("${tokenLiteral.literal} ");
+      }
     }
 
-    metadata.addNote(note.toString().trimRight());
+    (_lastEntity != null ? _lastEntity.metadata : metadata)
+        .addNote(note.toString().trimRight());
   }
 
   Performance _newPerformance(String movementName) {
     if (movementName.startsWith("+")) {
       movementName = movementName.split("+").last.trim();
     }
-    var unit = metadata.kvps["Unit for $movementName"]
-      ?? metadata.kvps["unit for $movementName"]
-      ?? metadata.kvps["Unit"]
-      ?? metadata.kvps["unit"]
-      ?? "unknown unit";
+    var unit = metadata.kvps["Unit for $movementName"] ??
+        metadata.kvps["unit for $movementName"] ??
+        metadata.kvps["Unit"] ??
+        metadata.kvps["unit"] ??
+        "unknown unit";
     return Performance(unit: unit);
   }
 
@@ -140,18 +207,31 @@ class Parser {
 
   /// parse runs the provided Scanner until eof signal and stores the metadata and movements.
   void parse() {
-    if (hasParsed) { return; }
-    if (_scanner == null) { throw "Needs a scanner, dummy"; }
+    if (hasParsed) {
+      return;
+    }
+    if (_scanner == null) {
+      throw "Needs a scanner, dummy";
+    }
 
     while (!_scanner.eof) {
       var tokenLiteral = _scanner.scan();
 
-      if (tokenLiteral.isEmpty) { continue; }
-      
-      if (tokenLiteral.token == Token.POUND) { _handleKVP(); }
-      else if (tokenLiteral.token == Token.STAR) { _handleNote(); }
-      else if (tokenLiteral.token == Token.IDENT) { _handleMovement(tokenLiteral); }
+      if (tokenLiteral.isEmpty) {
+        continue;
+      }
+
+      if (tokenLiteral.token == Token.AT) {
+        _handleDate();
+      } else if (tokenLiteral.token == Token.POUND) {
+        _handleKVP();
+      } else if (tokenLiteral.token == Token.STAR) {
+        _handleNote();
+      } else if (tokenLiteral.token == Token.WORD) {
+        _handleMovement(tokenLiteral);
+      }
     }
+
     hasParsed = true;
   }
 }

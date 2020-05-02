@@ -6,4 +6,6 @@ class Metadata {
   void addNote(String note) => notes.add(note);
 }
 
-
+abstract class Metadatable {
+  Metadata metadata;
+}

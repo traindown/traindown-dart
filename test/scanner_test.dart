@@ -6,8 +6,9 @@ import "package:traindown/src/token.dart";
 void main() {
   group("Constructor", () {
     test("No args causes an exception", () {
-      try { Scanner(); }
-      catch(e) {
+      try {
+        Scanner();
+      } catch (e) {
         expect(e, "You must pass either a filename or string");
         return;
       }
@@ -15,8 +16,9 @@ void main() {
     });
 
     test("Both args causes an exception", () {
-      try { Scanner(filename: "yay", string: "your mom"); }
-      catch(e) {
+      try {
+        Scanner(filename: "yay", string: "your mom");
+      } catch (e) {
         expect(e, "You may only pass a filename OR a string");
         return;
       }
@@ -25,6 +27,11 @@ void main() {
   });
 
   group("scan()", () {
+    test("With '@' it returns the correct TokenLiteral", () {
+      var s = Scanner(string: "@");
+      expect(s.scan(), TokenLiteral(Token.AT, "@"));
+    });
+
     test("With ':' it returns the correct TokenLiteral", () {
       var s = Scanner(string: ":");
       expect(s.scan(), TokenLiteral(Token.COLON, ":"));
@@ -32,12 +39,27 @@ void main() {
 
     test("With '123' it returns the correct TokenLiteral", () {
       var s = Scanner(string: "123");
-      expect(s.scan(), TokenLiteral(Token.UNIT, "123"));
+      expect(s.scan(), TokenLiteral(Token.AMOUNT, "123"));
     });
 
     test("With '123 ' it returns the correct TokenLiteral", () {
       var s = Scanner(string: "123 ");
-      expect(s.scan(), TokenLiteral(Token.UNIT, "123"));
+      expect(s.scan(), TokenLiteral(Token.AMOUNT, "123"));
+    });
+
+    test("With '123f' it returns the correct TokenLiteral", () {
+      var s = Scanner(string: "123f");
+      expect(s.scan(), TokenLiteral(Token.FAILS, "123"));
+    });
+
+    test("With '123r' it returns the correct TokenLiteral", () {
+      var s = Scanner(string: "123r");
+      expect(s.scan(), TokenLiteral(Token.REPS, "123"));
+    });
+
+    test("With '123s' it returns the correct TokenLiteral", () {
+      var s = Scanner(string: "123s");
+      expect(s.scan(), TokenLiteral(Token.SETS, "123"));
     });
 
     test("With '\n' it returns the correct TokenLiteral", () {
@@ -53,11 +75,6 @@ void main() {
     test("With '#' it returns the correct TokenLiteral", () {
       var s = Scanner(string: "#");
       expect(s.scan(), TokenLiteral(Token.POUND, "#"));
-    });
-
-    test("With ';' it returns the correct TokenLiteral", () {
-      var s = Scanner(string: ";");
-      expect(s.scan(), TokenLiteral(Token.SEMICOLON, ";"));
     });
 
     test("With '*' it returns the correct TokenLiteral", () {
@@ -87,7 +104,7 @@ void main() {
 
     test("With 'mom' it returns the correct TokenLiteral", () {
       var s = Scanner(string: "mom");
-      expect(s.scan(), TokenLiteral(Token.IDENT, "mom"));
+      expect(s.scan(), TokenLiteral(Token.WORD, "mom"));
     });
 
     test("With '' it returns the correct TokenLiteral", () {
@@ -96,7 +113,7 @@ void main() {
     });
   });
 
-  group("uncan()", () {
+  group("unscan()", () {
     test("It correctly rewinds the scan", () {
       var s = Scanner(string: ":");
       expect(s.scan(), TokenLiteral(Token.COLON, ":"));

@@ -3,6 +3,8 @@ import "dart:io";
 
 import "package:traindown/src/token.dart";
 
+// TODO: Capture line and column for error output.
+
 class Scanner {
   List<int> _bytes;
   Utf8Decoder _decoder;
@@ -33,24 +35,27 @@ class Scanner {
   }
 
   String get _current {
-    return (_index >= _bytes.length) ? "" : _decoder.convert([_bytes.elementAt(_index)]);
+    return (_index >= _bytes.length)
+        ? ""
+        : _decoder.convert([_bytes.elementAt(_index)]);
   }
 
   bool get eof => _index == _bytes.length - 1;
   bool get _isCharacter {
-    return !_isColon
-      && !_isDigit
-      && !_isLinebreak
-      && !_isPound
-      && !_isSemicolon
-      && !_isStar
-      && !_isWhitespace;
+    return !_isAt &&
+        !_isColon &&
+        !_isDigit &&
+        !_isLinebreak &&
+        !_isPound &&
+        !_isStar &&
+        !_isWhitespace;
   }
+
+  bool get _isAt => _current == "@";
   bool get _isColon => _current == ":";
   bool get _isDigit => num.tryParse(_current) != null;
   bool get _isLinebreak => _current == "\n" || _current == "\r";
   bool get _isPound => _current == "#";
-  bool get _isSemicolon => _current == ";";
   bool get _isStar => _current == "*";
   bool get _isWhitespace => _current == " " || _current == "\t";
 
@@ -59,12 +64,17 @@ class Scanner {
 
   void reset() => _index = -1;
 
-  TokenLiteral scan() {
-    if (eof) { return TokenLiteral.eof(); }
+  TokenLiteral scan({reverse = false}) {
+    if (eof) {
+      return TokenLiteral.eof();
+    }
 
-    var literal = _next();
+    var literal = reverse ? _prev() : _next();
     _lastIndex = _index - 1;
 
+    if (_isAt) {
+      return TokenLiteral(Token.AT, literal);
+    }
     if (_isColon) {
       return TokenLiteral(Token.COLON, literal);
     }
@@ -77,9 +87,6 @@ class Scanner {
     if (_isPound) {
       return TokenLiteral(Token.POUND, literal);
     }
-    if (_isSemicolon) {
-      return TokenLiteral(Token.SEMICOLON, literal);
-    }
     if (_isStar) {
       return TokenLiteral(Token.STAR, literal);
     }
@@ -87,13 +94,13 @@ class Scanner {
       return _scanWhitespace();
     }
     if (_isCharacter) {
-      return _scanIdentifier();
+      return _scanWord();
     }
 
     return TokenLiteral.illegal();
   }
 
-  TokenLiteral _scanIdentifier() {
+  TokenLiteral _scanWord() {
     var identifier = "";
     while (_isCharacter && !eof) {
       identifier += _current;
@@ -104,21 +111,30 @@ class Scanner {
     } else {
       _prev();
     }
-    return TokenLiteral(Token.IDENT, identifier);
+    return TokenLiteral(Token.WORD, identifier);
   }
 
   TokenLiteral _scanDigit() {
-    var digits = "";
+    var literal = "";
+    var token = Token.AMOUNT;
+
     while (_isDigit && !eof) {
-      digits += _current;
+      literal += _current;
       _next();
     }
     if (_isDigit && eof) {
-      digits += _current;
+      literal += _current;
+    } else if (_current == "f" || _current == "F") {
+      token = Token.FAILS;
+    } else if (_current == "r" || _current == "R") {
+      token = Token.REPS;
+    } else if (_current == "s" || _current == "S") {
+      token = Token.SETS;
     } else {
       _prev();
     }
-    return TokenLiteral(Token.UNIT, digits);
+
+    return TokenLiteral(token, literal);
   }
 
   TokenLiteral _scanLinebreak() {
@@ -127,7 +143,9 @@ class Scanner {
       hasNexted = true;
       _next();
     }
-    if (hasNexted) { _prev(); }
+    if (hasNexted) {
+      _prev();
+    }
 
     return TokenLiteral(Token.LINEBREAK, "");
   }
@@ -138,7 +156,9 @@ class Scanner {
       hasNexted = true;
       _next();
     }
-    if (hasNexted) { _prev(); }
+    if (hasNexted) {
+      _prev();
+    }
 
     return TokenLiteral(Token.WHITESPACE, "");
   }
@@ -147,4 +167,3 @@ class Scanner {
     _index = _lastIndex;
   }
 }
-
