@@ -5,7 +5,7 @@ import "package:traindown/src/parser.dart";
 
 abstract class ParserPresenter {
   Parser _parser;
-  
+
   Map get kvps => _parser.metadata.kvps;
   List<Movement> get movements => _parser.movements;
   List<String> get notes => _parser.metadata.notes;
@@ -17,7 +17,7 @@ abstract class ParserPresenter {
     _writeNotes(string);
     _writeMovements(string);
 
-    return string.toString();
+    return string.toString().trim();
   }
 
   StringBuffer initString() {
@@ -78,7 +78,11 @@ class HTMLPresenter extends ParserPresenter {
   @override
   StringBuffer initString() {
     var string = StringBuffer();
-    var date = kvps["Date"] ?? kvps["date"] ?? kvps["Day"] ?? kvps["day"] ?? "Unknown Date";
+    var date = kvps["Date"] ??
+        kvps["date"] ??
+        kvps["Day"] ??
+        kvps["day"] ??
+        "Unknown Date";
     var time = kvps["Time"] ?? kvps["time"] ?? "Unknown time";
 
     string.write("<h1>Training Session on $date at $time</h1>");
@@ -105,12 +109,14 @@ class HTMLPresenter extends ParserPresenter {
 
   void _writeMovements(StringBuffer s) {
     s.write("<h2>Movements</h2>");
-    s.write("<table><thead><tr><th>Movement</th><th>Load</th><th>Unit</th><th>Sets</th><th>Reps</th></tr></thead><tbody>");
+    s.write(
+        "<table><thead><tr><th>Movement</th><th>Load</th><th>Unit</th><th>Sets</th><th>Reps</th></tr></thead><tbody>");
 
     for (var movement in movements) {
       s.write("<tr><td colspan=\"5\">${movement.name}</td></tr>");
       for (var p in movement.performances) {
-        s.write("<tr><td></td><td>${p.load}</td><td>${p.unit}</td><td>${p.repeat}</td><td>${p.reps}</td></tr>");
+        s.write(
+            "<tr><td></td><td>${p.load}</td><td>${p.unit}</td><td>${p.repeat}</td><td>${p.reps}</td></tr>");
       }
     }
 
@@ -141,11 +147,8 @@ class JSONPresenter extends ParserPresenter {
 
   @override
   String call() {
-    return jsonEncode({
-      "metadata": kvps,
-      "movements": _movementsHash(),
-      "notes": notes
-    });
+    return jsonEncode(
+        {"metadata": kvps, "movements": _movementsHash(), "notes": notes});
   }
 
   List _movementsHash() {

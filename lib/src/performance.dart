@@ -1,6 +1,6 @@
 import "package:traindown/src/metadata.dart";
 
-class Performance implements Metadatable {
+class Performance extends Metadatable {
   int fails;
   int load;
   Metadata metadata = Metadata();
@@ -8,12 +8,22 @@ class Performance implements Metadatable {
   int reps;
   String unit;
 
+  static const List<String> unitKeywords = ["unit", "Unit", "u", "U"];
+
   Performance(
       {this.fails = 0,
       this.load = 0,
       this.repeat = 1,
       this.reps = 1,
       this.unit = ""});
+
+  @override
+  void addKVP(String key, String value) {
+    super.addKVP(key, value);
+    if (unitKeywords.contains(key)) {
+      unit = value;
+    }
+  }
 
   String get _metadata {
     if (metadata.kvps.entries.isEmpty) {

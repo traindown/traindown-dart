@@ -1,7 +1,7 @@
 import "package:traindown/src/metadata.dart";
 import "package:traindown/src/performance.dart";
 
-class Movement implements Metadatable {
+class Movement extends Metadatable {
   Metadata metadata = Metadata();
   String name;
   List<Performance> performances = [];

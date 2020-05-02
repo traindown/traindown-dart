@@ -73,8 +73,12 @@ class Parser {
       }
     }
 
-    (_lastEntity != null ? _lastEntity.metadata : metadata)
-        .addKVP(key.toString().trimRight(), value.toString().trimRight());
+    if (_lastEntity != null) {
+      _lastEntity.addKVP(
+          key.toString().trimRight(), value.toString().trimRight());
+    } else {
+      metadata.addKVP(key.toString().trimRight(), value.toString().trimRight());
+    }
   }
 
   // TODO: Break this up
@@ -182,11 +186,15 @@ class Parser {
       }
     }
 
-    (_lastEntity != null ? _lastEntity.metadata : metadata)
-        .addNote(note.toString().trimRight());
+    if (_lastEntity != null) {
+      _lastEntity.addNote(note.toString().trimRight());
+    } else {
+      metadata.addNote(note.toString().trimRight());
+    }
   }
 
   Performance _newPerformance(String movementName) {
+    // TODO: Actual superset support
     if (movementName.startsWith("+")) {
       movementName = movementName.split("+").last.trim();
     }

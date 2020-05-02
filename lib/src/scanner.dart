@@ -64,12 +64,12 @@ class Scanner {
 
   void reset() => _index = -1;
 
-  TokenLiteral scan({reverse = false}) {
+  TokenLiteral scan() {
     if (eof) {
       return TokenLiteral.eof();
     }
 
-    var literal = reverse ? _prev() : _next();
+    var literal = _next();
     _lastIndex = _index - 1;
 
     if (_isAt) {
