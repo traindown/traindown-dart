@@ -86,7 +86,7 @@ class Parser {
     bool mustAmount = false;
     StringBuffer nameBuffer = StringBuffer("${initial.literal} ");
 
-    _currentMovement = Movement(null);
+    _currentMovement = null;
     _currentPerformance = null;
 
     while (!_scanner.eof) {
@@ -154,7 +154,7 @@ class Parser {
       // Movement, then we must have hit another Movement, so we need to move
       // on. If not, collect the word for the name.
       if (tokenLiteral.isWord) {
-        if (_currentMovement.name == null) {
+        if (_currentMovement == null) {
           nameBuffer.write("${tokenLiteral.literal} ");
           continue;
         } else {
@@ -195,14 +195,7 @@ class Parser {
 
   Performance _newPerformance(String movementName) {
     // TODO: Actual superset support
-    if (movementName.startsWith("+")) {
-      movementName = movementName.split("+").last.trim();
-    }
-    var unit = metadata.kvps["Unit for $movementName"] ??
-        metadata.kvps["unit for $movementName"] ??
-        metadata.kvps["Unit"] ??
-        metadata.kvps["unit"] ??
-        "unknown unit";
+    var unit = metadata.kvps["Unit"] ?? metadata.kvps["unit"] ?? "unknown unit";
     return Performance(unit: unit);
   }
 
@@ -211,6 +204,8 @@ class Parser {
     metadata = Metadata();
     movements = [];
     _scanner = newScanner;
+    _currentMovement = null;
+    _currentPerformance = null;
   }
 
   /// parse runs the provided Scanner until eof signal and stores the metadata and movements.
