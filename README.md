@@ -93,11 +93,13 @@ Further on down the day, we can see
 225 5r
 ```
 which can be read as "I did one set of five reps at 225 pounds on the Squat." If we omit either an r or and s, the default is 1. So circling back to the original 500, it _could_ be expressed as
+
 **DON'T DO THIS**
 ```
 500 1r 1s
 ```
 **DON'T DO THIS**
+
 _Note: Seriously, don't do this. Save yourself the 1r / 1s shenanigans._
 
 but the whole point of **Traindown** is to make recording your training easy, not annoying.
