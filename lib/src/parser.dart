@@ -9,6 +9,7 @@ class Parser {
   bool hasParsed = false;
   Metadata metadata = Metadata();
   List<Movement> movements = [];
+  DateTime occurred = DateTime.now();
 
   Movement _currentMovement;
   Performance _currentPerformance;
@@ -30,25 +31,31 @@ class Parser {
   }
 
   void _handleDate() {
-    var dateBuffer = "";
-    var endDate = false;
+    StringBuffer buffer = StringBuffer();
+    bool endDate = false;
 
     while (!_scanner.eof && !endDate) {
-      var tokenLiteral = _scanner.scan();
+      TokenLiteral tokenLiteral = _scanner.scan();
 
-      if (tokenLiteral.token == Token.LINEBREAK) {
+      if (tokenLiteral.isLinebreak) {
         endDate = true;
       }
-      if (tokenLiteral.token == Token.STAR ||
-          tokenLiteral.token == Token.POUND) {
+      if (tokenLiteral.isStar || tokenLiteral.isPound) {
         _scanner.unscan();
         endDate = true;
       }
+      if (tokenLiteral.isWhitespace) {
+        buffer.write(" ");
+        continue;
+      }
 
-      dateBuffer += tokenLiteral.literal;
+      buffer.write(tokenLiteral.literal);
     }
 
-    metadata.addKVP("Occurred", dateBuffer.trimRight());
+    DateTime parsedDate = DateTime.tryParse(buffer.toString().trim());
+    if (parsedDate != null) {
+      occurred = parsedDate;
+    }
   }
 
   void _handleKVP() {
@@ -203,6 +210,7 @@ class Parser {
     hasParsed = false;
     metadata = Metadata();
     movements = [];
+    occurred = DateTime.now();
     _scanner = newScanner;
     _currentMovement = null;
     _currentPerformance = null;

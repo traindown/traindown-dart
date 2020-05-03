@@ -9,6 +9,7 @@ abstract class ParserPresenter {
   Map get kvps => _parser.metadata.kvps;
   List<Movement> get movements => _parser.movements;
   List<String> get notes => _parser.metadata.notes;
+  DateTime get occurred => _parser.occurred;
 
   String call() {
     var string = initString();
@@ -32,6 +33,17 @@ abstract class ParserPresenter {
 class ConsolePresenter extends ParserPresenter {
   Parser _parser;
   ConsolePresenter(this._parser);
+
+  @override
+  StringBuffer initString() {
+    StringBuffer string = StringBuffer();
+    String title = "$occurred Training";
+
+    string.write("$title\n");
+    string.write("${'=' * title.length}\n\n");
+
+    return string;
+  }
 
   @override
   void _writeMetadata(StringBuffer s) {
