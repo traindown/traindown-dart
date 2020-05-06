@@ -46,6 +46,7 @@ class Scanner {
         !_isColon &&
         !_isDigit &&
         !_isLinebreak &&
+        !_isPlus &&
         !_isPound &&
         !_isStar &&
         !_isWhitespace;
@@ -55,6 +56,7 @@ class Scanner {
   bool get _isColon => _current == ":";
   bool get _isDigit => num.tryParse(_current) != null;
   bool get _isLinebreak => _current == "\n" || _current == "\r";
+  bool get _isPlus => _current == "+";
   bool get _isPound => _current == "#";
   bool get _isStar => _current == "*";
   bool get _isWhitespace => _current == " " || _current == "\t";
@@ -83,6 +85,9 @@ class Scanner {
     }
     if (_isLinebreak) {
       return _scanLinebreak();
+    }
+    if (_isPlus) {
+      return TokenLiteral(Token.PLUS, literal);
     }
     if (_isPound) {
       return TokenLiteral(Token.POUND, literal);

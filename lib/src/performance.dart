@@ -25,6 +25,8 @@ class Performance extends Metadatable {
     }
   }
 
+  int get successfulReps => reps - fails;
+
   String get _metadata {
     if (metadata.kvps.entries.isEmpty) {
       return "";
@@ -48,10 +50,13 @@ class Performance extends Metadatable {
   }
 
   String get _summary {
+    String failures = fails > 0
+        ? " with $fails failures ($successfulReps successful reps)"
+        : "";
     if (unit.isNotEmpty) {
-      return "$load $unit for $repeat sets of $reps reps.";
+      return "$load $unit for $repeat sets of $reps reps$failures.";
     } else {
-      return "$load for $repeat sets of $reps reps.";
+      return "$load for $repeat sets of $reps reps$failures.";
     }
   }
 

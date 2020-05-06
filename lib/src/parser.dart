@@ -89,9 +89,10 @@ class Parser {
   }
 
   // TODO: Break this up
-  void _handleMovement(TokenLiteral initial) {
+  void _handleMovement({TokenLiteral trigger, bool superSetted = false}) {
     bool mustAmount = false;
-    StringBuffer nameBuffer = StringBuffer("${initial.literal} ");
+    StringBuffer nameBuffer =
+        StringBuffer(trigger != null ? "${trigger.literal} " : "");
 
     _currentMovement = null;
     _currentPerformance = null;
@@ -152,7 +153,10 @@ class Parser {
       // End of the Movement name. We now bootstrap the data and we must now
       // see an amount next, thus
       if (tokenLiteral.isColon) {
+        print(nameBuffer);
+        print(superSetted);
         _currentMovement = Movement(nameBuffer.toString().trimRight());
+        _currentMovement.superSetted = superSetted;
         mustAmount = true;
         continue;
       }
@@ -168,6 +172,14 @@ class Parser {
           _scanner.unscan();
           break;
         }
+      }
+
+      // If we hit a supersetted exercise, we need to set which is the parent
+      // and then move onto the next movement.
+      if (tokenLiteral.isPlus) {
+        print("\n\n\n\n\nPLUS!!!!!!");
+        _scanner.unscan();
+        break;
       }
     }
 
@@ -185,10 +197,10 @@ class Parser {
     while (!_scanner.eof && !endNote) {
       var tokenLiteral = _scanner.scan();
 
-      if (tokenLiteral.token == Token.LINEBREAK) {
+      if (tokenLiteral.isLinebreak) {
         endNote = true;
       }
-      if (tokenLiteral.token != Token.WHITESPACE) {
+      if (!tokenLiteral.isWhitespace) {
         note.write("${tokenLiteral.literal} ");
       }
     }
@@ -232,14 +244,16 @@ class Parser {
         continue;
       }
 
-      if (tokenLiteral.token == Token.AT) {
+      if (tokenLiteral.isAt) {
         _handleDate();
-      } else if (tokenLiteral.token == Token.POUND) {
+      } else if (tokenLiteral.isPound) {
         _handleKVP();
-      } else if (tokenLiteral.token == Token.STAR) {
+      } else if (tokenLiteral.isStar) {
         _handleNote();
-      } else if (tokenLiteral.token == Token.WORD) {
-        _handleMovement(tokenLiteral);
+      } else if (tokenLiteral.isWord) {
+        _handleMovement(trigger: tokenLiteral);
+      } else if (tokenLiteral.isPlus) {
+        _handleMovement(superSetted: true);
       }
     }
 

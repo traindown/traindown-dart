@@ -5,11 +5,13 @@ class Movement extends Metadatable {
   Metadata metadata = Metadata();
   String name;
   List<Performance> performances = [];
+  bool superSetted = false;
 
   Movement(this.name);
 
   @override
   String toString() {
-    return "$name:\n  ${performances.join('\n  ')}\n";
+    String maybePlus = superSetted ? "[Super Set] " : "";
+    return "$maybePlus$name:\n  ${performances.join('\n  ')}\n";
   }
 }

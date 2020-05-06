@@ -7,6 +7,7 @@ class Token {
   static const ILLEGAL = "Illegal";
   static const LINEBREAK = "Linebreak";
   static const REPS = "Reps";
+  static const PLUS = "Plus";
   static const POUND = "Pound";
   static const SETS = "Sets";
   static const STAR = "Star";
@@ -37,6 +38,7 @@ class TokenLiteral {
   bool get isFails => token == Token.FAILS;
   bool get isIllegal => token == Token.ILLEGAL;
   bool get isLinebreak => token == Token.LINEBREAK;
+  bool get isPlus => token == Token.PLUS;
   bool get isPound => token == Token.POUND;
   bool get isReps => token == Token.REPS;
   bool get isSets => token == Token.SETS;

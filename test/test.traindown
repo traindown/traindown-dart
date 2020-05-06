@@ -20,3 +20,8 @@ Squat:
 
 Kettlebell swings: 24 10r 4s
   # Unit: kg
++ Thigh Master: 1 100r
+  # Unit: squeeze
+  * To test the superset parsing
++ Deadlift: 501 1f
+  # Unit: kg
