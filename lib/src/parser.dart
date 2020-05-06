@@ -153,8 +153,6 @@ class Parser {
       // End of the Movement name. We now bootstrap the data and we must now
       // see an amount next, thus
       if (tokenLiteral.isColon) {
-        print(nameBuffer);
-        print(superSetted);
         _currentMovement = Movement(nameBuffer.toString().trimRight());
         _currentMovement.superSetted = superSetted;
         mustAmount = true;
@@ -177,7 +175,6 @@ class Parser {
       // If we hit a supersetted exercise, we need to set which is the parent
       // and then move onto the next movement.
       if (tokenLiteral.isPlus) {
-        print("\n\n\n\n\nPLUS!!!!!!");
         _scanner.unscan();
         break;
       }

@@ -7,62 +7,54 @@ import "package:traindown/src/scanner.dart";
 import "package:traindown/src/token.dart";
 
 class ScannerMock extends Fake implements Scanner {
-  var _index = 0;
+  int _index = 0;
 
   /*
     # Key Key: Value Value
     * This is note.
-    Movement: 100; 200 2r; 300 2s; 400 2r 2s;
+    Movement Name: 100 200 2r 300 2s 400 2r 2s
   */
 
-  var _tokenLiterals = [
+  List<TokenLiteral> _tokenLiterals = [
     TokenLiteral(Token.POUND, "#"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.IDENT, "Key"),
+    TokenLiteral(Token.WORD, "Key"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.IDENT, "Key"),
+    TokenLiteral(Token.WORD, "Key"),
     TokenLiteral(Token.COLON, ":"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.IDENT, "Value"),
+    TokenLiteral(Token.WORD, "Value"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.IDENT, "Value"),
+    TokenLiteral(Token.WORD, "Value"),
     TokenLiteral(Token.LINEBREAK, ""),
     TokenLiteral(Token.STAR, "*"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.IDENT, "This"),
+    TokenLiteral(Token.WORD, "This"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.IDENT, "is"),
+    TokenLiteral(Token.WORD, "is"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.IDENT, "note."),
+    TokenLiteral(Token.WORD, "note."),
     TokenLiteral(Token.LINEBREAK, ""),
-    TokenLiteral(Token.IDENT, "Movement"),
+    TokenLiteral(Token.WORD, "Movement"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.IDENT, "Name"),
+    TokenLiteral(Token.WORD, "Name"),
     TokenLiteral(Token.COLON, ":"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.UNIT, "100"),
-    TokenLiteral(Token.SEMICOLON, ";"),
+    TokenLiteral(Token.AMOUNT, "100"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.UNIT, "200"),
+    TokenLiteral(Token.AMOUNT, "200"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.UNIT, "2"),
-    TokenLiteral(Token.IDENT, "r"),
-    TokenLiteral(Token.SEMICOLON, ";"),
+    TokenLiteral(Token.REPS, "2"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.UNIT, "300"),
+    TokenLiteral(Token.AMOUNT, "300"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.UNIT, "2"),
-    TokenLiteral(Token.IDENT, "s"),
-    TokenLiteral(Token.SEMICOLON, ";"),
+    TokenLiteral(Token.SETS, "2"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.UNIT, "400"),
+    TokenLiteral(Token.AMOUNT, "400"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.UNIT, "2"),
-    TokenLiteral(Token.IDENT, "r"),
+    TokenLiteral(Token.REPS, "2"),
     TokenLiteral(Token.WHITESPACE, " "),
-    TokenLiteral(Token.UNIT, "2"),
-    TokenLiteral(Token.IDENT, "s"),
-    TokenLiteral(Token.SEMICOLON, ";"),
+    TokenLiteral(Token.SETS, "2"),
     TokenLiteral(Token.EOF, ""),
   ];
 
@@ -71,6 +63,9 @@ class ScannerMock extends Fake implements Scanner {
 
   @override
   TokenLiteral scan() => _tokenLiterals[_index++];
+
+  @override
+  TokenLiteral unscan() => _tokenLiterals[_index--];
 }
 
 void main() {
@@ -87,10 +82,10 @@ void main() {
   });
 
   group("parse()", () {
-    var parser = Parser(ScannerMock());
+    Parser parser = Parser(ScannerMock());
 
     group("After calling", () {
-      setUp(() => parser.parse());
+      parser.parse();
 
       test("Metadata is correctly captured", () {
         expect(parser.metadata.kvps, {"Key Key": "Value Value"});
@@ -101,7 +96,7 @@ void main() {
       });
 
       test("Movements are correctly captured", () {
-        var movement = parser.movements[0];
+        Movement movement = parser.movements[0];
         expect(movement is Movement, true);
         expect(movement.name, "Movement Name");
         expect(movement.performances.length, 4);
