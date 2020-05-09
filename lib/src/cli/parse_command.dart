@@ -3,7 +3,10 @@ import "dart:io";
 import "package:args/command_runner.dart";
 
 import "package:traindown/src/parser.dart";
-import "package:traindown/src/presenters.dart";
+import "package:traindown/src/presenter.dart";
+import "package:traindown/src/presenters/console_presenter.dart";
+import "package:traindown/src/presenters/html_presenter.dart";
+import "package:traindown/src/presenters/json_presenter.dart";
 import "package:traindown/src/scanner.dart";
 
 class ParseCommand extends Command {
@@ -46,11 +49,11 @@ class ParseCommand extends Command {
     Parser tParser = Parser(scanner);
     tParser.parse();
 
-    ParserPresenter presenter;
+    Presenter presenter;
     if (argResults["format"] == "html") {
-      presenter = HTMLPresenter(tParser);
+      presenter = HtmlPresenter(tParser);
     } else if (argResults["format"] == "json") {
-      presenter = JSONPresenter(tParser);
+      presenter = JsonPresenter(tParser);
     } else {
       presenter = ConsolePresenter(tParser);
     }

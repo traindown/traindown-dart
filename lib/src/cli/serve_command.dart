@@ -7,7 +7,7 @@ import "package:args/args.dart";
 import "package:args/command_runner.dart";
 
 import "package:traindown/src/parser.dart";
-import "package:traindown/src/presenters.dart";
+import "package:traindown/src/presenters/html_presenter.dart";
 import "package:traindown/src/scanner.dart";
 
 class ServeCommand extends Command {
@@ -96,7 +96,7 @@ class ServeCommand extends Command {
       Scanner scanner = Scanner(filename: file.path);
       Parser tParser = Parser(scanner);
       tParser.parse();
-      ParserPresenter presenter = HTMLPresenter(tParser);
+      HtmlPresenter presenter = HtmlPresenter(tParser);
       response += presenter.call();
     }
 
