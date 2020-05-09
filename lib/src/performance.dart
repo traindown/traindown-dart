@@ -19,9 +19,10 @@ class Performance extends Metadatable {
 
   @override
   void addKVP(String key, String value) {
-    super.addKVP(key, value);
     if (unitKeywords.contains(key)) {
       unit = value;
+    } else {
+      super.addKVP(key, value);
     }
   }
 

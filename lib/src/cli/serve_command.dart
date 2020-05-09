@@ -10,6 +10,9 @@ import "package:traindown/src/parser.dart";
 import "package:traindown/src/presenters/html_presenter.dart";
 import "package:traindown/src/scanner.dart";
 
+final String style =
+    "*,*:after,*:before{box-sizing:inherit}html{box-sizing:border-box;font-size:62.5%}body{margin:1em auto;max-width:960px;color:#606c76;font-family:'Roboto','Helvetica Neue','Helvetica','Arial',sans-serif;font-size:1.6em;font-weight:300;letter-spacing:.01em;line-height:1.6;padding:.5rem}hr{border:0;border-top:.1rem solid #f4f5f6;margin:3rem 0}hr.flat-top{margin-top:1rem}h1,h2,h3,h4,h5,h6{font-weight:300;letter-spacing:-.1rem;margin-bottom:2rem;margin-top:1rem}h1{font-size:3rem;line-height:1;}h2{font-size:2rem;line-height:1.25}h3{font-size:1.5rem;line-height:1.3}h4{font-size:1rem} table{border-collapse:collapse;border-spacing:0;empty-cells:show;border:1px solid #cbcbcb;width:100%;}table td,table th{border-left:1px solid #cbcbcb;border-width:0 0 0 1px;font-size:inherit;margin:0;overflow:visible;padding:.5em 1em}table thead{background-color:#fafafa;text-align:left;vertical-align:bottom}table td, table th{background-color:transparent;border-bottom:1px solid #cbcbcb}table tbody>tr:last-child>td{border-bottom-width:0}table tbody>tr.highlighted{background-color:#fafafa;}.metadata,.notes{font-size:70%}";
+
 class ServeCommand extends Command {
   final name = "serve";
   final description = "View your Traindown files in a browser.";
@@ -77,7 +80,7 @@ class ServeCommand extends Command {
           "<li>Hmmm...this directory doesn't appear to have any Traindown files</li>";
     }
 
-    return Response.ok("$header<ul>$listItems</ul>");
+    return Response.ok("$_styles$header<ul>$listItems</ul>");
   }
 
   Response _handleShow(Request request) {
@@ -87,7 +90,7 @@ class ServeCommand extends Command {
         .singleWhere((FileSystemEntity entity) =>
             entity.path.contains(request.url.toString()));
 
-    String response = "<div><a href='/'>Back to list</a></div>";
+    String response = "$_styles<div><a href='/'>Back to list</a></div>";
 
     if (!file.existsSync()) {
       response +=
@@ -102,4 +105,6 @@ class ServeCommand extends Command {
 
     return Response.ok(response);
   }
+
+  String get _styles => "<style>$style</style>";
 }
