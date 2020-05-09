@@ -114,22 +114,30 @@ class Parser {
         continue;
       }
 
-      // If we must have an amount, we must have an amount
+      // If we must have an amount, we must have an amount or if it's
+      // sets and reps, we add a little dash of bypass.
+      bool assumeAmount = false;
       if (mustAmount && !tokenLiteral.isAmount) {
-        throw "Failed to receive an amount";
+        if (tokenLiteral.isReps || tokenLiteral.isSets) {
+          assumeAmount = true;
+        } else {
+          throw "Failed to receive an amount";
+        }
       }
 
       // If we see an amount, create current Performance and push the value
       // there.
       // TODO: Rescue failed parse
-      if (tokenLiteral.isAmount) {
+      if (tokenLiteral.isAmount || assumeAmount) {
         if (_currentPerformance != null) {
           _currentMovement.performances.add(_currentPerformance);
         }
         _currentPerformance = _newPerformance(_currentMovement.name);
-        _currentPerformance.load = num.tryParse(tokenLiteral.literal);
+        _currentPerformance.load =
+            assumeAmount ? 1 : num.tryParse(tokenLiteral.literal);
         mustAmount = false;
-        continue;
+
+        if (!assumeAmount) continue;
       }
 
       // If we see fails...
