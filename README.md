@@ -302,4 +302,4 @@ Units in **Traindown** can really be _anything_, so whatever it is you are doing
 
 Made with 🤬. © | 2020 Greater Scott | All rights reserved.
 
-Free for use under the MIT license.
+Free for use under the BSD license.
