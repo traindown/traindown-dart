@@ -44,6 +44,7 @@ class Scanner {
   bool get _isCharacter {
     return !_isAt &&
         !_isColon &&
+        !_isDash &&
         !_isDigit &&
         !_isLinebreak &&
         !_isPlus &&
@@ -54,6 +55,7 @@ class Scanner {
 
   bool get _isAt => _current == "@";
   bool get _isColon => _current == ":";
+  bool get _isDash => _current == "-";
   bool get _isDigit => num.tryParse(_current) != null;
   bool get _isLinebreak => _current == "\n" || _current == "\r";
   bool get _isPlus => _current == "+";
@@ -79,6 +81,9 @@ class Scanner {
     }
     if (_isColon) {
       return TokenLiteral(Token.COLON, literal);
+    }
+    if (_isDash) {
+      return TokenLiteral(Token.DASH, literal);
     }
     if (_isDigit) {
       return _scanDigit();

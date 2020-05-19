@@ -1,3 +1,9 @@
+## 1.1.0
+
+- Added Formatter
+- Cleaned up examples and provided some comments
+- Added dash token
+
 ## 1.0.1
 
 - Fix for invalid export

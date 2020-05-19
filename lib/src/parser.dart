@@ -21,6 +21,8 @@ class Parser {
     }
     _scanner = scanner;
   }
+  Parser.for_file(String filename) : this(Scanner(filename: filename));
+  Parser.for_string(String string) : this(Scanner(string: string));
 
   Metadatable get _lastEntity {
     if (_currentPerformance != null) {
@@ -88,7 +90,6 @@ class Parser {
     }
   }
 
-  // TODO: Break this up
   void _handleMovement({TokenLiteral trigger, bool superSetted = false}) {
     bool mustAmount = false;
     StringBuffer nameBuffer =
@@ -127,7 +128,6 @@ class Parser {
 
       // If we see an amount, create current Performance and push the value
       // there.
-      // TODO: Rescue failed parse
       if (tokenLiteral.isAmount || assumeAmount) {
         if (_currentPerformance != null) {
           _currentMovement.performances.add(_currentPerformance);
@@ -196,11 +196,11 @@ class Parser {
   }
 
   void _handleNote() {
-    var endNote = false;
-    var note = StringBuffer("");
+    bool endNote = false;
+    StringBuffer note = StringBuffer("");
 
     while (!_scanner.eof && !endNote) {
-      var tokenLiteral = _scanner.scan();
+      TokenLiteral tokenLiteral = _scanner.scan();
 
       if (tokenLiteral.isLinebreak) {
         endNote = true;
@@ -218,8 +218,8 @@ class Parser {
   }
 
   Performance _newPerformance(String movementName) {
-    // TODO: Actual superset support
-    var unit = metadata.kvps["Unit"] ?? metadata.kvps["unit"] ?? "unknown unit";
+    String unit =
+        metadata.kvps["Unit"] ?? metadata.kvps["unit"] ?? "unknown unit";
     return Performance(unit: unit);
   }
 
@@ -243,7 +243,7 @@ class Parser {
     }
 
     while (!_scanner.eof) {
-      var tokenLiteral = _scanner.scan();
+      TokenLiteral tokenLiteral = _scanner.scan();
 
       if (tokenLiteral.isEmpty) {
         continue;

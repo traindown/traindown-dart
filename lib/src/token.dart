@@ -2,6 +2,7 @@ class Token {
   static const AMOUNT = "Amount";
   static const AT = "At";
   static const COLON = "Colon";
+  static const DASH = "Dash";
   static const EOF = "EOF";
   static const FAILS = "Fails";
   static const ILLEGAL = "Illegal";
@@ -34,6 +35,7 @@ class TokenLiteral {
   bool get isAmount => token == Token.AMOUNT;
   bool get isAt => token == Token.AT;
   bool get isColon => token == Token.COLON;
+  bool get isDash => token == Token.DASH;
   bool get isEmpty => token == Token.LINEBREAK || token == Token.WHITESPACE;
   bool get isFails => token == Token.FAILS;
   bool get isIllegal => token == Token.ILLEGAL;
