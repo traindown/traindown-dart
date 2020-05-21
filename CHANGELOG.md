@@ -1,3 +1,7 @@
+## 1.1.1
+
+- Add missing export for Formatter
+
 ## 1.1.0
 
 - Added Formatter
