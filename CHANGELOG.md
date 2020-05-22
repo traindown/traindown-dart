@@ -1,3 +1,7 @@
+## 1.2.0
+
+- Removed the CLI pieces to simplify distribution
+
 ## 1.1.1
 
 - Add missing export for Formatter
