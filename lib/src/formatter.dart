@@ -1,6 +1,3 @@
-import "package:traindown/src/metadata.dart";
-import "package:traindown/src/movement.dart";
-import "package:traindown/src/performance.dart";
 import "package:traindown/src/scanner.dart";
 import "package:traindown/src/token.dart";
 
@@ -111,6 +108,7 @@ class Formatter {
         switch (_state) {
           case FormatterState.capturing_date:
           case FormatterState.capturing_metadata_value:
+          case FormatterState.capturing_movement_performance:
             _addLinebreak();
             _state = FormatterState.idle;
             continue;
@@ -177,6 +175,8 @@ class Formatter {
           case FormatterState.capturing_note:
             _addLeftPad(tokenLiteral);
             continue;
+          case FormatterState.capturing_date:
+          case FormatterState.capturing_movement_performance:
           case FormatterState.idle:
             _addLinebreak();
             _addLiteral(tokenLiteral);
