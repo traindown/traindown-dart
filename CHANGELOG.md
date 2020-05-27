@@ -1,3 +1,7 @@
+## 1.2.1
+
+- Improved Formatter
+
 ## 1.2.0
 
 - Removed the CLI pieces to simplify distribution
