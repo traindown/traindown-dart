@@ -10,12 +10,21 @@ class ScannerMock extends Fake implements Scanner {
   int _index = 0;
 
   /*
+    @ 2020-01-01
     # Key Key: Value Value
     * This is note.
     Movement Name: 100 200 2r 300 2s 400 2r 2s
   */
 
   List<TokenLiteral> _tokenLiterals = [
+    TokenLiteral(Token.AT, "@"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.AMOUNT, "2020"),
+    TokenLiteral(Token.DASH, "-"),
+    TokenLiteral(Token.AMOUNT, "01"),
+    TokenLiteral(Token.DASH, "-"),
+    TokenLiteral(Token.AMOUNT, "01"),
+    TokenLiteral(Token.LINEBREAK, ""),
     TokenLiteral(Token.POUND, "#"),
     TokenLiteral(Token.WHITESPACE, " "),
     TokenLiteral(Token.WORD, "Key"),
@@ -107,17 +116,6 @@ void main() {
         expect(ps[2].toString(), "300 unknown unit for 2 sets of 1 reps.");
         expect(ps[3].toString(), "400 unknown unit for 2 sets of 2 reps.");
       });
-    });
-
-    test("An instance of Scanner is required for parsing", () {
-      parser.scanner = null;
-      try {
-        parser.parse();
-      } catch (e) {
-        expect(e, "Needs a scanner, dummy");
-        return;
-      }
-      throw "Should have failed init";
     });
   });
 }

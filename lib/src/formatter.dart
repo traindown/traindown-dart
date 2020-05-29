@@ -41,13 +41,11 @@ class Formatter extends EventedParser {
     _addLiteral(tokenLiteral);
   }
 
-  void beginDate(TokenLiteral tokenLiteral) {
-    _addRightPad(tokenLiteral);
-  }
+  void beginDate() => output.write("@ ");
 
-  void beginMetadata(TokenLiteral tokenLiteral) {
+  void beginMetadata() {
     _addLinebreak();
-    _addLiteral(tokenLiteral);
+    output.write("# ");
   }
 
   void beginMovementName(TokenLiteral tokenLiteral) {
@@ -55,9 +53,9 @@ class Formatter extends EventedParser {
     _addLiteral(tokenLiteral);
   }
 
-  void beginNote(TokenLiteral tokenLiteral) {
+  void beginNote() {
     _addLinebreak();
-    _addLiteral(tokenLiteral);
+    output.write("* ");
   }
 
   void beginPerformanceMetadata(TokenLiteral tokenLiteral) {
@@ -73,6 +71,8 @@ class Formatter extends EventedParser {
   }
 
   void encounteredDash(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
+
+  void encounteredEof() {}
 
   void encounteredFailures(TokenLiteral tokenLiteral) =>
       _addLeftPad(tokenLiteral, "f");
@@ -91,15 +91,17 @@ class Formatter extends EventedParser {
   // NOTE: Investigate context on this.
   void encounteredWord(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
 
-  void endDate(TokenLiteral tokenLiteral) => _addLinebreak();
+  void endDate() => _addLinebreak();
 
-  void endMetadataKey(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
+  void endMetadataKey() => output.write(":");
 
-  void endMetadataValue(TokenLiteral tokenLiteral) => _addLinebreak();
+  void endMetadataValue() => _addLinebreak();
 
-  void endMovementName(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
+  void endMovementName() => output.write(":");
 
-  void endPerformance(TokenLiteral tokenLiteral) => _addLinebreak();
+  void endNote() => _addLinebreak();
+
+  void endPerformance() => _addLinebreak();
 
   void wordDuringDate(TokenLiteral tokenLiteral) {
     _addLinebreak();

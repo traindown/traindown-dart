@@ -43,23 +43,25 @@ abstract class EventedParser {
   void amountDuringMetadataKey(TokenLiteral tokenLiteral);
   void amountDuringMetadataValue(TokenLiteral tokenLiteral);
   void amountDuringPerformance(TokenLiteral tokenLiteral);
-  void beginDate(TokenLiteral tokenLiteral);
-  void beginMetadata(TokenLiteral tokenLiteral);
+  void beginDate();
+  void beginMetadata();
   void beginMovementName(TokenLiteral tokenLiteral);
-  void beginNote(TokenLiteral tokenLiteral);
+  void beginNote();
   void beginPerformanceMetadata(TokenLiteral tokenLiteral);
   void beginPerformanceNote(TokenLiteral tokenLiteral);
   void encounteredDash(TokenLiteral tokenLiteral);
+  void encounteredEof();
   void encounteredFailures(TokenLiteral tokenLiteral);
   void encounteredReps(TokenLiteral tokenLiteral);
   void encounteredPlus(TokenLiteral tokenLiteral);
   void encounteredSets(TokenLiteral tokenLiteral);
   void encounteredWord(TokenLiteral tokenLiteral);
-  void endDate(TokenLiteral tokenLiteral);
-  void endMetadataKey(TokenLiteral tokenLiteral);
-  void endMetadataValue(TokenLiteral tokenLiteral);
-  void endMovementName(TokenLiteral tokenLiteral);
-  void endPerformance(TokenLiteral tokenLiteral);
+  void endDate();
+  void endMetadataKey();
+  void endMetadataValue();
+  void endMovementName();
+  void endNote();
+  void endPerformance();
   void wordDuringDate(TokenLiteral tokenLiteral);
   void wordDuringMetadataKey(TokenLiteral tokenLiteral);
   void wordDuringMetadataValue(TokenLiteral tokenLiteral);
@@ -101,18 +103,18 @@ abstract class EventedParser {
           throw UnexpectedToken(tokenLiteral.toString());
         }
 
-        beginDate(tokenLiteral);
+        beginDate();
         _state = ParseState.capturing_date;
       }
 
       if (tokenLiteral.isColon) {
         switch (_state) {
           case ParseState.capturing_metadata_key:
-            endMetadataKey(tokenLiteral);
+            endMetadataKey();
             _state = ParseState.capturing_metadata_value;
             continue;
           case ParseState.capturing_movement_name:
-            endMovementName(tokenLiteral);
+            endMovementName();
             _state = ParseState.capturing_movement_performance;
             continue;
           default:
@@ -137,16 +139,23 @@ abstract class EventedParser {
       if (tokenLiteral.isLinebreak) {
         switch (_state) {
           case ParseState.capturing_date:
-            endDate(tokenLiteral);
+            endDate();
+            _state = ParseState.idle;
             continue;
           case ParseState.capturing_metadata_value:
-            endMetadataValue(tokenLiteral);
+            endMetadataValue();
+            _state = ParseState.idle;
             continue;
           case ParseState.capturing_movement_performance:
-            endPerformance(tokenLiteral);
+            endPerformance();
+            _state = ParseState.idle;
+            continue;
+          case ParseState.capturing_note:
+            endNote();
             _state = ParseState.idle;
             continue;
           default:
+            _state = ParseState.idle;
             continue;
         }
       }
@@ -163,7 +172,7 @@ abstract class EventedParser {
             _state = ParseState.capturing_metadata_key;
             continue;
           default:
-            beginMetadata(tokenLiteral);
+            beginMetadata();
             _state = ParseState.capturing_metadata_key;
             continue;
         }
@@ -186,8 +195,8 @@ abstract class EventedParser {
             _state = ParseState.capturing_note;
             continue;
           default:
-            beginNote(tokenLiteral);
-            _state = ParseState.capturing_metadata_key;
+            beginNote();
+            _state = ParseState.capturing_note;
             continue;
         }
       }
@@ -226,5 +235,7 @@ abstract class EventedParser {
         }
       }
     }
+
+    encounteredEof();
   }
 }
