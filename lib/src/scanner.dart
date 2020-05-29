@@ -3,13 +3,13 @@ import "dart:io";
 
 import "package:traindown/src/token.dart";
 
-// TODO: Capture line and column for error output.
-
 class Scanner {
   List<int> _bytes;
   Utf8Decoder _decoder;
+  int _col = 0;
   int _index = -1;
   int _lastIndex = -1;
+  int _line = 1;
 
   Scanner({String filename, String string}) {
     if (filename != null && string != null) {
@@ -63,8 +63,15 @@ class Scanner {
   bool get _isStar => _current == "*";
   bool get _isWhitespace => _current == " " || _current == "\t";
 
-  String _next() => _decoder.convert([_bytes.elementAt(++_index)]);
-  String _prev() => _decoder.convert([_bytes.elementAt(--_index)]);
+  String _next() {
+    _col++;
+    return _decoder.convert([_bytes.elementAt(++_index)]);
+  }
+
+  String _prev() {
+    _col--;
+    return _decoder.convert([_bytes.elementAt(--_index)]);
+  }
 
   void reset() => _index = -1;
 
@@ -77,13 +84,13 @@ class Scanner {
     _lastIndex = _index - 1;
 
     if (_isAt) {
-      return TokenLiteral(Token.AT, literal);
+      return TokenLiteral(Token.AT, literal, _line, _col);
     }
     if (_isColon) {
-      return TokenLiteral(Token.COLON, literal);
+      return TokenLiteral(Token.COLON, literal, _line, _col);
     }
     if (_isDash) {
-      return TokenLiteral(Token.DASH, literal);
+      return TokenLiteral(Token.DASH, literal, _line, _col);
     }
     if (_isDigit) {
       return _scanDigit();
@@ -92,13 +99,13 @@ class Scanner {
       return _scanLinebreak();
     }
     if (_isPlus) {
-      return TokenLiteral(Token.PLUS, literal);
+      return TokenLiteral(Token.PLUS, literal, _line, _col);
     }
     if (_isPound) {
-      return TokenLiteral(Token.POUND, literal);
+      return TokenLiteral(Token.POUND, literal, _line, _col);
     }
     if (_isStar) {
-      return TokenLiteral(Token.STAR, literal);
+      return TokenLiteral(Token.STAR, literal, _line, _col);
     }
     if (_isWhitespace) {
       return _scanWhitespace();
@@ -121,7 +128,7 @@ class Scanner {
     } else {
       _prev();
     }
-    return TokenLiteral(Token.WORD, identifier);
+    return TokenLiteral(Token.WORD, identifier, _line, _col);
   }
 
   TokenLiteral _scanDigit() {
@@ -144,12 +151,14 @@ class Scanner {
       _prev();
     }
 
-    return TokenLiteral(token, literal);
+    return TokenLiteral(token, literal, _line, _col);
   }
 
   TokenLiteral _scanLinebreak() {
     var hasNexted = false;
     while (_isLinebreak && !eof) {
+      _col = 0;
+      _line++;
       hasNexted = true;
       _next();
     }
@@ -157,7 +166,7 @@ class Scanner {
       _prev();
     }
 
-    return TokenLiteral(Token.LINEBREAK, "");
+    return TokenLiteral(Token.LINEBREAK, "", _line, _col);
   }
 
   TokenLiteral _scanWhitespace() {
@@ -170,7 +179,7 @@ class Scanner {
       _prev();
     }
 
-    return TokenLiteral(Token.WHITESPACE, "");
+    return TokenLiteral(Token.WHITESPACE, "", _line, _col);
   }
 
   void unscan() {

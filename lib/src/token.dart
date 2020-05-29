@@ -17,10 +17,12 @@ class Token {
 }
 
 class TokenLiteral {
+  int col = 0;
+  int line = 0;
   String literal;
   String token;
 
-  TokenLiteral(this.token, this.literal);
+  TokenLiteral(this.token, this.literal, [this.line, this.col]);
 
   TokenLiteral.eof() {
     literal = "";
@@ -52,5 +54,5 @@ class TokenLiteral {
   bool operator ==(tl) => tl.token == token && tl.literal == literal;
 
   @override
-  String toString() => "$token: $literal";
+  String toString() => "$token: $literal at line $line column $col";
 }
