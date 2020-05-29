@@ -18,8 +18,7 @@ void main() {
   group("format()", () {
     test("With a date missing a space after the operator", () {
       Formatter formatter = Formatter.for_string("@2020-05-20");
-      formatter.format();
-      expect(formatter.output.toString(), equals("@ 2020-05-20"));
+      expect(formatter.format(), equals("@ 2020-05-20"));
     });
 
     test("With a somewhat complex string", () {
@@ -27,8 +26,7 @@ void main() {
       String result =
           '@ 2020-05-20\r\nSquat:\r\n  500 10r\r\n  600 2r\r\n  700\r\nPulldowns:\r\n  200 10r';
       Formatter formatter = Formatter.for_string(test);
-      formatter.format();
-      expect(formatter.output.toString(), equals(result));
+      expect(formatter.format(), equals(result));
     });
   });
 }

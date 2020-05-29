@@ -1,193 +1,125 @@
+import "package:traindown/src/evented_parser.dart";
 import "package:traindown/src/scanner.dart";
 import "package:traindown/src/token.dart";
 
-// TODO: Handle exceptions gracefully...
-
-enum FormatterState {
-  initialized,
-  awaiting_amount,
-  awaiting_metadata_value,
-  awaiting_movement_performance,
-  capturing_date,
-  capturing_metadata_key,
-  capturing_movement_name,
-  capturing_movement_performance,
-  capturing_metadata_value,
-  capturing_note,
-  idle,
-}
-
-class Formatter {
-  FormatterState _state = FormatterState.initialized;
-  Scanner _scanner;
+class Formatter extends EventedParser {
   StringBuffer output = StringBuffer();
 
-  Formatter(Scanner scanner) {
-    if (scanner == null) {
-      throw "Needs a scanner, dummy";
-    }
-    _scanner = scanner;
-  }
+  Formatter(Scanner scanner) : super(scanner);
+  Formatter.for_file(String filename) : super.for_file(filename);
+  Formatter.for_string(String string) : super.for_string(string);
 
-  Formatter.for_file(String filename) : this(Scanner(filename: filename));
-  Formatter.for_string(String string) : this(Scanner(string: string));
-
-  void format() {
+  String format() {
     output.clear();
 
-    if (_scanner == null) {
-      throw "Needs a scanner, dummy";
+    try {
+      call();
+    } on UnexpectedToken catch (e) {
+      print("Error at ${e.msg}");
     }
 
-    while (!_scanner.eof) {
-      TokenLiteral tokenLiteral = _scanner.scan();
+    return output.toString();
+  }
 
-      if (tokenLiteral.isAmount) {
-        switch (_state) {
-          case FormatterState.capturing_date:
-          case FormatterState.capturing_metadata_key:
-            _addLiteral(tokenLiteral);
-            continue;
-          case FormatterState.capturing_metadata_value:
-            _addLeftPad(tokenLiteral);
-            _state = FormatterState.idle;
-            continue;
-          case FormatterState.capturing_movement_performance:
-            _addLinebreak();
-            _addSpace(2);
-            _addLiteral(tokenLiteral);
-            continue;
-          case FormatterState.idle:
-            _addLinebreak();
-            _addSpace(2);
-            _addLiteral(tokenLiteral);
-            _state = FormatterState.capturing_movement_performance;
-            continue;
-          default:
-            throw ("Unexpected token");
-        }
-      }
+  void amountDuringDate(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
 
-      if (tokenLiteral.isAt) {
-        if (_state != FormatterState.initialized) throw ("Expected date");
+  void amountDuringIdle(TokenLiteral tokenLiteral) {
+    _addLinebreak();
+    _addSpace(2);
+    _addLiteral(tokenLiteral);
+  }
 
-        _addRightPad(tokenLiteral);
-        _state = FormatterState.capturing_date;
-      }
+  void amountDuringMetadataKey(TokenLiteral tokenLiteral) =>
+      _addLiteral(tokenLiteral);
 
-      if (tokenLiteral.isColon) {
-        switch (_state) {
-          case FormatterState.capturing_metadata_key:
-            _addLiteral(tokenLiteral);
-            _state = FormatterState.capturing_metadata_value;
-            continue;
-          case FormatterState.capturing_movement_name:
-            _addLiteral(tokenLiteral);
-            _state = FormatterState.capturing_movement_performance;
-            continue;
-          default:
-            throw ("Unexpected token");
-        }
-      }
+  void amountDuringMetadataValue(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral);
 
-      if (tokenLiteral.isDash) {
-        _addLiteral(tokenLiteral);
-        continue;
-      }
+  void amountDuringPerformance(TokenLiteral tokenLiteral) {
+    _addLinebreak();
+    _addSpace(2);
+    _addLiteral(tokenLiteral);
+  }
 
-      if (tokenLiteral.isFails) {
-        _addLeftPad(tokenLiteral, "f");
-        continue;
-      }
+  void beginDate(TokenLiteral tokenLiteral) {
+    _addRightPad(tokenLiteral);
+  }
 
-      if (tokenLiteral.isIllegal) {
-        // HMMMM
-      }
+  void beginMetadata(TokenLiteral tokenLiteral) {
+    _addLinebreak();
+    _addLiteral(tokenLiteral);
+  }
 
-      if (tokenLiteral.isLinebreak) {
-        switch (_state) {
-          case FormatterState.capturing_date:
-          case FormatterState.capturing_metadata_value:
-          case FormatterState.capturing_movement_performance:
-            _addLinebreak();
-            _state = FormatterState.idle;
-            continue;
-          default:
-            continue;
-        }
-      }
+  void beginMovementName(TokenLiteral tokenLiteral) {
+    _addLinebreak();
+    _addLiteral(tokenLiteral);
+  }
 
-      if (tokenLiteral.isPlus) {
-        _addLinebreak();
-        _addRightPad(tokenLiteral);
-        continue;
-      }
+  void beginNote(TokenLiteral tokenLiteral) {
+    _addLinebreak();
+    _addLiteral(tokenLiteral);
+  }
 
-      if (tokenLiteral.isPound) {
-        switch (_state) {
-          case FormatterState.capturing_movement_performance:
-            _addLinebreak();
-            _addSpace(4);
-            _addLiteral(tokenLiteral);
-            _state = FormatterState.capturing_metadata_key;
-            continue;
-          default:
-            _addLinebreak();
-            _addLiteral(tokenLiteral);
-            _state = FormatterState.capturing_metadata_key;
-            continue;
-        }
-      }
+  void beginPerformanceMetadata(TokenLiteral tokenLiteral) {
+    _addLinebreak();
+    _addSpace(4);
+    _addLiteral(tokenLiteral);
+  }
 
-      if (tokenLiteral.isReps) {
-        _addLeftPad(tokenLiteral, "r");
-        continue;
-      }
+  void beginPerformanceNote(TokenLiteral tokenLiteral) {
+    _addLinebreak();
+    _addSpace(4);
+    _addLiteral(tokenLiteral);
+  }
 
-      if (tokenLiteral.isSets) {
-        _addLeftPad(tokenLiteral, "s");
-        continue;
-      }
+  void encounteredDash(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
 
-      if (tokenLiteral.isStar) {
-        switch (_state) {
-          case FormatterState.capturing_movement_performance:
-            _addLinebreak();
-            _addSpace(4);
-            _addLiteral(tokenLiteral);
-            _state = FormatterState.capturing_note;
-            continue;
-          default:
-            _addLinebreak();
-            _addLiteral(tokenLiteral);
-            _state = FormatterState.capturing_metadata_key;
-            continue;
-        }
-      }
+  void encounteredFailures(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral, "f");
 
-      if (tokenLiteral.isWhitespace) continue;
+  void encounteredReps(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral, "r");
 
-      if (tokenLiteral.isWord) {
-        switch (_state) {
-          case FormatterState.capturing_metadata_key:
-          case FormatterState.capturing_metadata_value:
-          case FormatterState.capturing_movement_name:
-          case FormatterState.capturing_note:
-            _addLeftPad(tokenLiteral);
-            continue;
-          case FormatterState.capturing_date:
-          case FormatterState.capturing_movement_performance:
-          case FormatterState.idle:
-            _addLinebreak();
-            _addLiteral(tokenLiteral);
-            _state = FormatterState.capturing_movement_name;
-            continue;
-          default:
-            _addLiteral(tokenLiteral);
-            continue;
-        }
-      }
-    }
+  void encounteredPlus(TokenLiteral tokenLiteral) {
+    _addLinebreak();
+    _addRightPad(tokenLiteral);
+  }
+
+  void encounteredSets(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral, "s");
+
+  // NOTE: Investigate context on this.
+  void encounteredWord(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
+
+  void endDate(TokenLiteral tokenLiteral) => _addLinebreak();
+
+  void endMetadataKey(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
+
+  void endMetadataValue(TokenLiteral tokenLiteral) => _addLinebreak();
+
+  void endMovementName(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
+
+  void endPerformance(TokenLiteral tokenLiteral) => _addLinebreak();
+
+  void wordDuringDate(TokenLiteral tokenLiteral) {
+    _addLinebreak();
+    _addLiteral(tokenLiteral);
+  }
+
+  void wordDuringMetadataKey(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral);
+
+  void wordDuringMetadataValue(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral);
+
+  void wordDuringMovementName(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral);
+
+  void wordDuringNote(TokenLiteral tokenLiteral) => _addLeftPad(tokenLiteral);
+
+  void wordDuringPerformance(TokenLiteral tokenLiteral) {
+    _addLinebreak();
+    _addLiteral(tokenLiteral);
   }
 
   void _addLeftPad(TokenLiteral tokenLiteral, [append = ""]) =>
