@@ -1,3 +1,9 @@
+## 1.3.0
+
+- Added EventedParser. This is a much easier abstraction to deal with day to day.
+- Moved Formatter and Parser onto EventedParser for much win.
+- Updated tests.
+
 ## 1.2.1
 
 - Improved Formatter
