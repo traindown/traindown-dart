@@ -1,3 +1,5 @@
+import "dart:mirrors";
+
 import "package:traindown/src/scanner.dart";
 import "package:traindown/src/token.dart";
 
@@ -72,170 +74,204 @@ abstract class EventedParser {
   void call() {
     if (_scanner == null) throw "Needs a scanner, dummy";
 
+    InstanceMirror self = reflect(this);
+
     while (!_scanner.eof) {
       TokenLiteral tokenLiteral = _scanner.scan();
 
-      if (tokenLiteral.isAmount) {
-        switch (_state) {
-          case ParseState.capturing_date:
-            amountDuringDate(tokenLiteral);
-            continue;
-          case ParseState.capturing_metadata_key:
-            amountDuringMetadataKey(tokenLiteral);
-            continue;
-          case ParseState.capturing_metadata_value:
-            amountDuringMetadataValue(tokenLiteral);
-            continue;
-          case ParseState.capturing_movement_performance:
-            amountDuringPerformance(tokenLiteral);
-            continue;
-          case ParseState.idle:
-            amountDuringIdle(tokenLiteral);
-            _state = ParseState.capturing_movement_performance;
-            continue;
-          default:
-            throw UnexpectedToken(tokenLiteral.toString());
-        }
-      }
+      String method = "handle${tokenLiteral.token}";
 
-      if (tokenLiteral.isAt) {
-        if (_state != ParseState.initialized) {
-          throw UnexpectedToken(tokenLiteral.toString());
-        }
-
-        beginDate();
-        _state = ParseState.capturing_date;
-      }
-
-      if (tokenLiteral.isColon) {
-        switch (_state) {
-          case ParseState.capturing_metadata_key:
-            endMetadataKey();
-            _state = ParseState.capturing_metadata_value;
-            continue;
-          case ParseState.capturing_movement_name:
-            endMovementName();
-            _state = ParseState.capturing_movement_performance;
-            continue;
-          default:
-            throw UnexpectedToken(tokenLiteral.toString());
-        }
-      }
-
-      if (tokenLiteral.isDash) {
-        encounteredDash(tokenLiteral);
-        continue;
-      }
-
-      if (tokenLiteral.isFails) {
-        encounteredFailures(tokenLiteral);
-        continue;
-      }
-
-      if (tokenLiteral.isIllegal) {
+      if (!self.invoke(Symbol(method), [tokenLiteral, _state]).reflectee) {
         throw UnexpectedToken(tokenLiteral.toString());
       }
 
-      if (tokenLiteral.isLinebreak) {
-        switch (_state) {
-          case ParseState.capturing_date:
-            endDate();
-            _state = ParseState.idle;
-            continue;
-          case ParseState.capturing_metadata_value:
-            endMetadataValue();
-            _state = ParseState.idle;
-            continue;
-          case ParseState.capturing_movement_performance:
-            endPerformance();
-            _state = ParseState.idle;
-            continue;
-          case ParseState.capturing_note:
-            endNote();
-            _state = ParseState.idle;
-            continue;
-          default:
-            _state = ParseState.idle;
-            continue;
-        }
-      }
-
-      if (tokenLiteral.isPlus) {
-        encounteredPlus(tokenLiteral);
-        continue;
-      }
-
-      if (tokenLiteral.isPound) {
-        switch (_state) {
-          case ParseState.capturing_movement_performance:
-            beginPerformanceMetadata(tokenLiteral);
-            _state = ParseState.capturing_metadata_key;
-            continue;
-          default:
-            beginMetadata();
-            _state = ParseState.capturing_metadata_key;
-            continue;
-        }
-      }
-
-      if (tokenLiteral.isReps) {
-        encounteredReps(tokenLiteral);
-        continue;
-      }
-
-      if (tokenLiteral.isSets) {
-        encounteredSets(tokenLiteral);
-        continue;
-      }
-
-      if (tokenLiteral.isStar) {
-        switch (_state) {
-          case ParseState.capturing_movement_performance:
-            beginPerformanceNote(tokenLiteral);
-            _state = ParseState.capturing_note;
-            continue;
-          default:
-            beginNote();
-            _state = ParseState.capturing_note;
-            continue;
-        }
-      }
-
-      if (tokenLiteral.isWhitespace) continue;
-
-      if (tokenLiteral.isWord) {
-        switch (_state) {
-          case ParseState.capturing_metadata_key:
-            wordDuringMetadataKey(tokenLiteral);
-            continue;
-          case ParseState.capturing_metadata_value:
-            wordDuringMetadataValue(tokenLiteral);
-            continue;
-          case ParseState.capturing_movement_name:
-            wordDuringMovementName(tokenLiteral);
-            continue;
-          case ParseState.capturing_note:
-            wordDuringNote(tokenLiteral);
-            continue;
-          case ParseState.capturing_date:
-            wordDuringDate(tokenLiteral);
-            _state = ParseState.capturing_movement_name;
-            continue;
-          case ParseState.capturing_movement_performance:
-            wordDuringPerformance(tokenLiteral);
-            _state = ParseState.capturing_movement_name;
-            continue;
-          case ParseState.idle:
-            beginMovementName(tokenLiteral);
-            _state = ParseState.capturing_movement_name;
-            continue;
-          default:
-            encounteredWord(tokenLiteral);
-            continue;
-        }
-      }
+      continue;
     }
 
     encounteredEof();
+  }
+
+  bool handleAmount(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isAmount) return false;
+
+    switch (state) {
+      case ParseState.capturing_date:
+        amountDuringDate(tokenLiteral);
+        return true;
+      case ParseState.capturing_metadata_key:
+        amountDuringMetadataKey(tokenLiteral);
+        return true;
+      case ParseState.capturing_metadata_value:
+        amountDuringMetadataValue(tokenLiteral);
+        return true;
+      case ParseState.capturing_movement_performance:
+        amountDuringPerformance(tokenLiteral);
+        return true;
+      case ParseState.idle:
+        amountDuringIdle(tokenLiteral);
+        _state = ParseState.capturing_movement_performance;
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  bool handleAt(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isAt) return false;
+    if (state != ParseState.initialized) return false;
+
+    beginDate();
+    _state = ParseState.capturing_date;
+    return true;
+  }
+
+  bool handleColon(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isColon) return false;
+
+    switch (state) {
+      case ParseState.capturing_metadata_key:
+        endMetadataKey();
+        _state = ParseState.capturing_metadata_value;
+        return true;
+      case ParseState.capturing_movement_name:
+        endMovementName();
+        _state = ParseState.capturing_movement_performance;
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  bool handleDash(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isDash) return false;
+
+    encounteredDash(tokenLiteral);
+    return true;
+  }
+
+  bool handleFails(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isFails) return false;
+
+    encounteredFailures(tokenLiteral);
+    return true;
+  }
+
+  bool handleIllegal(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isIllegal) return false;
+    return true;
+  }
+
+  bool handleLinebreak(TokenLiteral tokenLiteral, ParseState state) {
+    switch (state) {
+      case ParseState.capturing_date:
+        endDate();
+        _state = ParseState.idle;
+        return true;
+      case ParseState.capturing_metadata_value:
+        endMetadataValue();
+        _state = ParseState.idle;
+        return true;
+      case ParseState.capturing_movement_performance:
+        endPerformance();
+        _state = ParseState.idle;
+        return true;
+      case ParseState.capturing_note:
+        endNote();
+        _state = ParseState.idle;
+        return true;
+      default:
+        _state = ParseState.idle;
+        return true;
+    }
+  }
+
+  bool handlePlus(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isPlus) return false;
+
+    encounteredPlus(tokenLiteral);
+    return true;
+  }
+
+  bool handlePound(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isPound) return false;
+
+    switch (state) {
+      case ParseState.capturing_movement_performance:
+        beginPerformanceMetadata(tokenLiteral);
+        _state = ParseState.capturing_metadata_key;
+        return true;
+      default:
+        beginMetadata();
+        _state = ParseState.capturing_metadata_key;
+        return true;
+    }
+  }
+
+  bool handleReps(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isReps) return false;
+
+    encounteredReps(tokenLiteral);
+    return true;
+  }
+
+  bool handleSets(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isSets) return false;
+
+    encounteredSets(tokenLiteral);
+    return true;
+  }
+
+  bool handleStar(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isStar) return false;
+
+    switch (state) {
+      case ParseState.capturing_movement_performance:
+        beginPerformanceNote(tokenLiteral);
+        _state = ParseState.capturing_note;
+        return true;
+      default:
+        beginNote();
+        _state = ParseState.capturing_note;
+        return true;
+    }
+  }
+
+  bool handleWhitespace(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isWhitespace) return false;
+    return true;
+  }
+
+  bool handleWord(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isWord) return false;
+
+    switch (state) {
+      case ParseState.capturing_metadata_key:
+        wordDuringMetadataKey(tokenLiteral);
+        return true;
+      case ParseState.capturing_metadata_value:
+        wordDuringMetadataValue(tokenLiteral);
+        return true;
+      case ParseState.capturing_movement_name:
+        wordDuringMovementName(tokenLiteral);
+        return true;
+      case ParseState.capturing_note:
+        wordDuringNote(tokenLiteral);
+        return true;
+      case ParseState.capturing_date:
+        wordDuringDate(tokenLiteral);
+        _state = ParseState.capturing_movement_name;
+        return true;
+      case ParseState.capturing_movement_performance:
+        wordDuringPerformance(tokenLiteral);
+        _state = ParseState.capturing_movement_name;
+        return true;
+      case ParseState.idle:
+        beginMovementName(tokenLiteral);
+        _state = ParseState.capturing_movement_name;
+        return true;
+      default:
+        encounteredWord(tokenLiteral);
+        return true;
+    }
   }
 }
