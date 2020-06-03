@@ -40,6 +40,8 @@ abstract class EventedParser {
   EventedParser.for_file(String filename) : this(Scanner(filename: filename));
   EventedParser.for_string(String string) : this(Scanner(string: string));
 
+  ParseState get state => _state;
+
   void amountDuringDate(TokenLiteral tokenLiteral);
   void amountDuringIdle(TokenLiteral tokenLiteral);
   void amountDuringMetadataKey(TokenLiteral tokenLiteral);
