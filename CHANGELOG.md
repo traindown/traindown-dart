@@ -1,3 +1,8 @@
+## 1.3.1
+
+- Added complete test coverage for EventedParser
+- Minor back compat changes to EventedParser
+
 ## 1.3.0
 
 - Added EventedParser. This is a much easier abstraction to deal with day to day.
