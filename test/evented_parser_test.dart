@@ -313,6 +313,108 @@ void main() {
     });
   });
 
+  group("handleLinebreak", () {
+    test("A TokenLiteral other than linebreak", () {
+      TokenLiteral notLinebreak = TokenLiteral(Token.AMOUNT, "1");
+      bool result = subject.handleLinebreak(notLinebreak, ParseState.idle);
+      expect(result, false);
+    });
+
+    group("With a linebreak TokenLiteral", () {
+      TokenLiteral linebreak = TokenLiteral(Token.LINEBREAK, "\n");
+      ParseState state;
+
+      var getResult = () => subject.handleLinebreak(linebreak, state);
+
+      test("with capturing_date state", () {
+        state = ParseState.capturing_date;
+        expect(getResult(), true);
+        expect(subject.calls, ["endDate"]);
+        expect(subject.state, ParseState.idle);
+      });
+
+      test("with capturing_metadata_value state", () {
+        state = ParseState.capturing_metadata_value;
+        expect(getResult(), true);
+        expect(subject.calls, ["endMetadataValue"]);
+        expect(subject.state, ParseState.idle);
+      });
+
+      test("with capturing_movement_performance state", () {
+        state = ParseState.capturing_movement_performance;
+        expect(getResult(), true);
+        expect(subject.calls, ["endPerformance"]);
+        expect(subject.state, ParseState.idle);
+      });
+
+      test("with capturing_note state", () {
+        state = ParseState.capturing_note;
+        expect(getResult(), true);
+        expect(subject.calls, ["endNote"]);
+        expect(subject.state, ParseState.idle);
+      });
+
+      test("with unexpected state", () {
+        state = ParseState.idle;
+        expect(getResult(), true);
+        expect(subject.calls, []);
+        expect(subject.state, ParseState.idle);
+      });
+    });
+  });
+
+  group("handlePlus", () {
+    test("A TokenLiteral other than plus", () {
+      TokenLiteral notPlus = TokenLiteral(Token.AMOUNT, "1");
+      bool result = subject.handlePlus(notPlus, ParseState.idle);
+      expect(result, false);
+    });
+
+    group("With a plus TokenLiteral", () {
+      TokenLiteral plus = TokenLiteral(Token.PLUS, "+");
+      ParseState state;
+
+      var getResult = () => subject.handlePlus(plus, state);
+
+      ParseState.values.forEach((possibleState) {
+        test("with $possibleState state", () {
+          state = possibleState;
+          expect(getResult(), true);
+          expect(subject.calls, ["encounteredPlus"]);
+        });
+      });
+    });
+  });
+
+  group("handlePound", () {
+    test("A TokenLiteral other than pound", () {
+      TokenLiteral notPound = TokenLiteral(Token.AMOUNT, "1");
+      bool result = subject.handlePound(notPound, ParseState.idle);
+      expect(result, false);
+    });
+
+    group("With a pound TokenLiteral", () {
+      TokenLiteral pound = TokenLiteral(Token.POUND, "#");
+      ParseState state;
+
+      var getResult = () => subject.handlePound(pound, state);
+
+      test("with capturing_movement_performance", () {
+        state = ParseState.capturing_movement_performance;
+        expect(getResult(), true);
+        expect(subject.calls, ["beginPerformanceMetadata"]);
+        expect(subject.state, ParseState.capturing_metadata_key);
+      });
+
+      test("with unexpected state", () {
+        state = ParseState.idle;
+        expect(getResult(), true);
+        expect(subject.calls, ["beginMetadata"]);
+        expect(subject.state, ParseState.capturing_metadata_key);
+      });
+    });
+  });
+
   group("handleReps", () {
     test("A TokenLiteral other than reps", () {
       TokenLiteral notReps = TokenLiteral(Token.AMOUNT, "1");
@@ -355,6 +457,123 @@ void main() {
           expect(getResult(), true);
           expect(subject.calls, ["encounteredSets"]);
         });
+      });
+    });
+  });
+
+  group("handleStar", () {
+    test("A TokenLiteral other than star", () {
+      TokenLiteral notStar = TokenLiteral(Token.AMOUNT, "1");
+      bool result = subject.handleStar(notStar, ParseState.idle);
+      expect(result, false);
+    });
+
+    group("With a star TokenLiteral", () {
+      TokenLiteral star = TokenLiteral(Token.STAR, "*");
+      ParseState state;
+
+      var getResult = () => subject.handleStar(star, state);
+
+      test("with capturing_movement_performance", () {
+        state = ParseState.capturing_movement_performance;
+        expect(getResult(), true);
+        expect(subject.calls, ["beginPerformanceNote"]);
+        expect(subject.state, ParseState.capturing_note);
+      });
+
+      test("with unexpected state", () {
+        state = ParseState.idle;
+        expect(getResult(), true);
+        expect(subject.calls, ["beginNote"]);
+        expect(subject.state, ParseState.capturing_note);
+      });
+    });
+  });
+
+  group("handleWhitespace", () {
+    test("A TokenLiteral other than whitespace", () {
+      TokenLiteral notWhitespace = TokenLiteral(Token.AMOUNT, "1");
+      bool result = subject.handleWhitespace(notWhitespace, ParseState.idle);
+      expect(result, false);
+    });
+
+    group("With a whitespace TokenLiteral", () {
+      TokenLiteral whitespace = TokenLiteral(Token.WHITESPACE, " ");
+      ParseState state;
+
+      var getResult = () => subject.handleWhitespace(whitespace, state);
+
+      ParseState.values.forEach((possibleState) {
+        test("with $possibleState state", () {
+          state = possibleState;
+          expect(getResult(), true);
+        });
+      });
+    });
+  });
+
+  group("handleWord", () {
+    test("A TokenLiteral other than word", () {
+      TokenLiteral notWord = TokenLiteral(Token.AMOUNT, "1");
+      bool result = subject.handleWord(notWord, ParseState.idle);
+      expect(result, false);
+    });
+
+    group("With a word TokenLiteral", () {
+      TokenLiteral word = TokenLiteral(Token.WORD, "yay");
+      ParseState state;
+
+      var getResult = () => subject.handleWord(word, state);
+
+      test("with capturing_metadata_key", () {
+        state = ParseState.capturing_metadata_key;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringMetadataKey"]);
+      });
+
+      test("with capturing_metadata_value", () {
+        state = ParseState.capturing_metadata_value;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringMetadataValue"]);
+      });
+
+      test("with capturing_movement_name", () {
+        state = ParseState.capturing_movement_name;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringMovementName"]);
+      });
+
+      test("with capturing_note", () {
+        state = ParseState.capturing_note;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringNote"]);
+      });
+
+      test("with capturing_date", () {
+        state = ParseState.capturing_date;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringDate"]);
+        expect(subject.state, ParseState.capturing_movement_name);
+      });
+
+      test("with capturing_movement_performance", () {
+        state = ParseState.capturing_movement_performance;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringPerformance"]);
+        expect(subject.state, ParseState.capturing_movement_name);
+      });
+
+      test("with idle", () {
+        state = ParseState.idle;
+        expect(getResult(), true);
+        expect(subject.calls, ["beginMovementName"]);
+        expect(subject.state, ParseState.capturing_movement_name);
+      });
+
+      test("with unexpected state", () {
+        state = ParseState.initialized;
+        expect(getResult(), true);
+        expect(subject.calls, ["encounteredWord"]);
       });
     });
   });

@@ -164,6 +164,8 @@ abstract class EventedParser {
   }
 
   bool handleLinebreak(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isLinebreak) return false;
+
     switch (state) {
       case ParseState.capturing_date:
         endDate();
