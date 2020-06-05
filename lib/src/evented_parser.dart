@@ -11,9 +11,11 @@ enum ParseState {
   capturing_date,
   capturing_metadata_key,
   capturing_movement_name,
+  capturing_movement_note,
   capturing_movement_performance,
   capturing_metadata_value,
   capturing_note,
+  capturing_performance_note,
   idle,
 }
 
@@ -46,13 +48,15 @@ abstract class EventedParser {
   void amountDuringIdle(TokenLiteral tokenLiteral);
   void amountDuringMetadataKey(TokenLiteral tokenLiteral);
   void amountDuringMetadataValue(TokenLiteral tokenLiteral);
+  void amountDuringNote(TokenLiteral tokenLiteral);
   void amountDuringPerformance(TokenLiteral tokenLiteral);
   void beginDate();
   void beginMetadata();
   void beginMovementName(TokenLiteral tokenLiteral);
+  void beginMovementNote();
   void beginNote();
   void beginPerformanceMetadata(TokenLiteral tokenLiteral);
-  void beginPerformanceNote(TokenLiteral tokenLiteral);
+  void beginPerformanceNote();
   void encounteredDash(TokenLiteral tokenLiteral);
   void encounteredEof();
   void encounteredFailures(TokenLiteral tokenLiteral);
@@ -64,8 +68,10 @@ abstract class EventedParser {
   void endMetadataKey();
   void endMetadataValue();
   void endMovementName();
+  void endMovementNote();
   void endNote();
   void endPerformance();
+  void endPerformanceNote();
   void wordDuringDate(TokenLiteral tokenLiteral);
   void wordDuringMetadataKey(TokenLiteral tokenLiteral);
   void wordDuringMetadataValue(TokenLiteral tokenLiteral);
@@ -106,8 +112,16 @@ abstract class EventedParser {
       case ParseState.capturing_metadata_value:
         amountDuringMetadataValue(tokenLiteral);
         return true;
+      case ParseState.awaiting_movement_performance:
       case ParseState.capturing_movement_performance:
         amountDuringPerformance(tokenLiteral);
+        _state = ParseState.capturing_movement_performance;
+        return true;
+      case ParseState.capturing_note:
+      case ParseState.capturing_movement_note:
+      case ParseState.capturing_performance_note:
+        amountDuringNote(tokenLiteral);
+        _state = ParseState.capturing_movement_performance;
         return true;
       case ParseState.idle:
         amountDuringIdle(tokenLiteral);
@@ -137,7 +151,7 @@ abstract class EventedParser {
         return true;
       case ParseState.capturing_movement_name:
         endMovementName();
-        _state = ParseState.capturing_movement_performance;
+        _state = ParseState.awaiting_movement_performance;
         return true;
       default:
         return false;
@@ -179,8 +193,16 @@ abstract class EventedParser {
         endPerformance();
         _state = ParseState.idle;
         return true;
+      case ParseState.capturing_movement_note:
+        endMovementNote();
+        _state = ParseState.idle;
+        return true;
       case ParseState.capturing_note:
         endNote();
+        _state = ParseState.idle;
+        return true;
+      case ParseState.capturing_performance_note:
+        endPerformanceNote();
         _state = ParseState.idle;
         return true;
       default:
@@ -229,9 +251,13 @@ abstract class EventedParser {
     if (!tokenLiteral.isStar) return false;
 
     switch (state) {
+      case ParseState.awaiting_movement_performance:
+        beginMovementNote();
+        _state = ParseState.capturing_movement_note;
+        return true;
       case ParseState.capturing_movement_performance:
-        beginPerformanceNote(tokenLiteral);
-        _state = ParseState.capturing_note;
+        beginPerformanceNote();
+        _state = ParseState.capturing_performance_note;
         return true;
       default:
         beginNote();

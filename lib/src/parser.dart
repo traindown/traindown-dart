@@ -11,11 +11,11 @@ class Parser extends EventedParser {
   List<Movement> movements = [];
   DateTime occurred = DateTime.now();
 
-  StringBuffer _dateBuffer = StringBuffer();
-  StringBuffer _keyBuffer = StringBuffer();
-  StringBuffer _nameBuffer = StringBuffer();
-  StringBuffer _noteBuffer = StringBuffer();
-  StringBuffer _valueBuffer = StringBuffer();
+  final StringBuffer _dateBuffer = StringBuffer();
+  final StringBuffer _keyBuffer = StringBuffer();
+  final StringBuffer _nameBuffer = StringBuffer();
+  final StringBuffer _noteBuffer = StringBuffer();
+  final StringBuffer _valueBuffer = StringBuffer();
 
   Movement _currentMovement;
   Performance _currentPerformance;
@@ -42,17 +42,26 @@ class Parser extends EventedParser {
     return Performance(unit: unit);
   }
 
+  @override
   void amountDuringDate(TokenLiteral tokenLiteral) =>
       _dateBuffer.write(tokenLiteral.literal);
 
+  @override
   void amountDuringIdle(TokenLiteral tokenLiteral) {}
 
+  @override
   void amountDuringMetadataKey(TokenLiteral tokenLiteral) =>
       _keyBuffer.write("${tokenLiteral.literal} ");
 
+  @override
   void amountDuringMetadataValue(TokenLiteral tokenLiteral) =>
       _valueBuffer.write("${tokenLiteral.literal} ");
 
+  @override
+  void amountDuringNote(TokenLiteral tokenLiteral) =>
+      _noteBuffer.write("${tokenLiteral.literal} ");
+
+  @override
   void amountDuringPerformance(TokenLiteral tokenLiteral) {
     if (_currentPerformance.load != 0) {
       endPerformance();
@@ -61,13 +70,16 @@ class Parser extends EventedParser {
     _currentPerformance.load = num.tryParse(tokenLiteral.literal);
   }
 
+  @override
   void beginDate() => _dateBuffer.clear();
 
+  @override
   void beginMetadata() {
     _keyBuffer.clear();
     _valueBuffer.clear();
   }
 
+  @override
   void beginMovementName(TokenLiteral tokenLiteral) {
     if (_currentMovement != null) {
       movements.add(_currentMovement);
@@ -76,37 +88,51 @@ class Parser extends EventedParser {
     _nameBuffer.write("${tokenLiteral.literal}");
   }
 
+  @override
+  void beginMovementNote() => _noteBuffer.clear();
+
+  @override
   void beginNote() => _noteBuffer.clear();
 
+  @override
   void beginPerformanceMetadata(TokenLiteral tokenLiteral) {
     _keyBuffer.clear();
     _valueBuffer.clear();
   }
 
-  void beginPerformanceNote(TokenLiteral tokenLiteral) => _noteBuffer.clear();
+  @override
+  void beginPerformanceNote() => _noteBuffer.clear();
 
+  @override
   void encounteredDash(TokenLiteral tokenLiteral) =>
       _dateBuffer.write(tokenLiteral.literal);
 
+  @override
   void encounteredEof() {
     endPerformance();
     movements.add(_currentMovement);
   }
 
+  @override
   void encounteredFailures(TokenLiteral tokenLiteral) =>
       _currentPerformance.fails = num.tryParse(tokenLiteral.literal);
 
+  @override
   void encounteredReps(TokenLiteral tokenLiteral) =>
       _currentPerformance.reps = num.tryParse(tokenLiteral.literal);
 
+  @override
   void encounteredPlus(TokenLiteral tokenLiteral) => _shouldSuperset = true;
 
+  @override
   void encounteredSets(TokenLiteral tokenLiteral) =>
       _currentPerformance.repeat = num.tryParse(tokenLiteral.literal);
 
   // NOTE: noop
+  @override
   void encounteredWord(TokenLiteral tokenLiteral) {}
 
+  @override
   void endDate() {
     DateTime parsedDate = DateTime.tryParse(_dateBuffer.toString().trim());
 
@@ -116,8 +142,10 @@ class Parser extends EventedParser {
   }
 
   // NOTE: noop
+  @override
   void endMetadataKey() {}
 
+  @override
   void endMetadataValue() {
     String key = _keyBuffer.toString().trimRight();
     String value = _valueBuffer.toString().trimRight();
@@ -129,6 +157,7 @@ class Parser extends EventedParser {
     }
   }
 
+  @override
   void endMovementName() {
     String name = _nameBuffer.toString().trimRight();
     _currentMovement = Movement(name);
@@ -137,6 +166,13 @@ class Parser extends EventedParser {
     _shouldSuperset = false;
   }
 
+  @override
+  void endMovementNote() {
+    String note = _noteBuffer.toString().trimRight();
+    _currentMovement.addNote(note);
+  }
+
+  @override
   void endNote() {
     String note = _noteBuffer.toString().trimRight();
 
@@ -147,26 +183,39 @@ class Parser extends EventedParser {
     }
   }
 
+  @override
   void endPerformance() {
     _currentMovement.performances.add(_currentPerformance);
     _currentPerformance = _newPerformance(_currentMovement.name);
   }
 
+  @override
+  void endPerformanceNote() {
+    String note = _noteBuffer.toString().trimRight();
+    _currentPerformance.addNote(note);
+  }
+
+  @override
   void wordDuringDate(TokenLiteral tokenLiteral) =>
       _dateBuffer.write("${tokenLiteral.literal} ");
 
+  @override
   void wordDuringMetadataKey(TokenLiteral tokenLiteral) =>
       _keyBuffer.write("${tokenLiteral.literal} ");
 
+  @override
   void wordDuringMetadataValue(TokenLiteral tokenLiteral) =>
       _valueBuffer.write("${tokenLiteral.literal} ");
 
+  @override
   void wordDuringMovementName(TokenLiteral tokenLiteral) =>
       _nameBuffer.write(" ${tokenLiteral.literal} ");
 
+  @override
   void wordDuringNote(TokenLiteral tokenLiteral) =>
       _noteBuffer.write("${tokenLiteral.literal} ");
 
+  @override
   void wordDuringPerformance(TokenLiteral tokenLiteral) {
     endPerformance();
     beginMovementName(tokenLiteral);

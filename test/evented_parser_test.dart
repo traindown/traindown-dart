@@ -11,122 +11,172 @@ class TestParser extends EventedParser {
 
   List<String> calls = [];
 
+  @override
   void amountDuringDate(TokenLiteral tokenLiteral) {
     calls.add("amountDuringDate");
   }
 
+  @override
   void amountDuringIdle(TokenLiteral tokenLiteral) {
     calls.add("amountDuringIdle");
   }
 
+  @override
   void amountDuringMetadataKey(TokenLiteral tokenLiteral) {
     calls.add("amountDuringMetadataKey");
   }
 
+  @override
   void amountDuringMetadataValue(TokenLiteral tokenLiteral) {
     calls.add("amountDuringMetadataValue");
   }
 
+  @override
+  void amountDuringNote(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringNote");
+  }
+
+  @override
   void amountDuringPerformance(TokenLiteral tokenLiteral) {
     calls.add("amountDuringPerformance");
   }
 
+  @override
   void beginDate() {
     calls.add("beginDate");
   }
 
+  @override
   void beginMetadata() {
     calls.add("beginMetadata");
   }
 
+  @override
   void beginMovementName(TokenLiteral tokenLiteral) {
     calls.add("beginMovementName");
   }
 
+  @override
+  void beginMovementNote() {
+    calls.add("beginMovementNote");
+  }
+
+  @override
   void beginNote() {
     calls.add("beginNote");
   }
 
+  @override
   void beginPerformanceMetadata(TokenLiteral tokenLiteral) {
     calls.add("beginPerformanceMetadata");
   }
 
-  void beginPerformanceNote(TokenLiteral tokenLiteral) {
+  @override
+  void beginPerformanceNote() {
     calls.add("beginPerformanceNote");
   }
 
+  @override
   void encounteredDash(TokenLiteral tokenLiteral) {
     calls.add("encounteredDash");
   }
 
+  @override
   void encounteredEof() {
     calls.add("encounteredEof");
   }
 
+  @override
   void encounteredFailures(TokenLiteral tokenLiteral) {
     calls.add("encounteredFailures");
   }
 
+  @override
   void encounteredReps(TokenLiteral tokenLiteral) {
     calls.add("encounteredReps");
   }
 
+  @override
   void encounteredPlus(TokenLiteral tokenLiteral) {
     calls.add("encounteredPlus");
   }
 
+  @override
   void encounteredSets(TokenLiteral tokenLiteral) {
     calls.add("encounteredSets");
   }
 
+  @override
   void encounteredWord(TokenLiteral tokenLiteral) {
     calls.add("encounteredWord");
   }
 
+  @override
   void endDate() {
     calls.add("endDate");
   }
 
+  @override
   void endMetadataKey() {
     calls.add("endMetadataKey");
   }
 
+  @override
   void endMetadataValue() {
     calls.add("endMetadataValue");
   }
 
+  @override
   void endMovementName() {
     calls.add("endMovementName");
   }
 
+  @override
+  void endMovementNote() {
+    calls.add("endMovementNote");
+  }
+
+  @override
   void endNote() {
     calls.add("endNote");
   }
 
+  @override
   void endPerformance() {
     calls.add("endPerformance");
   }
 
+  @override
+  void endPerformanceNote() {
+    calls.add("endPerformanceNote");
+  }
+
+  @override
   void wordDuringDate(TokenLiteral tokenLiteral) {
     calls.add("wordDuringDate");
   }
 
+  @override
   void wordDuringMetadataKey(TokenLiteral tokenLiteral) {
     calls.add("wordDuringMetadataKey");
   }
 
+  @override
   void wordDuringMetadataValue(TokenLiteral tokenLiteral) {
     calls.add("wordDuringMetadataValue");
   }
 
+  @override
   void wordDuringMovementName(TokenLiteral tokenLiteral) {
     calls.add("wordDuringMovementName");
   }
 
+  @override
   void wordDuringNote(TokenLiteral tokenLiteral) {
     calls.add("wordDuringNote");
   }
 
+  @override
   void wordDuringPerformance(TokenLiteral tokenLiteral) {
     calls.add("wordDuringPerformance");
   }
@@ -234,7 +284,7 @@ void main() {
         state = ParseState.capturing_movement_name;
         expect(getResult(), true);
         expect(subject.calls, ["endMovementName"]);
-        expect(subject.state, ParseState.capturing_movement_performance);
+        expect(subject.state, ParseState.awaiting_movement_performance);
       });
 
       test("with unexpected state", () {
@@ -474,11 +524,18 @@ void main() {
 
       var getResult = () => subject.handleStar(star, state);
 
+      test("with awaiting_movement_performance", () {
+        state = ParseState.awaiting_movement_performance;
+        expect(getResult(), true);
+        expect(subject.calls, ["beginMovementNote"]);
+        expect(subject.state, ParseState.capturing_movement_note);
+      });
+
       test("with capturing_movement_performance", () {
         state = ParseState.capturing_movement_performance;
         expect(getResult(), true);
         expect(subject.calls, ["beginPerformanceNote"]);
-        expect(subject.state, ParseState.capturing_note);
+        expect(subject.state, ParseState.capturing_performance_note);
       });
 
       test("with unexpected state", () {

@@ -22,9 +22,10 @@ void main() {
     });
 
     test("With a somewhat complex string", () {
-      String test = "@ 2020-05-20 Squat: 500 10r 600 2r 700 Pulldowns: 200 10r";
+      String test =
+          "@ 2020-05-20 Squat: * Narrow 500 10r * Hard 600 2r 700 Pulldowns: 200 10r";
       String result =
-          '@ 2020-05-20\r\nSquat:\r\n  500 10r\r\n  600 2r\r\n  700\r\nPulldowns:\r\n  200 10r';
+          '@ 2020-05-20\r\nSquat:\r\n  * Narrow\r\n  500 10r\r\n    * Hard\r\n  600 2r\r\n  700\r\nPulldowns:\r\n  200 10r';
       Formatter formatter = Formatter.for_string(test);
       expect(formatter.format(), equals(result));
     });
