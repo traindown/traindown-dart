@@ -22,18 +22,18 @@ class TestParser extends EventedParser {
   }
 
   @override
-  void amountDuringMetadataKey(TokenLiteral tokenLiteral) {
-    calls.add("amountDuringMetadataKey");
+  void amountDuringMovementMetadataKey(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringMovementMetadataKey");
   }
 
   @override
-  void amountDuringMetadataValue(TokenLiteral tokenLiteral) {
-    calls.add("amountDuringMetadataValue");
+  void amountDuringMovementMetadataValue(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringMovementMetadataValue");
   }
 
   @override
-  void amountDuringNote(TokenLiteral tokenLiteral) {
-    calls.add("amountDuringNote");
+  void amountDuringMovementNote(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringMovementNote");
   }
 
   @override
@@ -42,13 +42,43 @@ class TestParser extends EventedParser {
   }
 
   @override
+  void amountDuringPerformanceMetadataKey(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringPerformanceMetadataKey");
+  }
+
+  @override
+  void amountDuringPerformanceMetadataValue(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringPerformanceMetadataValue");
+  }
+
+  @override
+  void amountDuringPerformanceNote(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringPerformanceNote");
+  }
+
+  @override
+  void amountDuringSessionMetadataKey(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringSessionMetadataKey");
+  }
+
+  @override
+  void amountDuringSessionMetadataValue(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringSessionMetadataValue");
+  }
+
+  @override
+  void amountDuringSessionNote(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringSessionNote");
+  }
+
+  @override
   void beginDate() {
     calls.add("beginDate");
   }
 
   @override
-  void beginMetadata() {
-    calls.add("beginMetadata");
+  void beginMovementMetadata() {
+    calls.add("beginMovementMetadata");
   }
 
   @override
@@ -62,18 +92,23 @@ class TestParser extends EventedParser {
   }
 
   @override
-  void beginNote() {
-    calls.add("beginNote");
-  }
-
-  @override
-  void beginPerformanceMetadata(TokenLiteral tokenLiteral) {
+  void beginPerformanceMetadata() {
     calls.add("beginPerformanceMetadata");
   }
 
   @override
   void beginPerformanceNote() {
     calls.add("beginPerformanceNote");
+  }
+
+  @override
+  void beginSessionMetadata() {
+    calls.add("beginSessionMetadata");
+  }
+
+  @override
+  void beginSessionNote() {
+    calls.add("beginSessionNote");
   }
 
   @override
@@ -117,13 +152,33 @@ class TestParser extends EventedParser {
   }
 
   @override
-  void endMetadataKey() {
-    calls.add("endMetadataKey");
+  void endMovementMetadataKey() {
+    calls.add("endMovementMetadataKey");
   }
 
   @override
-  void endMetadataValue() {
-    calls.add("endMetadataValue");
+  void endMovementMetadataValue() {
+    calls.add("endMovementMetadataValue");
+  }
+
+  @override
+  void endPerformanceMetadataKey() {
+    calls.add("endPerformanceMetadataKey");
+  }
+
+  @override
+  void endPerformanceMetadataValue() {
+    calls.add("endPerformanceMetadataValue");
+  }
+
+  @override
+  void endSessionMetadataKey() {
+    calls.add("endSessionMetadataKey");
+  }
+
+  @override
+  void endSessionMetadataValue() {
+    calls.add("endSessionMetadataValue");
   }
 
   @override
@@ -137,18 +192,18 @@ class TestParser extends EventedParser {
   }
 
   @override
-  void endNote() {
-    calls.add("endNote");
+  void endPerformanceNote() {
+    calls.add("endPerformanceNote");
+  }
+
+  @override
+  void endSessionNote() {
+    calls.add("endSessionNote");
   }
 
   @override
   void endPerformance() {
     calls.add("endPerformance");
-  }
-
-  @override
-  void endPerformanceNote() {
-    calls.add("endPerformanceNote");
   }
 
   @override
@@ -199,29 +254,53 @@ void main() {
 
       var getResult = () => subject.handleAmount(amount, state);
 
-      test("with capturing_date state", () {
-        state = ParseState.capturing_date;
+      test("with capturingDate state", () {
+        state = ParseState.capturingDate;
         expect(getResult(), true);
         expect(subject.calls, ["amountDuringDate"]);
       });
 
-      test("with capturing_metadata_key state", () {
-        state = ParseState.capturing_metadata_key;
+      test("with capturingMovementMetadataKey state", () {
+        state = ParseState.capturingMovementMetadataKey;
         expect(getResult(), true);
-        expect(subject.calls, ["amountDuringMetadataKey"]);
+        expect(subject.calls, ["amountDuringMovementMetadataKey"]);
       });
 
-      test("with capturing_metadata_value state", () {
-        state = ParseState.capturing_metadata_key;
+      test("with capturingMovementMetadataValue state", () {
+        state = ParseState.capturingMovementMetadataKey;
         expect(getResult(), true);
-        expect(subject.calls, ["amountDuringMetadataKey"]);
+        expect(subject.calls, ["amountDuringMovementMetadataKey"]);
+      });
+
+      test("with capturingPerformanceMetadataKey state", () {
+        state = ParseState.capturingPerformanceMetadataKey;
+        expect(getResult(), true);
+        expect(subject.calls, ["amountDuringPerformanceMetadataKey"]);
+      });
+
+      test("with capturingPerformanceMetadataValue state", () {
+        state = ParseState.capturingPerformanceMetadataKey;
+        expect(getResult(), true);
+        expect(subject.calls, ["amountDuringPerformanceMetadataKey"]);
+      });
+
+      test("with capturingSessionMetadataKey state", () {
+        state = ParseState.capturingSessionMetadataKey;
+        expect(getResult(), true);
+        expect(subject.calls, ["amountDuringSessionMetadataKey"]);
+      });
+
+      test("with capturingSessionMetadataValue state", () {
+        state = ParseState.capturingSessionMetadataKey;
+        expect(getResult(), true);
+        expect(subject.calls, ["amountDuringSessionMetadataKey"]);
       });
 
       test("with idle state", () {
         state = ParseState.idle;
         expect(getResult(), true);
         expect(subject.calls, ["amountDuringIdle"]);
-        expect(subject.state, ParseState.capturing_movement_performance);
+        expect(subject.state, ParseState.capturingPerformance);
       });
 
       test("with unexpected state", () {
@@ -249,7 +328,7 @@ void main() {
         state = ParseState.initialized;
         expect(getResult(), true);
         expect(subject.calls, ["beginDate"]);
-        expect(subject.state, ParseState.capturing_date);
+        expect(subject.state, ParseState.capturingDate);
       });
 
       test("with unexpected state", () {
@@ -273,18 +352,32 @@ void main() {
 
       var getResult = () => subject.handleColon(colon, state);
 
-      test("with capturing_metadata_key state", () {
-        state = ParseState.capturing_metadata_key;
+      test("with capturingMovementMetadataKey state", () {
+        state = ParseState.capturingMovementMetadataKey;
         expect(getResult(), true);
-        expect(subject.calls, ["endMetadataKey"]);
-        expect(subject.state, ParseState.capturing_metadata_value);
+        expect(subject.calls, ["endMovementMetadataKey"]);
+        expect(subject.state, ParseState.capturingMovementMetadataValue);
       });
 
-      test("with capturing_movement_name state", () {
-        state = ParseState.capturing_movement_name;
+      test("with capturingPerformanceMetadataKey state", () {
+        state = ParseState.capturingPerformanceMetadataKey;
+        expect(getResult(), true);
+        expect(subject.calls, ["endPerformanceMetadataKey"]);
+        expect(subject.state, ParseState.capturingPerformanceMetadataValue);
+      });
+
+      test("with capturingMovementName state", () {
+        state = ParseState.capturingMovementName;
         expect(getResult(), true);
         expect(subject.calls, ["endMovementName"]);
-        expect(subject.state, ParseState.awaiting_movement_performance);
+        expect(subject.state, ParseState.awaitingPerformance);
+      });
+
+      test("with capturingSessionMetadataKey state", () {
+        state = ParseState.capturingSessionMetadataKey;
+        expect(getResult(), true);
+        expect(subject.calls, ["endSessionMetadataKey"]);
+        expect(subject.state, ParseState.capturingSessionMetadataValue);
       });
 
       test("with unexpected state", () {
@@ -376,31 +469,59 @@ void main() {
 
       var getResult = () => subject.handleLinebreak(linebreak, state);
 
-      test("with capturing_date state", () {
-        state = ParseState.capturing_date;
+      test("with capturingDate state", () {
+        state = ParseState.capturingDate;
         expect(getResult(), true);
         expect(subject.calls, ["endDate"]);
         expect(subject.state, ParseState.idle);
       });
 
-      test("with capturing_metadata_value state", () {
-        state = ParseState.capturing_metadata_value;
+      test("with capturingMovementMetadataValue state", () {
+        state = ParseState.capturingMovementMetadataValue;
         expect(getResult(), true);
-        expect(subject.calls, ["endMetadataValue"]);
+        expect(subject.calls, ["endMovementMetadataValue"]);
         expect(subject.state, ParseState.idle);
       });
 
-      test("with capturing_movement_performance state", () {
-        state = ParseState.capturing_movement_performance;
+      test("with capturingMovementNote state", () {
+        state = ParseState.capturingMovementNote;
+        expect(getResult(), true);
+        expect(subject.calls, ["endMovementNote"]);
+        expect(subject.state, ParseState.idle);
+      });
+
+      test("with capturingPerformance state", () {
+        state = ParseState.capturingPerformance;
         expect(getResult(), true);
         expect(subject.calls, ["endPerformance"]);
         expect(subject.state, ParseState.idle);
       });
 
-      test("with capturing_note state", () {
-        state = ParseState.capturing_note;
+      test("with capturingPerformanceMetadataValue state", () {
+        state = ParseState.capturingPerformanceMetadataValue;
         expect(getResult(), true);
-        expect(subject.calls, ["endNote"]);
+        expect(subject.calls, ["endPerformanceMetadataValue"]);
+        expect(subject.state, ParseState.idle);
+      });
+
+      test("with capturingPerformanceNote state", () {
+        state = ParseState.capturingPerformanceNote;
+        expect(getResult(), true);
+        expect(subject.calls, ["endPerformanceNote"]);
+        expect(subject.state, ParseState.idle);
+      });
+
+      test("with capturingSessionMetadataValue state", () {
+        state = ParseState.capturingSessionMetadataValue;
+        expect(getResult(), true);
+        expect(subject.calls, ["endSessionMetadataValue"]);
+        expect(subject.state, ParseState.idle);
+      });
+
+      test("with capturingSessionNote state", () {
+        state = ParseState.capturingSessionNote;
+        expect(getResult(), true);
+        expect(subject.calls, ["endSessionNote"]);
         expect(subject.state, ParseState.idle);
       });
 
@@ -449,18 +570,25 @@ void main() {
 
       var getResult = () => subject.handlePound(pound, state);
 
-      test("with capturing_movement_performance", () {
-        state = ParseState.capturing_movement_performance;
+      test("with awaitingPerformance", () {
+        state = ParseState.awaitingPerformance;
+        expect(getResult(), true);
+        expect(subject.calls, ["beginMovementMetadata"]);
+        expect(subject.state, ParseState.capturingMovementMetadataKey);
+      });
+
+      test("with capturingPerformance", () {
+        state = ParseState.capturingPerformance;
         expect(getResult(), true);
         expect(subject.calls, ["beginPerformanceMetadata"]);
-        expect(subject.state, ParseState.capturing_metadata_key);
+        expect(subject.state, ParseState.capturingPerformanceMetadataKey);
       });
 
       test("with unexpected state", () {
         state = ParseState.idle;
         expect(getResult(), true);
-        expect(subject.calls, ["beginMetadata"]);
-        expect(subject.state, ParseState.capturing_metadata_key);
+        expect(subject.calls, ["beginSessionMetadata"]);
+        expect(subject.state, ParseState.capturingSessionMetadataKey);
       });
     });
   });
@@ -524,25 +652,25 @@ void main() {
 
       var getResult = () => subject.handleStar(star, state);
 
-      test("with awaiting_movement_performance", () {
-        state = ParseState.awaiting_movement_performance;
+      test("with awaitingPerformance", () {
+        state = ParseState.awaitingPerformance;
         expect(getResult(), true);
         expect(subject.calls, ["beginMovementNote"]);
-        expect(subject.state, ParseState.capturing_movement_note);
+        expect(subject.state, ParseState.capturingMovementNote);
       });
 
-      test("with capturing_movement_performance", () {
-        state = ParseState.capturing_movement_performance;
+      test("with capturingPerformance", () {
+        state = ParseState.capturingPerformance;
         expect(getResult(), true);
         expect(subject.calls, ["beginPerformanceNote"]);
-        expect(subject.state, ParseState.capturing_performance_note);
+        expect(subject.state, ParseState.capturingPerformanceNote);
       });
 
       test("with unexpected state", () {
         state = ParseState.idle;
         expect(getResult(), true);
-        expect(subject.calls, ["beginNote"]);
-        expect(subject.state, ParseState.capturing_note);
+        expect(subject.calls, ["beginSessionNote"]);
+        expect(subject.state, ParseState.capturingSessionNote);
       });
     });
   });
@@ -582,49 +710,85 @@ void main() {
 
       var getResult = () => subject.handleWord(word, state);
 
-      test("with capturing_metadata_key", () {
-        state = ParseState.capturing_metadata_key;
+      test("with capturingDate", () {
+        state = ParseState.capturingDate;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringDate"]);
+        expect(subject.state, ParseState.capturingMovementName);
+      });
+
+      test("with capturingMovementMetadataKey", () {
+        state = ParseState.capturingMovementMetadataKey;
         expect(getResult(), true);
         expect(subject.calls, ["wordDuringMetadataKey"]);
       });
 
-      test("with capturing_metadata_value", () {
-        state = ParseState.capturing_metadata_value;
+      test("with capturingMovementMetadataValue", () {
+        state = ParseState.capturingMovementMetadataValue;
         expect(getResult(), true);
         expect(subject.calls, ["wordDuringMetadataValue"]);
       });
 
-      test("with capturing_movement_name", () {
-        state = ParseState.capturing_movement_name;
+      test("with capturingMovementName", () {
+        state = ParseState.capturingMovementName;
         expect(getResult(), true);
         expect(subject.calls, ["wordDuringMovementName"]);
       });
 
-      test("with capturing_note", () {
-        state = ParseState.capturing_note;
+      test("with capturingMovementNote", () {
+        state = ParseState.capturingMovementNote;
         expect(getResult(), true);
         expect(subject.calls, ["wordDuringNote"]);
       });
 
-      test("with capturing_date", () {
-        state = ParseState.capturing_date;
-        expect(getResult(), true);
-        expect(subject.calls, ["wordDuringDate"]);
-        expect(subject.state, ParseState.capturing_movement_name);
-      });
-
-      test("with capturing_movement_performance", () {
-        state = ParseState.capturing_movement_performance;
+      test("with capturingPerformance", () {
+        state = ParseState.capturingPerformance;
         expect(getResult(), true);
         expect(subject.calls, ["wordDuringPerformance"]);
-        expect(subject.state, ParseState.capturing_movement_name);
+        expect(subject.state, ParseState.capturingMovementName);
+      });
+
+      test("with capturingPerformanceMetadataKey", () {
+        state = ParseState.capturingPerformanceMetadataKey;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringMetadataKey"]);
+      });
+
+      test("with capturingPerformanceMetadataValue", () {
+        state = ParseState.capturingPerformanceMetadataValue;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringMetadataValue"]);
+      });
+
+      test("with capturingPerformanceNote", () {
+        state = ParseState.capturingPerformanceNote;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringNote"]);
+      });
+
+      test("with capturingSessionMetadataKey", () {
+        state = ParseState.capturingSessionMetadataKey;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringMetadataKey"]);
+      });
+
+      test("with capturingSessionMetadataValue", () {
+        state = ParseState.capturingSessionMetadataValue;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringMetadataValue"]);
+      });
+
+      test("with capturingSessionNote", () {
+        state = ParseState.capturingSessionNote;
+        expect(getResult(), true);
+        expect(subject.calls, ["wordDuringNote"]);
       });
 
       test("with idle", () {
         state = ParseState.idle;
         expect(getResult(), true);
         expect(subject.calls, ["beginMovementName"]);
-        expect(subject.state, ParseState.capturing_movement_name);
+        expect(subject.state, ParseState.capturingMovementName);
       });
 
       test("with unexpected state", () {

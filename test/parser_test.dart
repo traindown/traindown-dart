@@ -16,7 +16,7 @@ class ScannerMock extends Fake implements Scanner {
     Movement Name: 100 200 2r 300 2s 400 2r 2s
   */
 
-  List<TokenLiteral> _tokenLiterals = [
+  final List<TokenLiteral> _tokenLiterals = [
     TokenLiteral(Token.AT, "@"),
     TokenLiteral(Token.WHITESPACE, " "),
     TokenLiteral(Token.AMOUNT, "2020"),

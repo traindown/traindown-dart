@@ -26,14 +26,6 @@ class Parser extends EventedParser {
   Parser.for_file(String filename) : super.for_file(filename);
   Parser.for_string(String string) : super.for_string(string);
 
-  Metadatable get _lastEntity {
-    if (_currentPerformance != null) {
-      return _currentPerformance;
-    } else {
-      return _currentMovement;
-    }
-  }
-
   void parse() => call();
 
   Performance _newPerformance(String movementName) {
@@ -50,15 +42,15 @@ class Parser extends EventedParser {
   void amountDuringIdle(TokenLiteral tokenLiteral) {}
 
   @override
-  void amountDuringMetadataKey(TokenLiteral tokenLiteral) =>
+  void amountDuringMovementMetadataKey(TokenLiteral tokenLiteral) =>
       _keyBuffer.write("${tokenLiteral.literal} ");
 
   @override
-  void amountDuringMetadataValue(TokenLiteral tokenLiteral) =>
+  void amountDuringMovementMetadataValue(TokenLiteral tokenLiteral) =>
       _valueBuffer.write("${tokenLiteral.literal} ");
 
   @override
-  void amountDuringNote(TokenLiteral tokenLiteral) =>
+  void amountDuringMovementNote(TokenLiteral tokenLiteral) =>
       _noteBuffer.write("${tokenLiteral.literal} ");
 
   @override
@@ -71,13 +63,31 @@ class Parser extends EventedParser {
   }
 
   @override
-  void beginDate() => _dateBuffer.clear();
+  void amountDuringPerformanceMetadataKey(TokenLiteral tokenLiteral) =>
+      _keyBuffer.write("${tokenLiteral.literal} ");
 
   @override
-  void beginMetadata() {
-    _keyBuffer.clear();
-    _valueBuffer.clear();
-  }
+  void amountDuringPerformanceMetadataValue(TokenLiteral tokenLiteral) =>
+      _valueBuffer.write("${tokenLiteral.literal} ");
+
+  @override
+  void amountDuringPerformanceNote(TokenLiteral tokenLiteral) =>
+      _noteBuffer.write("${tokenLiteral.literal} ");
+
+  @override
+  void amountDuringSessionMetadataKey(TokenLiteral tokenLiteral) =>
+      _keyBuffer.write("${tokenLiteral.literal} ");
+
+  @override
+  void amountDuringSessionMetadataValue(TokenLiteral tokenLiteral) =>
+      _valueBuffer.write("${tokenLiteral.literal} ");
+
+  @override
+  void amountDuringSessionNote(TokenLiteral tokenLiteral) =>
+      _noteBuffer.write("${tokenLiteral.literal} ");
+
+  @override
+  void beginDate() => _dateBuffer.clear();
 
   @override
   void beginMovementName(TokenLiteral tokenLiteral) {
@@ -89,19 +99,31 @@ class Parser extends EventedParser {
   }
 
   @override
+  void beginMovementMetadata() {
+    _keyBuffer.clear();
+    _valueBuffer.clear();
+  }
+
+  @override
   void beginMovementNote() => _noteBuffer.clear();
 
   @override
-  void beginNote() => _noteBuffer.clear();
-
-  @override
-  void beginPerformanceMetadata(TokenLiteral tokenLiteral) {
+  void beginPerformanceMetadata() {
     _keyBuffer.clear();
     _valueBuffer.clear();
   }
 
   @override
   void beginPerformanceNote() => _noteBuffer.clear();
+
+  @override
+  void beginSessionMetadata() {
+    _keyBuffer.clear();
+    _valueBuffer.clear();
+  }
+
+  @override
+  void beginSessionNote() => _noteBuffer.clear();
 
   @override
   void encounteredDash(TokenLiteral tokenLiteral) =>
@@ -141,22 +163,6 @@ class Parser extends EventedParser {
     }
   }
 
-  // NOTE: noop
-  @override
-  void endMetadataKey() {}
-
-  @override
-  void endMetadataValue() {
-    String key = _keyBuffer.toString().trimRight();
-    String value = _valueBuffer.toString().trimRight();
-
-    if (_lastEntity != null) {
-      _lastEntity.addKVP(key, value);
-    } else {
-      metadata.addKVP(key, value);
-    }
-  }
-
   @override
   void endMovementName() {
     String name = _nameBuffer.toString().trimRight();
@@ -166,21 +172,22 @@ class Parser extends EventedParser {
     _shouldSuperset = false;
   }
 
+  // NOTE: noop
+  @override
+  void endMovementMetadataKey() {}
+
+  @override
+  void endMovementMetadataValue() {
+    String key = _keyBuffer.toString().trimRight();
+    String value = _valueBuffer.toString().trimRight();
+
+    _currentMovement.addKVP(key, value);
+  }
+
   @override
   void endMovementNote() {
     String note = _noteBuffer.toString().trimRight();
     _currentMovement.addNote(note);
-  }
-
-  @override
-  void endNote() {
-    String note = _noteBuffer.toString().trimRight();
-
-    if (_lastEntity != null) {
-      _lastEntity.addNote(note);
-    } else {
-      metadata.addNote(note);
-    }
   }
 
   @override
@@ -189,10 +196,40 @@ class Parser extends EventedParser {
     _currentPerformance = _newPerformance(_currentMovement.name);
   }
 
+  // NOTE: noop
+  @override
+  void endPerformanceMetadataKey() {}
+
+  @override
+  void endPerformanceMetadataValue() {
+    String key = _keyBuffer.toString().trimRight();
+    String value = _valueBuffer.toString().trimRight();
+
+    _currentPerformance.addKVP(key, value);
+  }
+
   @override
   void endPerformanceNote() {
     String note = _noteBuffer.toString().trimRight();
     _currentPerformance.addNote(note);
+  }
+
+  // NOTE: noop
+  @override
+  void endSessionMetadataKey() {}
+
+  @override
+  void endSessionMetadataValue() {
+    String key = _keyBuffer.toString().trimRight();
+    String value = _valueBuffer.toString().trimRight();
+
+    metadata.addKVP(key, value);
+  }
+
+  @override
+  void endSessionNote() {
+    String note = _noteBuffer.toString().trimRight();
+    metadata.addNote(note);
   }
 
   @override

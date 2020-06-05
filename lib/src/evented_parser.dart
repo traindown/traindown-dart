@@ -4,19 +4,21 @@ import "package:traindown/src/scanner.dart";
 import "package:traindown/src/token.dart";
 
 enum ParseState {
-  initialized,
-  awaiting_amount,
-  awaiting_metadata_value,
-  awaiting_movement_performance,
-  capturing_date,
-  capturing_metadata_key,
-  capturing_movement_name,
-  capturing_movement_note,
-  capturing_movement_performance,
-  capturing_metadata_value,
-  capturing_note,
-  capturing_performance_note,
+  awaitingPerformance,
+  capturingDate,
+  capturingMovementMetadataKey,
+  capturingMovementMetadataValue,
+  capturingMovementName,
+  capturingMovementNote,
+  capturingPerformance,
+  capturingPerformanceMetadataKey,
+  capturingPerformanceMetadataValue,
+  capturingPerformanceNote,
+  capturingSessionMetadataKey,
+  capturingSessionMetadataValue,
+  capturingSessionNote,
   idle,
+  initialized
 }
 
 class UnexpectedToken implements Exception {
@@ -46,17 +48,24 @@ abstract class EventedParser {
 
   void amountDuringDate(TokenLiteral tokenLiteral);
   void amountDuringIdle(TokenLiteral tokenLiteral);
-  void amountDuringMetadataKey(TokenLiteral tokenLiteral);
-  void amountDuringMetadataValue(TokenLiteral tokenLiteral);
-  void amountDuringNote(TokenLiteral tokenLiteral);
+  void amountDuringMovementMetadataKey(TokenLiteral tokenLiteral);
+  void amountDuringMovementMetadataValue(TokenLiteral tokenLiteral);
+  void amountDuringMovementNote(TokenLiteral tokenLiteral);
+  void amountDuringPerformanceMetadataKey(TokenLiteral tokenLiteral);
+  void amountDuringPerformanceMetadataValue(TokenLiteral tokenLiteral);
+  void amountDuringPerformanceNote(TokenLiteral tokenLiteral);
+  void amountDuringSessionMetadataKey(TokenLiteral tokenLiteral);
+  void amountDuringSessionMetadataValue(TokenLiteral tokenLiteral);
+  void amountDuringSessionNote(TokenLiteral tokenLiteral);
   void amountDuringPerformance(TokenLiteral tokenLiteral);
   void beginDate();
-  void beginMetadata();
+  void beginMovementMetadata();
   void beginMovementName(TokenLiteral tokenLiteral);
   void beginMovementNote();
-  void beginNote();
-  void beginPerformanceMetadata(TokenLiteral tokenLiteral);
+  void beginPerformanceMetadata();
   void beginPerformanceNote();
+  void beginSessionMetadata();
+  void beginSessionNote();
   void encounteredDash(TokenLiteral tokenLiteral);
   void encounteredEof();
   void encounteredFailures(TokenLiteral tokenLiteral);
@@ -65,13 +74,17 @@ abstract class EventedParser {
   void encounteredSets(TokenLiteral tokenLiteral);
   void encounteredWord(TokenLiteral tokenLiteral);
   void endDate();
-  void endMetadataKey();
-  void endMetadataValue();
+  void endMovementMetadataKey();
+  void endMovementMetadataValue();
   void endMovementName();
   void endMovementNote();
-  void endNote();
   void endPerformance();
+  void endPerformanceMetadataKey();
+  void endPerformanceMetadataValue();
   void endPerformanceNote();
+  void endSessionMetadataKey();
+  void endSessionMetadataValue();
+  void endSessionNote();
   void wordDuringDate(TokenLiteral tokenLiteral);
   void wordDuringMetadataKey(TokenLiteral tokenLiteral);
   void wordDuringMetadataValue(TokenLiteral tokenLiteral);
@@ -103,29 +116,47 @@ abstract class EventedParser {
     if (!tokenLiteral.isAmount) return false;
 
     switch (state) {
-      case ParseState.capturing_date:
+      case ParseState.capturingDate:
         amountDuringDate(tokenLiteral);
         return true;
-      case ParseState.capturing_metadata_key:
-        amountDuringMetadataKey(tokenLiteral);
+      case ParseState.capturingMovementMetadataKey:
+        amountDuringMovementMetadataKey(tokenLiteral);
         return true;
-      case ParseState.capturing_metadata_value:
-        amountDuringMetadataValue(tokenLiteral);
+      case ParseState.capturingPerformanceMetadataKey:
+        amountDuringPerformanceMetadataKey(tokenLiteral);
         return true;
-      case ParseState.awaiting_movement_performance:
-      case ParseState.capturing_movement_performance:
+      case ParseState.capturingSessionMetadataKey:
+        amountDuringSessionMetadataKey(tokenLiteral);
+        return true;
+      case ParseState.capturingMovementMetadataValue:
+        amountDuringMovementMetadataValue(tokenLiteral);
+        return true;
+      case ParseState.capturingPerformanceMetadataValue:
+        amountDuringPerformanceMetadataValue(tokenLiteral);
+        return true;
+      case ParseState.capturingSessionMetadataValue:
+        amountDuringSessionMetadataValue(tokenLiteral);
+        return true;
+      case ParseState.awaitingPerformance:
+      case ParseState.capturingPerformance:
         amountDuringPerformance(tokenLiteral);
-        _state = ParseState.capturing_movement_performance;
+        _state = ParseState.capturingPerformance;
         return true;
-      case ParseState.capturing_note:
-      case ParseState.capturing_movement_note:
-      case ParseState.capturing_performance_note:
-        amountDuringNote(tokenLiteral);
-        _state = ParseState.capturing_movement_performance;
+      case ParseState.capturingMovementNote:
+        amountDuringMovementNote(tokenLiteral);
+        _state = ParseState.capturingPerformance;
+        return true;
+      case ParseState.capturingPerformanceNote:
+        amountDuringPerformanceNote(tokenLiteral);
+        _state = ParseState.capturingPerformance;
+        return true;
+      case ParseState.capturingSessionNote:
+        amountDuringSessionNote(tokenLiteral);
+        _state = ParseState.capturingPerformance;
         return true;
       case ParseState.idle:
         amountDuringIdle(tokenLiteral);
-        _state = ParseState.capturing_movement_performance;
+        _state = ParseState.capturingPerformance;
         return true;
       default:
         return false;
@@ -137,7 +168,7 @@ abstract class EventedParser {
     if (state != ParseState.initialized) return false;
 
     beginDate();
-    _state = ParseState.capturing_date;
+    _state = ParseState.capturingDate;
     return true;
   }
 
@@ -145,13 +176,21 @@ abstract class EventedParser {
     if (!tokenLiteral.isColon) return false;
 
     switch (state) {
-      case ParseState.capturing_metadata_key:
-        endMetadataKey();
-        _state = ParseState.capturing_metadata_value;
+      case ParseState.capturingMovementMetadataKey:
+        endMovementMetadataKey();
+        _state = ParseState.capturingMovementMetadataValue;
         return true;
-      case ParseState.capturing_movement_name:
+      case ParseState.capturingPerformanceMetadataKey:
+        endPerformanceMetadataKey();
+        _state = ParseState.capturingPerformanceMetadataValue;
+        return true;
+      case ParseState.capturingSessionMetadataKey:
+        endSessionMetadataKey();
+        _state = ParseState.capturingSessionMetadataValue;
+        return true;
+      case ParseState.capturingMovementName:
         endMovementName();
-        _state = ParseState.awaiting_movement_performance;
+        _state = ParseState.awaitingPerformance;
         return true;
       default:
         return false;
@@ -181,28 +220,36 @@ abstract class EventedParser {
     if (!tokenLiteral.isLinebreak) return false;
 
     switch (state) {
-      case ParseState.capturing_date:
+      case ParseState.capturingDate:
         endDate();
         _state = ParseState.idle;
         return true;
-      case ParseState.capturing_metadata_value:
-        endMetadataValue();
+      case ParseState.capturingMovementMetadataValue:
+        endMovementMetadataValue();
         _state = ParseState.idle;
         return true;
-      case ParseState.capturing_movement_performance:
+      case ParseState.capturingPerformanceMetadataValue:
+        endPerformanceMetadataValue();
+        _state = ParseState.idle;
+        return true;
+      case ParseState.capturingSessionMetadataValue:
+        endSessionMetadataValue();
+        _state = ParseState.idle;
+        return true;
+      case ParseState.capturingPerformance:
         endPerformance();
         _state = ParseState.idle;
         return true;
-      case ParseState.capturing_movement_note:
+      case ParseState.capturingMovementNote:
         endMovementNote();
         _state = ParseState.idle;
         return true;
-      case ParseState.capturing_note:
-        endNote();
+      case ParseState.capturingPerformanceNote:
+        endPerformanceNote();
         _state = ParseState.idle;
         return true;
-      case ParseState.capturing_performance_note:
-        endPerformanceNote();
+      case ParseState.capturingSessionNote:
+        endSessionNote();
         _state = ParseState.idle;
         return true;
       default:
@@ -222,13 +269,17 @@ abstract class EventedParser {
     if (!tokenLiteral.isPound) return false;
 
     switch (state) {
-      case ParseState.capturing_movement_performance:
-        beginPerformanceMetadata(tokenLiteral);
-        _state = ParseState.capturing_metadata_key;
+      case ParseState.awaitingPerformance:
+        beginMovementMetadata();
+        _state = ParseState.capturingMovementMetadataKey;
+        return true;
+      case ParseState.capturingPerformance:
+        beginPerformanceMetadata();
+        _state = ParseState.capturingPerformanceMetadataKey;
         return true;
       default:
-        beginMetadata();
-        _state = ParseState.capturing_metadata_key;
+        beginSessionMetadata();
+        _state = ParseState.capturingSessionMetadataKey;
         return true;
     }
   }
@@ -251,17 +302,17 @@ abstract class EventedParser {
     if (!tokenLiteral.isStar) return false;
 
     switch (state) {
-      case ParseState.awaiting_movement_performance:
+      case ParseState.awaitingPerformance:
         beginMovementNote();
-        _state = ParseState.capturing_movement_note;
+        _state = ParseState.capturingMovementNote;
         return true;
-      case ParseState.capturing_movement_performance:
+      case ParseState.capturingPerformance:
         beginPerformanceNote();
-        _state = ParseState.capturing_performance_note;
+        _state = ParseState.capturingPerformanceNote;
         return true;
       default:
-        beginNote();
-        _state = ParseState.capturing_note;
+        beginSessionNote();
+        _state = ParseState.capturingSessionNote;
         return true;
     }
   }
@@ -275,29 +326,35 @@ abstract class EventedParser {
     if (!tokenLiteral.isWord) return false;
 
     switch (state) {
-      case ParseState.capturing_metadata_key:
+      case ParseState.capturingDate:
+        wordDuringDate(tokenLiteral);
+        _state = ParseState.capturingMovementName;
+        return true;
+      case ParseState.capturingMovementMetadataKey:
+      case ParseState.capturingPerformanceMetadataKey:
+      case ParseState.capturingSessionMetadataKey:
         wordDuringMetadataKey(tokenLiteral);
         return true;
-      case ParseState.capturing_metadata_value:
+      case ParseState.capturingMovementMetadataValue:
+      case ParseState.capturingPerformanceMetadataValue:
+      case ParseState.capturingSessionMetadataValue:
         wordDuringMetadataValue(tokenLiteral);
         return true;
-      case ParseState.capturing_movement_name:
+      case ParseState.capturingMovementName:
         wordDuringMovementName(tokenLiteral);
         return true;
-      case ParseState.capturing_note:
+      case ParseState.capturingMovementNote:
+      case ParseState.capturingPerformanceNote:
+      case ParseState.capturingSessionNote:
         wordDuringNote(tokenLiteral);
         return true;
-      case ParseState.capturing_date:
-        wordDuringDate(tokenLiteral);
-        _state = ParseState.capturing_movement_name;
-        return true;
-      case ParseState.capturing_movement_performance:
+      case ParseState.capturingPerformance:
         wordDuringPerformance(tokenLiteral);
-        _state = ParseState.capturing_movement_name;
+        _state = ParseState.capturingMovementName;
         return true;
       case ParseState.idle:
         beginMovementName(tokenLiteral);
-        _state = ParseState.capturing_movement_name;
+        _state = ParseState.capturingMovementName;
         return true;
       default:
         encounteredWord(tokenLiteral);
