@@ -3,6 +3,7 @@ import "package:traindown/src/metadata.dart";
 class Performance extends Metadatable {
   int fails;
   int load;
+  @override
   Metadata metadata = Metadata();
   int repeat;
   int reps;
@@ -15,7 +16,7 @@ class Performance extends Metadatable {
       this.load = 0,
       this.repeat = 1,
       this.reps = 1,
-      this.unit = ""});
+      this.unit = "unknown unit"});
 
   @override
   void addKVP(String key, String value) {

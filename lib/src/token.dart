@@ -39,6 +39,7 @@ class TokenLiteral {
   bool get isColon => token == Token.COLON;
   bool get isDash => token == Token.DASH;
   bool get isEmpty => token == Token.LINEBREAK || token == Token.WHITESPACE;
+  bool get isEOF => token == Token.EOF;
   bool get isFails => token == Token.FAILS;
   bool get isIllegal => token == Token.ILLEGAL;
   bool get isLinebreak => token == Token.LINEBREAK;

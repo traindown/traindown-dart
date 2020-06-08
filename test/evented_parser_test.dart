@@ -411,6 +411,43 @@ void main() {
     });
   });
 
+  group("handleEof", () {
+    test("A TokenLiteral other than EOF", () {
+      TokenLiteral notEof = TokenLiteral(Token.AMOUNT, "1");
+      bool result = subject.handleAt(notEof, ParseState.idle);
+      expect(result, false);
+    });
+
+    group("With an EOF TokenLiteral", () {
+      TokenLiteral eof = TokenLiteral.eof();
+      ParseState state;
+
+      var getResult = () => subject.handleEof(eof, state);
+
+      test("with capturingPerformanceMetadataValue state", () {
+        state = ParseState.capturingPerformanceMetadataValue;
+        expect(getResult(), true);
+        expect(
+            subject.calls, ["endPerformanceMetadataValue", "encounteredEof"]);
+        expect(subject.state, ParseState.atEof);
+      });
+
+      test("with capturingPerformanceNote state", () {
+        state = ParseState.capturingPerformanceNote;
+        expect(getResult(), true);
+        expect(subject.calls, ["endPerformanceNote", "encounteredEof"]);
+        expect(subject.state, ParseState.atEof);
+      });
+
+      test("with unexpected state", () {
+        state = ParseState.idle;
+        expect(getResult(), true);
+        expect(subject.calls, ["encounteredEof"]);
+        expect(subject.state, ParseState.atEof);
+      });
+    });
+  });
+
   group("handleFails", () {
     test("A TokenLiteral other than fails", () {
       TokenLiteral notFails = TokenLiteral(Token.AMOUNT, "1");
@@ -480,35 +517,35 @@ void main() {
         state = ParseState.capturingMovementMetadataValue;
         expect(getResult(), true);
         expect(subject.calls, ["endMovementMetadataValue"]);
-        expect(subject.state, ParseState.idle);
+        expect(subject.state, ParseState.awaitingPerformance);
       });
 
       test("with capturingMovementNote state", () {
         state = ParseState.capturingMovementNote;
         expect(getResult(), true);
         expect(subject.calls, ["endMovementNote"]);
-        expect(subject.state, ParseState.idle);
+        expect(subject.state, ParseState.awaitingPerformance);
       });
 
       test("with capturingPerformance state", () {
         state = ParseState.capturingPerformance;
         expect(getResult(), true);
-        expect(subject.calls, ["endPerformance"]);
-        expect(subject.state, ParseState.idle);
+        expect(subject.calls, []);
+        expect(subject.state, ParseState.idleFollowingPerformance);
       });
 
       test("with capturingPerformanceMetadataValue state", () {
         state = ParseState.capturingPerformanceMetadataValue;
         expect(getResult(), true);
         expect(subject.calls, ["endPerformanceMetadataValue"]);
-        expect(subject.state, ParseState.idle);
+        expect(subject.state, ParseState.idleFollowingPerformance);
       });
 
       test("with capturingPerformanceNote state", () {
         state = ParseState.capturingPerformanceNote;
         expect(getResult(), true);
         expect(subject.calls, ["endPerformanceNote"]);
-        expect(subject.state, ParseState.idle);
+        expect(subject.state, ParseState.idleFollowingPerformance);
       });
 
       test("with capturingSessionMetadataValue state", () {

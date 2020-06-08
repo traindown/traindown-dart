@@ -4,6 +4,7 @@ import "package:traindown/src/scanner.dart";
 import "package:traindown/src/token.dart";
 
 enum ParseState {
+  atEof,
   awaitingPerformance,
   capturingDate,
   capturingMovementMetadataKey,
@@ -18,6 +19,7 @@ enum ParseState {
   capturingSessionMetadataValue,
   capturingSessionNote,
   idle,
+  idleFollowingPerformance,
   initialized
 }
 
@@ -96,9 +98,10 @@ abstract class EventedParser {
     if (_scanner == null) throw "Needs a scanner, dummy";
 
     InstanceMirror self = reflect(this);
+    TokenLiteral tokenLiteral;
 
     while (!_scanner.eof) {
-      TokenLiteral tokenLiteral = _scanner.scan();
+      tokenLiteral = _scanner.scan();
 
       String method = "handle${tokenLiteral.token}";
 
@@ -109,7 +112,7 @@ abstract class EventedParser {
       continue;
     }
 
-    encounteredEof();
+    handleEof(TokenLiteral.eof(), _state);
   }
 
   bool handleAmount(TokenLiteral tokenLiteral, ParseState state) {
@@ -139,6 +142,11 @@ abstract class EventedParser {
         return true;
       case ParseState.awaitingPerformance:
       case ParseState.capturingPerformance:
+        amountDuringPerformance(tokenLiteral);
+        _state = ParseState.capturingPerformance;
+        return true;
+      case ParseState.idleFollowingPerformance:
+        endPerformance();
         amountDuringPerformance(tokenLiteral);
         _state = ParseState.capturingPerformance;
         return true;
@@ -204,6 +212,27 @@ abstract class EventedParser {
     return true;
   }
 
+  bool handleEof(TokenLiteral tokenLiteral, ParseState state) {
+    if (!tokenLiteral.isEOF) return false;
+
+    switch (state) {
+      case ParseState.capturingPerformanceMetadataValue:
+        endPerformanceMetadataValue();
+        encounteredEof();
+        _state = ParseState.atEof;
+        return true;
+      case ParseState.capturingPerformanceNote:
+        endPerformanceNote();
+        encounteredEof();
+        _state = ParseState.atEof;
+        return true;
+      default:
+        encounteredEof();
+        _state = ParseState.atEof;
+        return true;
+    }
+  }
+
   bool handleFails(TokenLiteral tokenLiteral, ParseState state) {
     if (!tokenLiteral.isFails) return false;
 
@@ -220,33 +249,34 @@ abstract class EventedParser {
     if (!tokenLiteral.isLinebreak) return false;
 
     switch (state) {
+      case ParseState.awaitingPerformance:
+        return true;
       case ParseState.capturingDate:
         endDate();
         _state = ParseState.idle;
         return true;
       case ParseState.capturingMovementMetadataValue:
         endMovementMetadataValue();
-        _state = ParseState.idle;
+        _state = ParseState.awaitingPerformance;
         return true;
       case ParseState.capturingPerformanceMetadataValue:
         endPerformanceMetadataValue();
-        _state = ParseState.idle;
+        _state = ParseState.idleFollowingPerformance;
         return true;
       case ParseState.capturingSessionMetadataValue:
         endSessionMetadataValue();
         _state = ParseState.idle;
         return true;
       case ParseState.capturingPerformance:
-        endPerformance();
-        _state = ParseState.idle;
+        _state = ParseState.idleFollowingPerformance;
         return true;
       case ParseState.capturingMovementNote:
         endMovementNote();
-        _state = ParseState.idle;
+        _state = ParseState.awaitingPerformance;
         return true;
       case ParseState.capturingPerformanceNote:
         endPerformanceNote();
-        _state = ParseState.idle;
+        _state = ParseState.idleFollowingPerformance;
         return true;
       case ParseState.capturingSessionNote:
         endSessionNote();
@@ -274,6 +304,7 @@ abstract class EventedParser {
         _state = ParseState.capturingMovementMetadataKey;
         return true;
       case ParseState.capturingPerformance:
+      case ParseState.idleFollowingPerformance:
         beginPerformanceMetadata();
         _state = ParseState.capturingPerformanceMetadataKey;
         return true;
@@ -307,6 +338,7 @@ abstract class EventedParser {
         _state = ParseState.capturingMovementNote;
         return true;
       case ParseState.capturingPerformance:
+      case ParseState.idleFollowingPerformance:
         beginPerformanceNote();
         _state = ParseState.capturingPerformanceNote;
         return true;

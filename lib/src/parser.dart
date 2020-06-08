@@ -180,7 +180,6 @@ class Parser extends EventedParser {
   void endMovementMetadataValue() {
     String key = _keyBuffer.toString().trimRight();
     String value = _valueBuffer.toString().trimRight();
-
     _currentMovement.addKVP(key, value);
   }
 
