@@ -1,3 +1,9 @@
+## 1.4.0
+
+- Holy crap! We now have metadata and notes per each entity: session, movement, and performance.
+- This is the final piece for a complete language spec.
+- Complete test coverage for all libraries involved in this effort.
+
 ## 1.3.1
 
 - Added complete test coverage for EventedParser
