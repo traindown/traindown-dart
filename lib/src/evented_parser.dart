@@ -1,5 +1,3 @@
-import "dart:mirrors";
-
 import "package:traindown/src/scanner.dart";
 import "package:traindown/src/token.dart";
 
@@ -97,22 +95,32 @@ abstract class EventedParser {
   void call() {
     if (_scanner == null) throw "Needs a scanner, dummy";
 
-    InstanceMirror self = reflect(this);
-    TokenLiteral tokenLiteral;
-
     while (!_scanner.eof) {
-      tokenLiteral = _scanner.scan();
-
-      String method = "handle${tokenLiteral.token}";
-
-      if (!self.invoke(Symbol(method), [tokenLiteral, _state]).reflectee) {
-        throw UnexpectedToken(tokenLiteral.toString());
-      }
-
+      _route(_scanner.scan());
       continue;
     }
 
     handleEof(TokenLiteral.eof(), _state);
+  }
+
+  // NOTE: This is a hamfisted approach that will be deprecated if/when
+  // dart:mirrors gains Flutter/JS support.
+  void _route(TokenLiteral tokenLiteral) {
+    if (tokenLiteral.isAmount) handleAmount(tokenLiteral, _state);
+    if (tokenLiteral.isAt) handleAt(tokenLiteral, _state);
+    if (tokenLiteral.isColon) handleColon(tokenLiteral, _state);
+    if (tokenLiteral.isDash) handleDash(tokenLiteral, _state);
+    if (tokenLiteral.isEOF) handleEof(tokenLiteral, _state);
+    if (tokenLiteral.isFails) handleFails(tokenLiteral, _state);
+    if (tokenLiteral.isIllegal) handleIllegal(tokenLiteral, _state);
+    if (tokenLiteral.isLinebreak) handleLinebreak(tokenLiteral, _state);
+    if (tokenLiteral.isPlus) handlePlus(tokenLiteral, _state);
+    if (tokenLiteral.isPound) handlePound(tokenLiteral, _state);
+    if (tokenLiteral.isReps) handleReps(tokenLiteral, _state);
+    if (tokenLiteral.isSets) handleSets(tokenLiteral, _state);
+    if (tokenLiteral.isStar) handleStar(tokenLiteral, _state);
+    if (tokenLiteral.isWhitespace) handleWhitespace(tokenLiteral, _state);
+    if (tokenLiteral.isWord) handleWord(tokenLiteral, _state);
   }
 
   bool handleAmount(TokenLiteral tokenLiteral, ParseState state) {
