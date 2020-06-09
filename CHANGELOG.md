@@ -1,3 +1,7 @@
+## 1.4.1
+
+- Remove dependency on dart:mirrors for much GUI in exchange for ugly code.
+
 ## 1.4.0
 
 - Holy crap! We now have metadata and notes per each entity: session, movement, and performance.
