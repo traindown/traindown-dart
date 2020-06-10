@@ -584,12 +584,26 @@ void main() {
 
       var getResult = () => subject.handlePlus(plus, state);
 
-      ParseState.values.forEach((possibleState) {
-        test("with $possibleState state", () {
-          state = possibleState;
-          expect(getResult(), true);
-          expect(subject.calls, ["encounteredPlus"]);
-        });
+      test("with capturingPerformance state", () {
+        state = ParseState.capturingPerformance;
+        expect(getResult(), true);
+        expect(subject.calls, ["endPerformance", "beginMovementName"]);
+        expect(subject.state, ParseState.capturingMovementName);
+      });
+
+      test("with idleFollowingPerformance state", () {
+        state = ParseState.idleFollowingPerformance;
+        expect(getResult(), true);
+        expect(subject.calls, ["beginMovementName"]);
+        expect(subject.state, ParseState.capturingMovementName);
+      });
+
+      test("with unexpected state", () {
+        state = ParseState.idle;
+        ParseState currentState = subject.state;
+        expect(getResult(), true);
+        expect(subject.calls, ["encounteredPlus"]);
+        expect(subject.state, currentState);
       });
     });
   });

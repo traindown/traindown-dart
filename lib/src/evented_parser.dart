@@ -299,8 +299,20 @@ abstract class EventedParser {
   bool handlePlus(TokenLiteral tokenLiteral, ParseState state) {
     if (!tokenLiteral.isPlus) return false;
 
-    encounteredPlus(tokenLiteral);
-    return true;
+    switch (state) {
+      case ParseState.capturingPerformance:
+        endPerformance();
+        beginMovementName(tokenLiteral);
+        _state = ParseState.capturingMovementName;
+        return true;
+      case ParseState.idleFollowingPerformance:
+        beginMovementName(tokenLiteral);
+        _state = ParseState.capturingMovementName;
+        return true;
+      default:
+        encounteredPlus(tokenLiteral);
+        return true;
+    }
   }
 
   bool handlePound(TokenLiteral tokenLiteral, ParseState state) {

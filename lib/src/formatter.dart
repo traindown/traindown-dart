@@ -162,7 +162,7 @@ class Formatter extends EventedParser {
   void encounteredWord(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
 
   @override
-  void endDate() => _addLinebreak();
+  void endDate() {}
 
   @override
   void endMovementMetadataKey() => output.write(":");

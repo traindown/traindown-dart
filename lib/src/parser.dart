@@ -95,7 +95,13 @@ class Parser extends EventedParser {
       movements.add(_currentMovement);
     }
 
-    _nameBuffer.write("${tokenLiteral.literal}");
+    _nameBuffer.clear();
+
+    if (tokenLiteral.isPlus) {
+      _shouldSuperset = true;
+    } else {
+      _nameBuffer.write("${tokenLiteral.literal}");
+    }
   }
 
   @override
