@@ -38,5 +38,14 @@ void main() {
       Formatter formatter = Formatter.for_string(test);
       expect(formatter.format(), equals(result));
     });
+
+    test("With another identified pathological string stripping colons", () {
+      String test =
+          "@2020-06-10\n# unit: lbs\nSquat: 500 10r 4s * Note\nPullover: 100 10r 4s";
+      String result =
+          "@ 2020-06-10\r\n# unit: lbs\r\n\r\nSquat:\r\n  500 10r 4s\r\n    * Note\r\n\r\nPullover:\r\n  100 10r 4s";
+      Formatter formatter = Formatter.for_string(test);
+      expect(formatter.format(), equals(result));
+    });
   });
 }

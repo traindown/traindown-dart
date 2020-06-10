@@ -409,6 +409,7 @@ abstract class EventedParser {
         _state = ParseState.capturingMovementName;
         return true;
       case ParseState.idle:
+      case ParseState.idleFollowingPerformance:
         beginMovementName(tokenLiteral);
         _state = ParseState.capturingMovementName;
         return true;
