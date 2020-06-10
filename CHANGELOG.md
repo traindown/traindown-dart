@@ -1,3 +1,7 @@
+## 1.4.3
+
+- Fix for superset formatting and parsing.
+
 ## 1.4.2
 
 - Improved the output of the Formatter based on real world testing.
