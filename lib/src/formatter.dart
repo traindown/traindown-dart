@@ -89,12 +89,13 @@ class Formatter extends EventedParser {
   @override
   void beginMovementMetadata() {
     _addLinebreak();
-    _addSpace(4);
+    _addSpace(2);
     output.write("#");
   }
 
   @override
   void beginMovementName(TokenLiteral tokenLiteral) {
+    _addLinebreak();
     _addLinebreak();
     _addLiteral(tokenLiteral);
   }
@@ -123,14 +124,12 @@ class Formatter extends EventedParser {
   @override
   void beginSessionMetadata() {
     _addLinebreak();
-    _addSpace(2);
     output.write("#");
   }
 
   @override
   void beginSessionNote() {
     _addLinebreak();
-    _addSpace(2);
     output.write("*");
   }
 
@@ -169,13 +168,13 @@ class Formatter extends EventedParser {
   void endMovementMetadataKey() => output.write(":");
 
   @override
-  void endMovementMetadataValue() => _addLinebreak();
+  void endMovementMetadataValue() {}
 
   @override
   void endMovementName() => output.write(":");
 
   @override
-  void endMovementNote() => _addLinebreak();
+  void endMovementNote() {}
 
   @override
   void endPerformance() => _addLinebreak();
@@ -184,19 +183,19 @@ class Formatter extends EventedParser {
   void endPerformanceMetadataKey() => output.write(":");
 
   @override
-  void endPerformanceMetadataValue() => _addLinebreak();
+  void endPerformanceMetadataValue() {}
 
   @override
-  void endPerformanceNote() => _addLinebreak();
+  void endPerformanceNote() {}
 
   @override
   void endSessionMetadataKey() => output.write(":");
 
   @override
-  void endSessionMetadataValue() => _addLinebreak();
+  void endSessionMetadataValue() {}
 
   @override
-  void endSessionNote() => _addLinebreak();
+  void endSessionNote() {}
 
   @override
   void wordDuringDate(TokenLiteral tokenLiteral) {

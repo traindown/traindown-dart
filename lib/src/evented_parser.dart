@@ -342,10 +342,14 @@ abstract class EventedParser {
 
     switch (state) {
       case ParseState.awaitingPerformance:
+      case ParseState.capturingMovementMetadataValue:
+      case ParseState.capturingMovementNote:
         beginMovementNote();
         _state = ParseState.capturingMovementNote;
         return true;
       case ParseState.capturingPerformance:
+      case ParseState.capturingPerformanceMetadataValue:
+      case ParseState.capturingPerformanceNote:
       case ParseState.idleFollowingPerformance:
         beginPerformanceNote();
         _state = ParseState.capturingPerformanceNote;
