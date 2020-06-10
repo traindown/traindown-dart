@@ -1,3 +1,7 @@
+## 1.4.2
+
+- Improved the output of the Formatter based on real world testing.
+
 ## 1.4.1
 
 - Remove dependency on dart:mirrors for much GUI in exchange for ugly code.
