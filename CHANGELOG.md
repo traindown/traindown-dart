@@ -1,3 +1,7 @@
+## 1.4.4
+
+- Fix for movements that followed performance or performance metadata/notes.
+
 ## 1.4.3
 
 - Fix for superset formatting and parsing.
