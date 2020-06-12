@@ -1,3 +1,7 @@
+## 1.4.5
+
+- Fix for superfluous linebreak that would occur between Performances during formatting.
+
 ## 1.4.4
 
 - Fix for movements that followed performance or performance metadata/notes.
