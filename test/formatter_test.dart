@@ -47,5 +47,14 @@ void main() {
       Formatter formatter = Formatter.for_string(test);
       expect(formatter.format(), equals(result));
     });
+
+    test("With a string known to produce too many linebreaks", () {
+      String test =
+          "@2020-06-12\n# unit: lbs\nSquat: 500 10r 4s\n 600 5r\n 700";
+      String result =
+          "@ 2020-06-12\r\n# unit: lbs\r\n\r\nSquat:\r\n  500 10r 4s\r\n  600 5r\r\n  700";
+      Formatter formatter = Formatter.for_string(test);
+      expect(formatter.format(), equals(result));
+    });
   });
 }

@@ -177,7 +177,7 @@ class Formatter extends EventedParser {
   void endMovementNote() {}
 
   @override
-  void endPerformance() => _addLinebreak();
+  void endPerformance() {}
 
   @override
   void endPerformanceMetadataKey() => output.write(":");
