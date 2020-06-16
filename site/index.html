@@ -145,6 +145,7 @@ Squat: 500</pre>
 Squat: 500
   # RIR: 2</pre>
   <p>This is saying "For the single squat at 500, I had 2 reps in reserve." Unlike the burrito count, the reps in reserve are applied to only the performance.</p>
+  <p>You may also track <strong>movement metadata</strong> that applies to all performances of the movement. To do so, just place your key value pair after the movement name and before any performances.</p>
   <p>By adding more details in the metadata, you can make more sense of the <em>why</em> in your training at both the session and perofmrance level. Metadata is also very searchable, so if you choose to use a <strong>Traindown</strong> enabled analysis tool, you can really start to make sense of the big picture.</p>
   <p>But wait...one key pieces is missing. <em>When</em> did this happen?
   <h3>Date and Time</h3>
@@ -277,7 +278,7 @@ Squat:
     * Whoops. Spoke too soon. Clenching!
   500
     * Another easy rep.</pre>
-  <p>There is a third kind of note available to you called the <strong>movement note</strong>. This note is useful for capturing information about the entire movement such as stance, grip placement, etc. A movement note is declared after the movement name and before any performances. For example
+  <p>Similar to metadata, there exists a third kind of note available to you called the <strong>movement note</strong>. This note is useful for capturing information about the entire movement such as stance, grip placement, etc. A movement note is declared after the movement name and before any performances, just like the movement metadata. For example
   <pre>Squat:
 
   * Worked on trying to increase interabdominal pressure, but not too much considering the burritos.
@@ -295,8 +296,8 @@ Squat:
   <p>The notes about pressure and hand placement apply to <em>all the performances</em> of the movement.</p>
   <h3>Recap</h3>
   <p>You now know all there is to know about <strong>Traindown</strong>.</p>
-  <p>Each session has many performances as well as a date and time on which it occurred. Sessions and performances both can have notes and metadata. Movements can have notes. The layout of your file doesn't really matter in so far as you can read it years from now or the tool you use to analyze your training can read it.</p>
-  <p>It's entirely up to you how you want to record your training and I recommend trying out different strategies to see what feels best for you. If you happen to have any questions, please feel free to email me at <a href="mailto: tyler@liftwhat.com">tyler at liftwhat dot com</a>. Kick ass!</p>
+  <p>Each session has many performances as well as a date and time on which it occurred. All three types of information&mdash;sessions, movements, and performances&mdash;can have notes and metadata. The layout of your file doesn't really matter in so far as you can read it years from now or the tool you use to analyze your training can read it.</p>
+  <p>It's entirely up to you how you want to record your training and I recommend trying out different strategies to see what feels best for you. If you happen to have any questions, please feel free to email me at <a href="mailto: tyler@greaterscott.com">tyler at greaterscott dot com</a>. Kick ass!</p>
   <h3>FAQs</h3>
   <h4>What is the preferred file extension for Traindown?</h4>
   <p>This will likely depend on your analysis tool of choice, but the standard file extension is <strong>.traindown</strong>&mdash;e.g., <em>20190101.traindown</em>. You could just as easily save your files as plain text files, if you prefer.</p>

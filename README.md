@@ -47,6 +47,8 @@ Squat: 500
 ```
 This is saying "For the single squat at 500, I had 2 reps in reserve." Unlike the burrito count, the reps in reserve are applied to only the performance.
 
+You may also track **movement metadata** that applies to all performances of the movement. To do so, just place your key value pair after the movement name and before any performances.
+
 By adding more details in the metadata, you can make more sense of the _why_ in your training at both the session and perofmrance level. Metadata is also very searchable, so if you choose to use a **Traindown** enabled analysis tool, you can really start to make sense of the big picture.
 
 But wait...one key pieces is missing. _When_ did this happen?
@@ -222,7 +224,7 @@ Remember that each combination of a load for sets and reps is considered a **per
   500
     * Another easy rep.
 ```
-There is a third kind of note available to you called the **movement note**. This note is useful for capturing information about the entire movement such as stance, grip placement, etc. A movement note is declared after the movement name and before any performances. For example
+Similar to metadata, there exists a third kind of note available to you called the **movement note**. This note is useful for capturing information about the entire movement such as stance, grip placement, etc. A movement note is declared after the movement name and before any performances, just like the movement metadata. For example
 ```
 Squat:
 
@@ -245,9 +247,9 @@ The notes about pressure and hand placement apply to _all the performances_ of t
 
 You now know all there is to know about **Traindown**.
 
-Each session has many performances as well as a date and time on which it occurred. Sessions and performances both can have notes and metadata. Movements can have notes. The layout of your file doesn't really matter in so far as you can read it years from now or the tool you use to analyze your training can read it.
+Each session has many performances as well as a date and time on which it occurred. All three types of information-sessions, movements, and performances-can have notes and metadata. The layout of your file doesn't really matter in so far as you can read it years from now or the tool you use to analyze your training can read it.
 
-It's entirely up to you how you want to record your training and I recommend trying out different strategies to see what feels best for you. If you happen to have any questions, please feel free to email me at [tyler at liftwhat dot com](mailto: tyler@liftwhat.com). Kick ass!
+It's entirely up to you how you want to record your training and I recommend trying out different strategies to see what feels best for you. If you happen to have any questions, please feel free to email me at [tyler at greaterscott dot com](mailto: tyler@greaterscott.com). Kick ass!
 
 ## FAQs
 
