@@ -1,3 +1,7 @@
+## 1.4.6
+
+- Expose all classes for maximum play.
+
 ## 1.4.5
 
 - Fix for superfluous linebreak that would occur between Performances during formatting.
