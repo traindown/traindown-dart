@@ -25,6 +25,8 @@ class ScannerMock extends Fake implements Scanner {
         # Peformance Key: Performance Value
         * This is a performance note
       500
+
+    Another: 100
   */
 
   final List<TokenLiteral> _tokenLiterals = [
@@ -131,6 +133,11 @@ class ScannerMock extends Fake implements Scanner {
     TokenLiteral(Token.WORD, "note."),
     TokenLiteral(Token.LINEBREAK, ""),
     TokenLiteral(Token.AMOUNT, "500"),
+    TokenLiteral(Token.LINEBREAK, ""),
+    TokenLiteral(Token.WORD, "Another"),
+    TokenLiteral(Token.COLON, ":"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.AMOUNT, "100"),
     TokenLiteral(Token.EOF, ""),
   ];
 
@@ -176,6 +183,11 @@ void main() {
         expect(movement is Movement, true);
         expect(movement.name, "Movement Name");
         expect(movement.performances.length, 5);
+
+        Movement another = parser.movements.last;
+        expect(another is Movement, true);
+        expect(another.name, "Another");
+        expect(another.performances.length, 1);
       });
 
       test("Movement Metadata is correctly captured", () {
@@ -202,6 +214,11 @@ void main() {
         penultimatePerformance.addNote("This is a performance note.");
         expect(performances[3].toString(), penultimatePerformance.toString());
         expect(performances[4].toString(), Performance(load: 500).toString());
+
+        Movement another = parser.movements.last;
+        List<Performance> another_performances = another.performances;
+        expect(another_performances[0].toString(),
+            Performance(load: 100).toString());
       });
 
       test("Performance Metadata is correctly captured", () {

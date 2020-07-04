@@ -91,6 +91,10 @@ class Parser extends EventedParser {
 
   @override
   void beginMovementName(TokenLiteral tokenLiteral) {
+    if (_currentPerformance != null) {
+      endPerformance();
+    }
+
     if (_currentMovement != null) {
       movements.add(_currentMovement);
     }
