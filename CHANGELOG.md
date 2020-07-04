@@ -1,3 +1,7 @@
+## 1.4.7
+
+- Fix for missing performance when switching movements.
+
 ## 1.4.6
 
 - Expose all classes for maximum play.
