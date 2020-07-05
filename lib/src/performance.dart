@@ -28,6 +28,7 @@ class Performance extends Metadatable {
   }
 
   int get successfulReps => reps - fails;
+  int get volume => successfulReps * load;
 
   String get _metadata {
     if (metadata.kvps.entries.isEmpty) {

@@ -2,12 +2,15 @@ import "package:traindown/src/metadata.dart";
 import "package:traindown/src/performance.dart";
 
 class Movement extends Metadatable {
+  @override
   Metadata metadata = Metadata();
   String name;
   List<Performance> performances = [];
   bool superSetted = false;
 
   Movement(this.name);
+
+  int get volume => performances.fold(0, (acc, p) => acc + p.volume);
 
   @override
   String toString() {
