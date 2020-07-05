@@ -1,3 +1,7 @@
+## 1.4.8
+
+- Add getters for volume on Performance and Movement
+
 ## 1.4.7
 
 - Fix for missing performance when switching movements.
