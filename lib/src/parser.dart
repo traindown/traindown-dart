@@ -201,7 +201,9 @@ class Parser extends EventedParser {
 
   @override
   void endPerformance() {
-    _currentMovement.performances.add(_currentPerformance);
+    if (_currentPerformance.wasTouched) {
+      _currentMovement.performances.add(_currentPerformance);
+    }
     _currentPerformance = _newPerformance(_currentMovement.name);
   }
 
