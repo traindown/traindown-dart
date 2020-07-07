@@ -1,3 +1,9 @@
+## 1.5.0
+
+- Add wasTouched to Performance to aid in parsing
+- Correct volume calculation for Performance
+- Specs for Performance
+
 ## 1.4.8
 
 - Add getters for volume on Performance and Movement
