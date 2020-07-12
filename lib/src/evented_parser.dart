@@ -50,6 +50,7 @@ abstract class EventedParser {
   void amountDuringIdle(TokenLiteral tokenLiteral);
   void amountDuringMovementMetadataKey(TokenLiteral tokenLiteral);
   void amountDuringMovementMetadataValue(TokenLiteral tokenLiteral);
+  void amountDuringMovementName(TokenLiteral tokenLiteral);
   void amountDuringMovementNote(TokenLiteral tokenLiteral);
   void amountDuringPerformanceMetadataKey(TokenLiteral tokenLiteral);
   void amountDuringPerformanceMetadataValue(TokenLiteral tokenLiteral);
@@ -132,6 +133,9 @@ abstract class EventedParser {
         return true;
       case ParseState.capturingMovementMetadataKey:
         amountDuringMovementMetadataKey(tokenLiteral);
+        return true;
+      case ParseState.capturingMovementName:
+        amountDuringMovementName(tokenLiteral);
         return true;
       case ParseState.capturingPerformanceMetadataKey:
         amountDuringPerformanceMetadataKey(tokenLiteral);

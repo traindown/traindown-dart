@@ -32,6 +32,11 @@ class TestParser extends EventedParser {
   }
 
   @override
+  void amountDuringMovementName(TokenLiteral tokenLiteral) {
+    calls.add("amountDuringMovementName");
+  }
+
+  @override
   void amountDuringMovementNote(TokenLiteral tokenLiteral) {
     calls.add("amountDuringMovementNote");
   }
@@ -270,6 +275,12 @@ void main() {
         state = ParseState.capturingMovementMetadataKey;
         expect(getResult(), true);
         expect(subject.calls, ["amountDuringMovementMetadataKey"]);
+      });
+
+      test("with capturingMovementName state", () {
+        state = ParseState.capturingMovementName;
+        expect(getResult(), true);
+        expect(subject.calls, ["amountDuringMovementName"]);
       });
 
       test("with capturingPerformanceMetadataKey state", () {

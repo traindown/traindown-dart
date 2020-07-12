@@ -56,5 +56,12 @@ void main() {
       Formatter formatter = Formatter.for_string(test);
       expect(formatter.format(), equals(result));
     });
+
+    test("With a missing colon on a movement name and no line break", () {
+      String test = "@2020-07-12\nsquat 100";
+      String result = "@ 2020-07-12\r\n\r\nsquat:\r\n  100";
+      Formatter formatter = Formatter.for_string(test);
+      expect(formatter.format(), equals(result));
+    });
   });
 }

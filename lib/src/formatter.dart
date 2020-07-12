@@ -40,6 +40,14 @@ class Formatter extends EventedParser {
       _addLeftPad(tokenLiteral);
 
   @override
+  void amountDuringMovementName(TokenLiteral tokenLiteral) {
+    output.write(':');
+    _addLinebreak();
+    _addSpace(2);
+    _addLiteral(tokenLiteral);
+  }
+
+  @override
   void amountDuringMovementNote(TokenLiteral tokenLiteral) {
     _addLinebreak();
     _addSpace(2);

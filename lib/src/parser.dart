@@ -50,6 +50,9 @@ class Parser extends EventedParser {
       _valueBuffer.write("${tokenLiteral.literal} ");
 
   @override
+  void amountDuringMovementName(TokenLiteral tokenLiteral) {}
+
+  @override
   void amountDuringMovementNote(TokenLiteral tokenLiteral) =>
       _noteBuffer.write("${tokenLiteral.literal} ");
 
