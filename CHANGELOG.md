@@ -1,3 +1,9 @@
+## 1.6.0
+
+- Add metadata chaining. Now you can just slam all your metadata into one line.
+- Add support for Movement unit to propagate down into all Performances. Performance unit takes priority over Movement and Movement takes priority over Session.
+- Add automatic colon insertion on Movement name.
+
 ## 1.5.0
 
 - Add wasTouched to Performance to aid in parsing
