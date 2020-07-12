@@ -28,9 +28,18 @@ class Parser extends EventedParser {
 
   void parse() => call();
 
-  Performance _newPerformance(String movementName) {
-    String unit =
-        metadata.kvps["Unit"] ?? metadata.kvps["unit"] ?? "unknown unit";
+  Performance _newPerformance() {
+    String unit = 'unknown unit';
+    for (Metadata scope in [_currentMovement.metadata, metadata]) {
+      for (String unitKeyword in Performance.unitKeywords) {
+        if (scope.kvps.containsKey(unitKeyword)) {
+          unit = scope.kvps[unitKeyword];
+          break;
+        }
+      }
+      if (unit != 'unknown unit') break;
+    }
+
     return Performance(unit: unit);
   }
 
@@ -181,7 +190,7 @@ class Parser extends EventedParser {
     String name = _nameBuffer.toString().trimRight();
     _currentMovement = Movement(name);
     _currentMovement.superSetted = _shouldSuperset;
-    _currentPerformance = _newPerformance(name);
+    _currentPerformance = _newPerformance();
     _shouldSuperset = false;
   }
 
@@ -207,7 +216,7 @@ class Parser extends EventedParser {
     if (_currentPerformance.wasTouched) {
       _currentMovement.performances.add(_currentPerformance);
     }
-    _currentPerformance = _newPerformance(_currentMovement.name);
+    _currentPerformance = _newPerformance();
   }
 
   // NOTE: noop
@@ -219,7 +228,11 @@ class Parser extends EventedParser {
     String key = _keyBuffer.toString().trimRight();
     String value = _valueBuffer.toString().trimRight();
 
-    _currentPerformance.addKVP(key, value);
+    if (Performance.unitKeywords.contains(key)) {
+      _currentPerformance.unit = value;
+    } else {
+      _currentPerformance.addKVP(key, value);
+    }
   }
 
   @override

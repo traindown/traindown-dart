@@ -14,6 +14,7 @@ class ScannerMock extends Fake implements Scanner {
     @ 2020-01-01
 
     # Session Key: Session Value
+    # unit: Session Unit
     * This is a session note.
 
     Movement Name: 
@@ -26,7 +27,11 @@ class ScannerMock extends Fake implements Scanner {
         * This is a performance note
       500
 
-    Another: 100
+    Another:
+      # unit: Movement Unit
+      100
+      200
+        # unit: Performance Unit
   */
 
   final List<TokenLiteral> _tokenLiterals = [
@@ -49,6 +54,15 @@ class ScannerMock extends Fake implements Scanner {
     TokenLiteral(Token.WORD, "Session"),
     TokenLiteral(Token.WHITESPACE, " "),
     TokenLiteral(Token.WORD, "Value"),
+    TokenLiteral(Token.LINEBREAK, ""),
+    TokenLiteral(Token.POUND, "#"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.WORD, "unit"),
+    TokenLiteral(Token.COLON, ":"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.WORD, "Session"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.WORD, "Unit"),
     TokenLiteral(Token.LINEBREAK, ""),
     TokenLiteral(Token.STAR, "*"),
     TokenLiteral(Token.WHITESPACE, " "),
@@ -136,8 +150,32 @@ class ScannerMock extends Fake implements Scanner {
     TokenLiteral(Token.LINEBREAK, ""),
     TokenLiteral(Token.WORD, "Another"),
     TokenLiteral(Token.COLON, ":"),
+    TokenLiteral(Token.LINEBREAK, ""),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.POUND, "#"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.WORD, "unit"),
+    TokenLiteral(Token.COLON, ":"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.WORD, "Movement"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.WORD, "Unit"),
+    TokenLiteral(Token.LINEBREAK, ""),
     TokenLiteral(Token.WHITESPACE, " "),
     TokenLiteral(Token.AMOUNT, "100"),
+    TokenLiteral(Token.LINEBREAK, ""),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.AMOUNT, "200"),
+    TokenLiteral(Token.LINEBREAK, ""),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.POUND, "#"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.WORD, "unit"),
+    TokenLiteral(Token.COLON, ":"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.WORD, "Performance"),
+    TokenLiteral(Token.WHITESPACE, " "),
+    TokenLiteral(Token.WORD, "Unit"),
     TokenLiteral(Token.EOF, ""),
   ];
 
@@ -171,7 +209,8 @@ void main() {
       parser.parse();
 
       test("Session Metadata is correctly captured", () {
-        expect(parser.metadata.kvps, {"Session Key": "Session Value"});
+        expect(parser.metadata.kvps,
+            {"Session Key": "Session Value", "unit": "Session Unit"});
       });
 
       test("Session Notes are correctly captured", () {
@@ -187,7 +226,7 @@ void main() {
         Movement another = parser.movements.last;
         expect(another is Movement, true);
         expect(another.name, "Another");
-        expect(another.performances.length, 1);
+        expect(another.performances.length, 2);
       });
 
       test("Movement Metadata is correctly captured", () {
@@ -203,22 +242,26 @@ void main() {
       test("Performances are correctly captured", () {
         Movement movement = parser.movements.first;
         List<Performance> performances = movement.performances;
-        expect(performances[0].toString(), Performance(load: 100).toString());
+        expect(performances[0].toString(),
+            Performance(load: 100, unit: 'Session Unit').toString());
         expect(performances[1].toString(),
-            Performance(load: 200, reps: 2).toString());
+            Performance(load: 200, reps: 2, unit: 'Session Unit').toString());
         expect(performances[2].toString(),
-            Performance(load: 300, repeat: 2).toString());
+            Performance(load: 300, repeat: 2, unit: 'Session Unit').toString());
         Performance penultimatePerformance =
-            Performance(load: 400, repeat: 2, reps: 2);
+            Performance(load: 400, repeat: 2, reps: 2, unit: 'Session Unit');
         penultimatePerformance.addKVP("Performance Key", "Performance Value");
         penultimatePerformance.addNote("This is a performance note.");
         expect(performances[3].toString(), penultimatePerformance.toString());
-        expect(performances[4].toString(), Performance(load: 500).toString());
+        expect(performances[4].toString(),
+            Performance(load: 500, unit: 'Session Unit').toString());
 
         Movement another = parser.movements.last;
         List<Performance> another_performances = another.performances;
         expect(another_performances[0].toString(),
-            Performance(load: 100).toString());
+            Performance(load: 100, unit: 'Movement Unit').toString());
+        expect(another_performances[1].toString(),
+            Performance(load: 200, unit: 'Performance Unit').toString());
       });
 
       test("Performance Metadata is correctly captured", () {
