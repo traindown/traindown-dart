@@ -13,8 +13,7 @@ class ScannerMock extends Fake implements Scanner {
   /*
     @ 2020-01-01
 
-    # Session Key: Session Value
-    # unit: Session Unit
+    # Session Key: Session Value # unit: Session Unit
     * This is a session note.
 
     Movement Name: 
@@ -54,7 +53,7 @@ class ScannerMock extends Fake implements Scanner {
     TokenLiteral(Token.WORD, "Session"),
     TokenLiteral(Token.WHITESPACE, " "),
     TokenLiteral(Token.WORD, "Value"),
-    TokenLiteral(Token.LINEBREAK, ""),
+    TokenLiteral(Token.WHITESPACE, " "),
     TokenLiteral(Token.POUND, "#"),
     TokenLiteral(Token.WHITESPACE, " "),
     TokenLiteral(Token.WORD, "unit"),

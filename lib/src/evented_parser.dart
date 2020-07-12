@@ -332,6 +332,21 @@ abstract class EventedParser {
         beginPerformanceMetadata();
         _state = ParseState.capturingPerformanceMetadataKey;
         return true;
+      case ParseState.capturingMovementMetadataValue:
+        endMovementMetadataValue();
+        beginMovementMetadata();
+        _state = ParseState.capturingMovementMetadataKey;
+        return true;
+      case ParseState.capturingPerformanceMetadataValue:
+        endPerformanceMetadataValue();
+        beginPerformanceMetadata();
+        _state = ParseState.capturingPerformanceMetadataKey;
+        return true;
+      case ParseState.capturingSessionMetadataValue:
+        endSessionMetadataValue();
+        beginSessionMetadata();
+        _state = ParseState.capturingSessionMetadataKey;
+        return true;
       default:
         beginSessionMetadata();
         _state = ParseState.capturingSessionMetadataKey;
