@@ -1,9 +1,9 @@
-import "package:traindown/src/evented_parser.dart";
-import "package:traindown/src/metadata.dart";
-import "package:traindown/src/movement.dart";
-import "package:traindown/src/performance.dart";
-import "package:traindown/src/scanner.dart";
-import "package:traindown/src/token.dart";
+import 'package:traindown/src/evented_parser.dart';
+import 'package:traindown/src/metadata.dart';
+import 'package:traindown/src/movement.dart';
+import 'package:traindown/src/performance.dart';
+import 'package:traindown/src/scanner.dart';
+import 'package:traindown/src/token.dart';
 
 class Parser extends EventedParser {
   bool hasParsed = false;
@@ -52,18 +52,18 @@ class Parser extends EventedParser {
 
   @override
   void amountDuringMovementMetadataKey(TokenLiteral tokenLiteral) =>
-      _keyBuffer.write("${tokenLiteral.literal} ");
+      _keyBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void amountDuringMovementMetadataValue(TokenLiteral tokenLiteral) =>
-      _valueBuffer.write("${tokenLiteral.literal} ");
+      _valueBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void amountDuringMovementName(TokenLiteral tokenLiteral) {}
 
   @override
   void amountDuringMovementNote(TokenLiteral tokenLiteral) =>
-      _noteBuffer.write("${tokenLiteral.literal} ");
+      _noteBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void amountDuringPerformance(TokenLiteral tokenLiteral) {
@@ -71,32 +71,43 @@ class Parser extends EventedParser {
       endPerformance();
     }
 
-    _currentPerformance.load = num.tryParse(tokenLiteral.literal);
+    if (tokenLiteral.isWord) {
+      if (Performance.bodyweightKeywords.contains(tokenLiteral.literal)) {
+        _currentPerformance.load = 1;
+        _currentPerformance.unit = 'bodyweight';
+      } else {
+        wordDuringPerformance(tokenLiteral);
+      }
+    }
+
+    if (tokenLiteral.isAmount) {
+      _currentPerformance.load = num.tryParse(tokenLiteral.literal);
+    }
   }
 
   @override
   void amountDuringPerformanceMetadataKey(TokenLiteral tokenLiteral) =>
-      _keyBuffer.write("${tokenLiteral.literal} ");
+      _keyBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void amountDuringPerformanceMetadataValue(TokenLiteral tokenLiteral) =>
-      _valueBuffer.write("${tokenLiteral.literal} ");
+      _valueBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void amountDuringPerformanceNote(TokenLiteral tokenLiteral) =>
-      _noteBuffer.write("${tokenLiteral.literal} ");
+      _noteBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void amountDuringSessionMetadataKey(TokenLiteral tokenLiteral) =>
-      _keyBuffer.write("${tokenLiteral.literal} ");
+      _keyBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void amountDuringSessionMetadataValue(TokenLiteral tokenLiteral) =>
-      _valueBuffer.write("${tokenLiteral.literal} ");
+      _valueBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void amountDuringSessionNote(TokenLiteral tokenLiteral) =>
-      _noteBuffer.write("${tokenLiteral.literal} ");
+      _noteBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void beginDate() => _dateBuffer.clear();
@@ -116,7 +127,7 @@ class Parser extends EventedParser {
     if (tokenLiteral.isPlus) {
       _shouldSuperset = true;
     } else {
-      _nameBuffer.write("${tokenLiteral.literal}");
+      _nameBuffer.write('${tokenLiteral.literal}');
     }
   }
 
@@ -261,23 +272,23 @@ class Parser extends EventedParser {
 
   @override
   void wordDuringDate(TokenLiteral tokenLiteral) =>
-      _dateBuffer.write("${tokenLiteral.literal} ");
+      _dateBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void wordDuringMetadataKey(TokenLiteral tokenLiteral) =>
-      _keyBuffer.write("${tokenLiteral.literal} ");
+      _keyBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void wordDuringMetadataValue(TokenLiteral tokenLiteral) =>
-      _valueBuffer.write("${tokenLiteral.literal} ");
+      _valueBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void wordDuringMovementName(TokenLiteral tokenLiteral) =>
-      _nameBuffer.write(" ${tokenLiteral.literal} ");
+      _nameBuffer.write(' ${tokenLiteral.literal} ');
 
   @override
   void wordDuringNote(TokenLiteral tokenLiteral) =>
-      _noteBuffer.write("${tokenLiteral.literal} ");
+      _noteBuffer.write('${tokenLiteral.literal} ');
 
   @override
   void wordDuringPerformance(TokenLiteral tokenLiteral) {

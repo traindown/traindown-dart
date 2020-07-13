@@ -401,6 +401,10 @@ abstract class EventedParser {
     if (!tokenLiteral.isWord) return false;
 
     switch (state) {
+      case ParseState.awaitingPerformance:
+        amountDuringPerformance(tokenLiteral);
+        _state = ParseState.capturingPerformance;
+        return true;
       case ParseState.capturingDate:
         wordDuringDate(tokenLiteral);
         _state = ParseState.capturingMovementName;

@@ -772,6 +772,13 @@ void main() {
 
       var getResult = () => subject.handleWord(word, state);
 
+      test("with awaitingPerformance", () {
+        state = ParseState.awaitingPerformance;
+        expect(getResult(), true);
+        expect(subject.calls, ["amountDuringPerformance"]);
+        expect(subject.state, ParseState.capturingPerformance);
+      });
+
       test("with capturingDate", () {
         state = ParseState.capturingDate;
         expect(getResult(), true);

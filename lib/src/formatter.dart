@@ -1,6 +1,7 @@
-import "package:traindown/src/evented_parser.dart";
-import "package:traindown/src/scanner.dart";
-import "package:traindown/src/token.dart";
+import 'package:traindown/src/evented_parser.dart';
+import 'package:traindown/src/performance.dart';
+import 'package:traindown/src/scanner.dart';
+import 'package:traindown/src/token.dart';
 
 class Formatter extends EventedParser {
   StringBuffer output = StringBuffer();
@@ -15,7 +16,7 @@ class Formatter extends EventedParser {
     try {
       call();
     } on UnexpectedToken catch (e) {
-      print("Error at ${e.msg}");
+      print('Error at ${e.msg}');
     }
 
     return output.toString();
@@ -57,7 +58,10 @@ class Formatter extends EventedParser {
   @override
   void amountDuringPerformance(TokenLiteral tokenLiteral) {
     _addLinebreak();
-    _addSpace(2);
+    if (tokenLiteral.isAmount ||
+        Performance.bodyweightKeywords.contains(tokenLiteral.literal)) {
+      _addSpace(2);
+    }
     _addLiteral(tokenLiteral);
   }
 
@@ -92,13 +96,13 @@ class Formatter extends EventedParser {
   }
 
   @override
-  void beginDate() => output.write("@ ");
+  void beginDate() => output.write('@ ');
 
   @override
   void beginMovementMetadata() {
     _addLinebreak();
     _addSpace(2);
-    output.write("#");
+    output.write('#');
   }
 
   @override
@@ -112,33 +116,33 @@ class Formatter extends EventedParser {
   void beginMovementNote() {
     _addLinebreak();
     _addSpace(2);
-    output.write("*");
+    output.write('*');
   }
 
   @override
   void beginPerformanceMetadata() {
     _addLinebreak();
     _addSpace(4);
-    output.write("#");
+    output.write('#');
   }
 
   @override
   void beginPerformanceNote() {
     _addLinebreak();
     _addSpace(4);
-    output.write("*");
+    output.write('*');
   }
 
   @override
   void beginSessionMetadata() {
     _addLinebreak();
-    output.write("#");
+    output.write('#');
   }
 
   @override
   void beginSessionNote() {
     _addLinebreak();
-    output.write("*");
+    output.write('*');
   }
 
   @override
@@ -149,11 +153,11 @@ class Formatter extends EventedParser {
 
   @override
   void encounteredFailures(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral, "f");
+      _addLeftPad(tokenLiteral, 'f');
 
   @override
   void encounteredReps(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral, "r");
+      _addLeftPad(tokenLiteral, 'r');
 
   @override
   void encounteredPlus(TokenLiteral tokenLiteral) {
@@ -163,7 +167,7 @@ class Formatter extends EventedParser {
 
   @override
   void encounteredSets(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral, "s");
+      _addLeftPad(tokenLiteral, 's');
 
   // NOTE: Investigate context on this.
   @override
@@ -173,13 +177,13 @@ class Formatter extends EventedParser {
   void endDate() {}
 
   @override
-  void endMovementMetadataKey() => output.write(":");
+  void endMovementMetadataKey() => output.write(':');
 
   @override
   void endMovementMetadataValue() {}
 
   @override
-  void endMovementName() => output.write(":");
+  void endMovementName() => output.write(':');
 
   @override
   void endMovementNote() {}
@@ -188,7 +192,7 @@ class Formatter extends EventedParser {
   void endPerformance() {}
 
   @override
-  void endPerformanceMetadataKey() => output.write(":");
+  void endPerformanceMetadataKey() => output.write(':');
 
   @override
   void endPerformanceMetadataValue() {}
@@ -197,7 +201,7 @@ class Formatter extends EventedParser {
   void endPerformanceNote() {}
 
   @override
-  void endSessionMetadataKey() => output.write(":");
+  void endSessionMetadataKey() => output.write(':');
 
   @override
   void endSessionMetadataValue() {}
@@ -232,16 +236,16 @@ class Formatter extends EventedParser {
     _addLiteral(tokenLiteral);
   }
 
-  void _addLeftPad(TokenLiteral tokenLiteral, [append = ""]) =>
-      output.write(" ${tokenLiteral.literal}${append}");
+  void _addLeftPad(TokenLiteral tokenLiteral, [append = '']) =>
+      output.write(' ${tokenLiteral.literal}${append}');
 
-  void _addLinebreak() => output.write("\r\n");
+  void _addLinebreak() => output.write('\r\n');
 
   void _addLiteral(TokenLiteral tokenLiteral) =>
       output.write(tokenLiteral.literal);
 
   void _addRightPad(TokenLiteral tokenLiteral) =>
-      output.write("${tokenLiteral.literal} ");
+      output.write('${tokenLiteral.literal} ');
 
-  void _addSpace([int count = 1]) => output.write(" " * count);
+  void _addSpace([int count = 1]) => output.write(' ' * count);
 }

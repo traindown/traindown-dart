@@ -1,4 +1,4 @@
-import "package:traindown/src/metadata.dart";
+import 'package:traindown/src/metadata.dart';
 
 class Performance extends Metadatable {
   int _fails;
@@ -10,14 +10,26 @@ class Performance extends Metadatable {
   String _unit;
   bool _touched = false;
 
-  static const List<String> unitKeywords = ["unit", "Unit", "u", "U"];
+  static const List<String> bodyweightKeywords = [
+    'bw',
+    'BW',
+    'bodyweight',
+    'Bodyweight'
+  ];
+
+  static const List<String> unitKeywords = [
+    'u',
+    'U',
+    'unit',
+    'Unit',
+  ];
 
   Performance(
       {int fails = 0,
       int load = 1,
       int repeat = 1,
       int reps = 1,
-      String unit = "unknown unit"})
+      String unit = 'unknown unit'})
       : _fails = fails,
         _load = load,
         _repeat = repeat,
@@ -48,24 +60,24 @@ class Performance extends Metadatable {
 
   String get _metadata {
     if (metadata.kvps.entries.isEmpty) {
-      return "";
+      return '';
     }
     StringBuffer ret = StringBuffer();
     for (var mapEntry in metadata.kvps.entries) {
-      ret.write("    ${mapEntry.key}: ${mapEntry.value}\n");
+      ret.write('    ${mapEntry.key}: ${mapEntry.value}\n');
     }
-    return "\n$ret\n";
+    return '\n$ret\n';
   }
 
   String get _notes {
     if (metadata.notes.isEmpty) {
-      return "";
+      return '';
     }
     StringBuffer ret = StringBuffer();
     for (var note in metadata.notes) {
-      ret.write("    - $note\n");
+      ret.write('    - $note\n');
     }
-    return "\n$ret\n";
+    return '\n$ret\n';
   }
 
   int get repeat => _repeat;
@@ -84,18 +96,18 @@ class Performance extends Metadatable {
 
   String get _summary {
     String failures = fails > 0
-        ? " with $fails failures ($successfulReps successful reps)"
-        : "";
+        ? ' with $fails failures ($successfulReps successful reps)'
+        : '';
     if (unit.isNotEmpty) {
-      return "$load $unit for $repeat sets of $reps reps$failures.";
+      return '$load $unit for $repeat sets of $reps reps$failures.';
     } else {
-      return "$load for $repeat sets of $reps reps$failures.";
+      return '$load for $repeat sets of $reps reps$failures.';
     }
   }
 
   @override
   String toString() {
-    return "$_summary$_metadata$_notes";
+    return '$_summary$_metadata$_notes';
   }
 
   String get unit => _unit;
