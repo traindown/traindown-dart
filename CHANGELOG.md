@@ -1,3 +1,8 @@
+## 1.7.0
+
+- Add special amounts that simplify the bodyweight entry. Now, instead of having to manually set a unit you can just say `bw 10r` and it will produce a Performance with a load of 1 and an unit of "bodyweight".
+- Some pedantic linter cleanup.
+
 ## 1.6.0
 
 - Add metadata chaining. Now you can just slam all your metadata into one line.
