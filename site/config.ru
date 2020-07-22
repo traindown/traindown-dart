@@ -1,3 +1,6 @@
+require 'rack/ssl-enforcer'
+use Rack::SslEnforcer
+
 use Rack::Static,
   :urls => ["/images", "/css"],
   :root => "public"
