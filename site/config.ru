@@ -1,17 +1,15 @@
-require 'rack/ssl-enforcer'
-use Rack::SslEnforcer
+require "rack/contrib/try_static"
+require "rack/contrib/not_found"
 
-use Rack::Static,
-  :urls => ["/images", "/css"],
-  :root => "public"
-
-run lambda { |env|
-  [
-    200,
-    {
-      'Content-Type'  => 'text/html',
-      'Cache-Control' => 'public, max-age=86400'
-    },
-    File.open('public/index.html', File::RDONLY)
-  ]
+use Rack::TryStatic, {
+  root: "public",
+  header_rules: [
+    [:all, {
+      'Cache-Control' => 'no-cache no-store',
+    }]
+  ],
+  urls: %w[/],
+  try: %w[.html index.html /index.html .css main.css /main.css]
 }
+
+run Rack::NotFound.new("public/404.html")
