@@ -8,7 +8,7 @@ class Movement extends Metadatable {
   List<Performance> performances = [];
   bool superSetted = false;
 
-  Movement(this.name);
+  Movement(String initName) : name = initName.trim();
 
   int get volume => performances.fold(0, (acc, p) => acc + p.volume);
 

@@ -26,7 +26,7 @@ class ScannerMock extends Fake implements Scanner {
         * This is a performance note
       500
 
-    Another:
+    + Another:
       # unit: Movement Unit
       bw
       100
@@ -148,6 +148,8 @@ class ScannerMock extends Fake implements Scanner {
     TokenLiteral(Token.LINEBREAK, ''),
     TokenLiteral(Token.AMOUNT, '500'),
     TokenLiteral(Token.LINEBREAK, ''),
+    TokenLiteral(Token.PLUS, '+'),
+    TokenLiteral(Token.WHITESPACE, ' '),
     TokenLiteral(Token.WORD, 'Another'),
     TokenLiteral(Token.COLON, ':'),
     TokenLiteral(Token.LINEBREAK, ''),
