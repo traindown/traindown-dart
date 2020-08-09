@@ -16,7 +16,7 @@ class ScannerMock extends Fake implements Scanner {
     # Session Key: Session Value # unit: Session Unit
     * This is a session note.
 
-    Movement Name: 
+    Movement Name 123: 
       # Movement Key: Movement Value
       * This is a movement note.
 
@@ -80,6 +80,8 @@ class ScannerMock extends Fake implements Scanner {
     TokenLiteral(Token.WORD, 'Movement'),
     TokenLiteral(Token.WHITESPACE, ' '),
     TokenLiteral(Token.WORD, 'Name'),
+    TokenLiteral(Token.WHITESPACE, ' '),
+    TokenLiteral(Token.AMOUNT, '123'),
     TokenLiteral(Token.COLON, ':'),
     TokenLiteral(Token.LINEBREAK, ''),
     TokenLiteral(Token.POUND, '#'),
@@ -225,7 +227,7 @@ void main() {
       test('Movements are correctly captured', () {
         Movement movement = parser.movements.first;
         expect(movement is Movement, true);
-        expect(movement.name, 'Movement Name');
+        expect(movement.name, 'Movement Name 123');
         expect(movement.performances.length, 5);
 
         Movement another = parser.movements.last;

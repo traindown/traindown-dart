@@ -307,6 +307,24 @@ void main() {
         expect(subject.calls, ["amountDuringSessionMetadataKey"]);
       });
 
+      test("with capturingMovementNote state", () {
+        state = ParseState.capturingMovementNote;
+        expect(getResult(), true);
+        expect(subject.calls, ["amountDuringMovementNote"]);
+      });
+
+      test("with capturingPerformanceNote state", () {
+        state = ParseState.capturingPerformanceNote;
+        expect(getResult(), true);
+        expect(subject.calls, ["amountDuringPerformanceNote"]);
+      });
+
+      test("with capturingSessionNote state", () {
+        state = ParseState.capturingSessionNote;
+        expect(getResult(), true);
+        expect(subject.calls, ["amountDuringSessionNote"]);
+      });
+
       test("with idle state", () {
         state = ParseState.idle;
         expect(getResult(), true);

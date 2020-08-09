@@ -23,9 +23,9 @@ void main() {
 
     test("With a somewhat complex string", () {
       String test =
-          "@ 2020-05-20 # session meta: true * Session note.\nSquat: # movement meta: true * Movement note.\n500 10r # performance meta: true * Performance note. 600 2r 700 Pulldowns: 200 10r";
+          "@ 2020-05-20 # session meta: true * Session note.\nSquat: # movement meta: true * Movement note.\n500 10r # performance meta: true * 1 Performance note.\n 600 2r 700 Pulldowns: 200 10r";
       String result =
-          '@ 2020-05-20\r\n# session meta: true\r\n* Session note.\r\n\r\nSquat:\r\n  # movement meta: true\r\n  * Movement note.\r\n  500 10r\r\n    # performance meta: true\r\n    * Performance note.\r\n  600 2r\r\n  700\r\nPulldowns:\r\n  200 10r';
+          '@ 2020-05-20\r\n# session meta: true\r\n* Session note.\r\n\r\nSquat:\r\n  # movement meta: true\r\n  * Movement note.\r\n  500 10r\r\n    # performance meta: true\r\n    * 1 Performance note.\r\n  600 2r\r\n  700\r\nPulldowns:\r\n  200 10r';
       Formatter formatter = Formatter.for_string(test);
       expect(formatter.format(), equals(result));
     });
@@ -57,8 +57,8 @@ void main() {
       expect(formatter.format(), equals(result));
     });
 
-    test("With a missing colon on a movement name and no line break", () {
-      String test = "@2020-07-12\nsquat 100";
+    test("With a colon on a movement name and no line break", () {
+      String test = "@2020-07-12\nsquat: 100";
       String result = "@ 2020-07-12\r\n\r\nsquat:\r\n  100";
       Formatter formatter = Formatter.for_string(test);
       expect(formatter.format(), equals(result));

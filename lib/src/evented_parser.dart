@@ -164,15 +164,12 @@ abstract class EventedParser {
         return true;
       case ParseState.capturingMovementNote:
         amountDuringMovementNote(tokenLiteral);
-        _state = ParseState.capturingPerformance;
         return true;
       case ParseState.capturingPerformanceNote:
         amountDuringPerformanceNote(tokenLiteral);
-        _state = ParseState.capturingPerformance;
         return true;
       case ParseState.capturingSessionNote:
         amountDuringSessionNote(tokenLiteral);
-        _state = ParseState.capturingPerformance;
         return true;
       case ParseState.idle:
         amountDuringIdle(tokenLiteral);

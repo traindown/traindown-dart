@@ -41,19 +41,12 @@ class Formatter extends EventedParser {
       _addLeftPad(tokenLiteral);
 
   @override
-  void amountDuringMovementName(TokenLiteral tokenLiteral) {
-    output.write(':');
-    _addLinebreak();
-    _addSpace(2);
-    _addLiteral(tokenLiteral);
-  }
+  void amountDuringMovementName(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral);
 
   @override
-  void amountDuringMovementNote(TokenLiteral tokenLiteral) {
-    _addLinebreak();
-    _addSpace(2);
-    _addLiteral(tokenLiteral);
-  }
+  void amountDuringMovementNote(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral);
 
   @override
   void amountDuringPerformance(TokenLiteral tokenLiteral) {
@@ -74,11 +67,8 @@ class Formatter extends EventedParser {
       _addLeftPad(tokenLiteral);
 
   @override
-  void amountDuringPerformanceNote(TokenLiteral tokenLiteral) {
-    _addLinebreak();
-    _addSpace(2);
-    _addLiteral(tokenLiteral);
-  }
+  void amountDuringPerformanceNote(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral);
 
   @override
   void amountDuringSessionMetadataKey(TokenLiteral tokenLiteral) =>
@@ -89,11 +79,8 @@ class Formatter extends EventedParser {
       _addLeftPad(tokenLiteral);
 
   @override
-  void amountDuringSessionNote(TokenLiteral tokenLiteral) {
-    _addLinebreak();
-    _addSpace(2);
-    _addLiteral(tokenLiteral);
-  }
+  void amountDuringSessionNote(TokenLiteral tokenLiteral) =>
+      _addLeftPad(tokenLiteral);
 
   @override
   void beginDate() => output.write('@ ');
