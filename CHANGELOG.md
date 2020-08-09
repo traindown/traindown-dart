@@ -1,3 +1,9 @@
+## 1.8.0
+
+- Removed auto colon insertion in order to support numbers in names and notes.
+- Added ability to use numbers in names and notes. "Preacher 21s" is now valid, folks.
+- Fixed additional leading whitespace on supersetted movement names.
+
 ## 1.7.0
 
 - Add special amounts that simplify the bodyweight entry. Now, instead of having to manually set a unit you can just say `bw 10r` and it will produce a Performance with a load of 1 and an unit of "bodyweight".
