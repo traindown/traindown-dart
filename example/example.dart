@@ -18,6 +18,7 @@ void main() {
   formatter.format();
 
   // Ah, much better.
+  print("Enjoy this formatted Traindown!\n\n");
   print(formatter.output);
   print("\n\n---\n\n");
 
@@ -38,15 +39,12 @@ void main() {
 
   print("\n\n---\n\n");
 
-  // Here is a Scanner that is reading from a file.
-  Scanner scanner1 = Scanner(filename: "./example.traindown");
-
-  // Let's recycle our Parser. Only you can save the planet!
-  parser.scanner = scanner1;
+  // Here we set our Parser to a new instance reading from a file!
+  parser = Parser.for_file("./example.traindown");
 
   // And parse...
   parser.parse();
 
   // to present!
-  print(presenter.call());
+  print(ConsolePresenter(parser).call());
 }

@@ -10,6 +10,7 @@ class Parser extends EventedParser {
   Metadata metadata = Metadata();
   List<Movement> movements = [];
   DateTime occurred = DateTime.now();
+  Scanner scanner;
 
   final StringBuffer _dateBuffer = StringBuffer();
   final StringBuffer _keyBuffer = StringBuffer();

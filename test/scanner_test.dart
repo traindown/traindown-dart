@@ -111,6 +111,18 @@ void main() {
       var s = Scanner(string: "");
       expect(s.scan(), TokenLiteral(Token.EOF, ""));
     });
+
+    test("With '\"mom\"' it returns the correct TokenLiteral", () {
+      var s = Scanner(string: '"mom"');
+      expect(s.scan(), TokenLiteral(Token.WORD, '"mom"'));
+    });
+
+    test("With '1/4' it returns the correct TokenLiteral", () {
+      var s = Scanner(string: '1/4');
+      expect(s.scan(), TokenLiteral(Token.AMOUNT, '1'));
+      expect(s.scan(), TokenLiteral(Token.WORD, '/'));
+      expect(s.scan(), TokenLiteral(Token.AMOUNT, '4'));
+    });
   });
 
   group("unscan()", () {
