@@ -1,12 +1,24 @@
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'package:traindown/src/movement.dart';
+// import 'package:traindown/src/movement.dart';
 import 'package:traindown/src/parser.dart';
-import 'package:traindown/src/performance.dart';
-import 'package:traindown/src/scanner.dart';
+// import 'package:traindown/src/performance.dart';
+// import 'package:traindown/src/scanner.dart';
 import 'package:traindown/src/token.dart';
 
+void main() {
+  group('parse()', () {
+    Parser parser = Parser("* 123");
+
+    test('Session Notes are correctly captured', () {
+      Token expected = Token(TokenType.Note, "123");
+      expect(parser.tokens(), [expected]);
+    });
+  });
+}
+
+/*
 class ScannerMock extends Fake implements Scanner {
   int _index = 0;
 
@@ -288,3 +300,4 @@ void main() {
     });
   });
 }
+*/
