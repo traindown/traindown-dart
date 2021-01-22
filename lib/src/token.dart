@@ -25,6 +25,8 @@ class Token {
   @override
   String toString() => "[$token] $literal";
 
+  TokenType get tokenType => _token;
+
   String get token {
     String title = "Invalid";
 

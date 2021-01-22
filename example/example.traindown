@@ -1,31 +1,42 @@
-@ 2019-12-25 08:03
+@ 1/1/2021 1:23pm
 
-# Week: 2
-# Day: 4
-# Burritos: 3
-# Unit: lbs
+# session meta key 1: session meta "value" 1
+# session meta key '2': session meta value 2
+# 3rd session meta key: 3rd session meta value
 
-* Definitely should have stopped at two burritos.
-* 1/4 is a ratio that should be in the note.
+* session note 1
+* 2nd session note
+* "Third" session note
 
-Squat:
-  * Left foot was backwards
-  # rest: 67 seconds
+movement 1: 100 101.1; 102
 
-  135 10r 2s
-  225 5r
-  315 5r
-  405 2r
-    * Had to stop at two reps to run to the bathroom.
-  455
-  500 3s
-    * Surprisingly easy singles given that episode at 405.
-    * Consider going up in weight next week.
+'2nd movement: 
+  # 2nd movement meta key 1: 2nd movement meta value 1
+  # Movement 2 meta key 2: Movement 2 meta key 2
 
-Kettlebell swings: 24 10r 4s
-  # Unit: kg
-+ Thigh Master: 1 100r
-  # Unit: squeeze
-  * To test the superset parsing
-+ Deadlift: 501 1f
-  # Unit: kg
+  * 2nd movement note 1
+  * Movment 2 note 2
+
+  201
+  202 2r
+  203 2s
+  204 2r 2s
+  205 2f
+
+Third movement:
+  301
+    * 301 note 1
+    * Second 301 note
+  302
+    # 302 meta key 1: 302 meta value 1
+    # Meta key 2 for 302: Meta value 2 for 302
+
++ '4th movement:
+  # unit: 4th unit movement
+  400.456
+  401
+    # unit: 401 unit
+  bw
+  bw+4
+
+Fifth movement: 5r 5f 5s 500
