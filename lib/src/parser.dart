@@ -26,7 +26,7 @@ Function idleState(Lexer lexer) {
     lexer.next();
     lexer.ignore();
 
-    return idleState(lexer);
+    return idleState;
   }
 
   switch (chr) {
@@ -208,8 +208,4 @@ bool isLineTerminator(String chr) {
   return false;
 }
 
-bool isWhitespace(String chr) {
-  RegExp ws = RegExp("\s");
-
-  return ws.hasMatch(chr);
-}
+bool isWhitespace(String chr) => chr.trim().isEmpty;

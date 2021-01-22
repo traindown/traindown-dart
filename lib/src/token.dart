@@ -12,7 +12,7 @@ enum TokenType {
 }
 
 class Token {
-  static final String EOF = "\0";
+  static final String EOF = r"\0";
 
   String literal;
   final TokenType _token;

@@ -14,13 +14,13 @@ class Lexer {
   VCR vcr;
 
   Lexer(String src, Function initialState) {
-    source = Characters(src);
+    source = Characters(src.trim());
     state = initialState;
     tokens = [];
     vcr = VCR();
   }
 
-  String current() => source.skip(start).take(position).toString();
+  String current() => source.skip(start).take(position - start).toString();
 
   void emit(TokenType t) {
     Token token = Token(t, current());
