@@ -70,7 +70,7 @@ void main() {
     test('Stress test', () {
       List<Token> tokens = parser.tokens();
       var tokenStrs = tokens.map((t) => t.toString());
-      tokenStrs == expected;
+      expect(tokenStrs, expected);
     });
   });
 }

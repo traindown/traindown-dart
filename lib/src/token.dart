@@ -65,4 +65,13 @@ class Token {
 
     return title;
   }
+
+  bool get isMovement =>
+      _token == TokenType.Movement || _token == TokenType.SupersetMovement;
+
+  bool get isPerformance =>
+      _token == TokenType.Load ||
+      _token == TokenType.Fail ||
+      _token == TokenType.Rep ||
+      _token == TokenType.Set;
 }
