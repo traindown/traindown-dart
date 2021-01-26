@@ -16,38 +16,38 @@ final String expected = """
 * "Third" session note
 
 movement 1:
- 100
- 101.1
- 102
+  100
+  101.1
+  102
 
 '2nd movement:
   # 2nd movement meta key 1: 2nd movement meta value 1
   # Movement 2 meta key 2: Movement 2 meta key 2
   * 2nd movement note 1
   * Movment 2 note 2
- 201
- 202 2r
- 203 2s
- 204 2r 2s
- 205 2f
+  201
+  202 2r
+  203 2s
+  204 2r 2s
+  205 2f
 
 Third movement:
- 301
+  301
     * 301 note 1
     * Second 301 note
- 302
+  302
     # 302 meta key 1: 302 meta value 1
     # Meta key 2 for 302: Meta value 2 for 302
 
 + '4th movement:
   # unit: 4th unit movement
- 400.456
- 401
+  400.456
+  401
     # unit: 401 unit
- bw
- bw+4
+  bw
+  bw+4
 
-Fifth movement: 5r 5f 5s 50""";
+Fifth movement: 5r 5f 5s  500""";
 
 void main() {
   test("Stress test", () {
@@ -58,7 +58,6 @@ void main() {
     Formatter formatter = Formatter(linebreaker: '\n');
     Parser parser = Parser(src);
 
-    // print(formatter.format(parser.tokens()));
     expect(expected, formatter.format(parser.tokens()));
   });
 }

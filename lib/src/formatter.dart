@@ -45,8 +45,8 @@ class Formatter {
       case TokenType.Load:
         _pastMovement = true;
         String pre = (_performanceNeedsLoad && !_movementHasPerformanced)
-            ? spacer
-            : "$linebreaker$spacer";
+            ? indenter
+            : "$linebreaker$indenter";
         _movementHasPerformanced = true;
         _performanceNeedsLoad = false;
         ret = "$pre${t.literal}";

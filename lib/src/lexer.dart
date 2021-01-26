@@ -45,14 +45,13 @@ class Lexer {
     }
 
     Characters sub = source.skip(position);
+    position++;
 
     if (sub.isEmpty) {
       vcr.push(Token.EOF);
       return Token.EOF;
     } else {
-      position++;
       vcr.push(sub.first);
-
       return sub.first;
     }
   }

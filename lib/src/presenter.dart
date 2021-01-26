@@ -1,12 +1,7 @@
 import "package:traindown/src/movement.dart";
-import "package:traindown/src/parser.dart";
+import "package:traindown/src/token.dart";
 
 abstract class Presenter {
-  Parser parser;
-  StringBuffer result = StringBuffer();
-
-  Presenter(this.parser);
-
   Map get kvps => parser.metadata.kvps;
   List<Movement> get movements => parser.movements;
   List<String> get notes => parser.metadata.notes;
@@ -16,8 +11,8 @@ abstract class Presenter {
   void writeMovements() {}
   void writeNotes() {}
 
-  String call() {
-    result = initString();
+  String present(List<Token> tokens) {
+    StringBuffer result = initString();
 
     writeMetadata();
     writeNotes();

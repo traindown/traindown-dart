@@ -1,50 +1,34 @@
-import "package:traindown/src/formatter.dart";
-import "package:traindown/src/parser.dart";
-import "package:traindown/src/presenters/console_presenter.dart";
-import "package:traindown/src/scanner.dart";
+import 'package:traindown/src/formatter.dart';
+import 'package:traindown/src/parser.dart';
 
 void main() {
   // Here is an example Traindown string that could be polished that is being
-  // passed into a Scanner for formatting.
-  Scanner scanner = Scanner(string: """
+  // passed into a Parser for parsing.
+  Parser parser = Parser("""
     @ 2019-10-21
     # unit:lbs
-    Squat: 500 #rir:10 550 2r 600 3r 3s * Was hard""");
+    Squat: 500 #rir:10 550 2r 600 3r 3s; * Was hard""");
 
-  // Let's see what our Formatter can do!
-  Formatter formatter = Formatter(scanner);
+  // The result of the parsing is a List<Token> that we can then hand off
+  // to things like our Formatter.
+  Formatter formatter = Formatter();
 
-  // There are no accidents, only happy mistakes.
-  formatter.format();
+  // Let's see what our Formatter can do! Here we make a new one that uses
+  // just the default output options.
+  String formatted = formatter.format(parser.tokens());
 
   // Ah, much better.
-  print("Enjoy this formatted Traindown!\n\n");
-  print(formatter.output);
-  print("\n\n---\n\n");
+  print('Enjoy this formatted Traindown!\n');
+  print(formatted);
+  print('\n\n---\n\n');
 
-  // So here is our Parser. This little thing is responsible for turning
-  // Traindown into fantastic data. Let's try sending it our wonderfully
-  // formatted Traindown.
-  Parser parser = Parser(Scanner(string: formatter.output.toString()));
+  // With the Formatter, you can alter the output to suit your specific needs.
+  // Here is an example where we open up some breathing room.
+  formatter.indenter = '    ';
 
-  // And look here--a presenter! Presenters paint a picture of our training
-  // data. This one speaks console.
-  ConsolePresenter presenter = ConsolePresenter(parser);
+  print('Very space. Much wow\n');
+  print(formatter.format(parser.tokens()));
+  print('\n\n---\n\n');
 
-  // Let's now parse that string...
-  parser.parse();
-
-  // And show it to the world!
-  print(presenter.call());
-
-  print("\n\n---\n\n");
-
-  // Here we set our Parser to a new instance reading from a file!
-  parser = Parser.for_file("./example.traindown");
-
-  // And parse...
-  parser.parse();
-
-  // to present!
-  print(ConsolePresenter(parser).call());
+  // The Formatter allows for customizing the indenter, spacer, and line endings.
 }

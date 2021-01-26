@@ -61,7 +61,7 @@ void main() {
     "[Reps] 5",
     "[Fails] 5",
     "[Sets] 5",
-    "[Load] 50",
+    "[Load] 500",
   ];
 
   group('parse()', () {
