@@ -1,5 +1,6 @@
 import 'package:traindown/src/formatter.dart';
 import 'package:traindown/src/parser.dart';
+import 'package:traindown/src/session.dart';
 
 void main() {
   // Here is an example Traindown string that could be polished that is being
@@ -7,7 +8,7 @@ void main() {
   Parser parser = Parser("""
     @ 2019-10-21
     # unit:lbs
-    Squat: 500 #rir:10 550 2r 600 3r 3s; * Was hard""");
+    Squat: 500 #rir:10; 550 2r; 600 3r 3s; * Was hard""");
 
   // The result of the parsing is a List<Token> that we can then hand off
   // to things like our Formatter.
@@ -30,5 +31,10 @@ void main() {
   print(formatter.format(parser.tokens()));
   print('\n\n---\n\n');
 
-  // The Formatter allows for customizing the indenter, spacer, and line endings.
+  // Once we parse, we typically want to do *stuff* with the data. That's where
+  // Sessions come in. Let's take one for a test drive.
+
+  Session session = Session(parser.tokens());
+
+  print(session);
 }

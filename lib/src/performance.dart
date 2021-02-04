@@ -1,12 +1,10 @@
 import 'package:traindown/src/metadata.dart';
 
 class Performance extends Metadatable {
-  int _fails;
-  int _load;
-  @override
-  Metadata metadata = Metadata();
-  int _repeat;
-  int _reps;
+  double _fails;
+  double _load;
+  double _sets;
+  double _reps;
   String _unit;
   bool _touched = false;
 
@@ -25,14 +23,14 @@ class Performance extends Metadatable {
   ];
 
   Performance(
-      {int fails = 0,
-      int load = 1,
-      int repeat = 1,
-      int reps = 1,
+      {double fails = 0,
+      double load = -1,
+      double sets = 1,
+      double reps = 1,
       String unit = 'unknown unit'})
       : _fails = fails,
-        _load = load,
-        _repeat = repeat,
+        _load = load < 0 ? null : load,
+        _sets = sets,
         _reps = reps,
         _unit = unit;
 
@@ -46,14 +44,14 @@ class Performance extends Metadatable {
     _touched = true;
   }
 
-  int get fails => _fails;
-  set fails(int newFails) {
+  double get fails => _fails;
+  set fails(double newFails) {
     _touched = true;
     _fails = newFails;
   }
 
-  int get load => _load;
-  set load(int newLoad) {
+  double get load => _load;
+  set load(double newLoad) {
     _touched = true;
     _load = newLoad;
   }
@@ -80,28 +78,28 @@ class Performance extends Metadatable {
     return '\n$ret\n';
   }
 
-  int get repeat => _repeat;
-  set repeat(int newRepeat) {
+  double get sets => _sets;
+  set sets(double newSets) {
     _touched = true;
-    _repeat = newRepeat;
+    _sets = newSets;
   }
 
-  int get reps => _reps;
-  set reps(int newReps) {
+  double get reps => _reps;
+  set reps(double newReps) {
     _touched = true;
     _reps = newReps;
   }
 
-  int get successfulReps => reps - fails;
+  double get successfulReps => reps - fails;
 
   String get _summary {
     String failures = fails > 0
         ? ' with $fails failures ($successfulReps successful reps)'
         : '';
     if (unit.isNotEmpty) {
-      return '$load $unit for $repeat sets of $reps reps$failures.';
+      return '$load $unit for $sets sets of $reps reps$failures.';
     } else {
-      return '$load for $repeat sets of $reps reps$failures.';
+      return '$load for $sets sets of $reps reps$failures.';
     }
   }
 
@@ -116,6 +114,6 @@ class Performance extends Metadatable {
     _unit = newUnit;
   }
 
-  int get volume => successfulReps * load * repeat;
+  double get volume => successfulReps * load * sets;
   bool get wasTouched => _touched;
 }

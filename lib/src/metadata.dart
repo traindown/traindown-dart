@@ -7,7 +7,7 @@ class Metadata {
 }
 
 abstract class Metadatable {
-  Metadata metadata;
+  Metadata metadata = Metadata();
 
   void addKVP(String key, String value) =>
       metadata.kvps.putIfAbsent(key, () => value);

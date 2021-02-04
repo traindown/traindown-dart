@@ -2,15 +2,16 @@ import "package:traindown/src/metadata.dart";
 import "package:traindown/src/performance.dart";
 
 class Movement extends Metadatable {
-  @override
-  Metadata metadata = Metadata();
   String name;
   List<Performance> performances = [];
   bool superSetted = false;
 
-  Movement(String initName) : name = initName.trim();
+  Movement(String initName, [bool superset = false]) {
+    name = initName.trim();
+    superSetted = superset;
+  }
 
-  int get volume => performances.fold(0, (acc, p) => acc + p.volume);
+  double get volume => performances.fold(0, (acc, p) => acc + p.volume);
 
   String get _metadata {
     if (metadata.kvps.entries.isEmpty) {
@@ -31,7 +32,7 @@ class Movement extends Metadatable {
     for (var note in metadata.notes) {
       ret.write('  - $note\n');
     }
-    return '\n$ret\n';
+    return '\n$ret';
   }
 
   @override
