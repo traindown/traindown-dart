@@ -96,10 +96,12 @@ class Performance extends Metadatable {
     String failures = fails > 0
         ? ' with $fails failures ($successfulReps successful reps)'
         : '';
+    String loadStr = load != null ? "$load" : "unknown load";
+
     if (unit.isNotEmpty) {
-      return '$load $unit for $sets sets of $reps reps$failures.';
+      return '$loadStr $unit for $sets sets of $reps reps$failures.';
     } else {
-      return '$load for $sets sets of $reps reps$failures.';
+      return '$loadStr for $sets sets of $reps reps$failures.';
     }
   }
 
