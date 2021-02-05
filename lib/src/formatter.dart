@@ -1,238 +1,100 @@
-import 'package:traindown/src/evented_parser.dart';
-import 'package:traindown/src/performance.dart';
-import 'package:traindown/src/scanner.dart';
 import 'package:traindown/src/token.dart';
 
-class Formatter extends EventedParser {
-  StringBuffer output = StringBuffer();
+class Formatter {
+  String indenter, linebreaker, spacer;
 
-  Formatter(Scanner scanner) : super(scanner);
-  Formatter.for_file(String filename) : super.for_file(filename);
-  Formatter.for_string(String string) : super.for_string(string);
+  bool _pastSession = false;
+  bool _pastMovement = false;
+  bool _movementHasPerformanced = false;
+  bool _performanceNeedsLoad = false;
 
-  String format() {
-    output.clear();
+  Formatter(
+      {this.indenter = '  ', this.linebreaker = '\r\n', this.spacer = ' '});
 
-    try {
-      call();
-    } on UnexpectedToken catch (e) {
-      print('Error at ${e.msg}');
+  String format(List<Token> tokens) {
+    _reset();
+    StringBuffer buffer = StringBuffer();
+
+    tokens.forEach((t) => buffer.write(stringFor(t)));
+
+    return buffer.toString();
+  }
+
+  void _reset() {
+    _pastSession = false;
+    _pastMovement = false;
+    _movementHasPerformanced = false;
+    _performanceNeedsLoad = false;
+  }
+
+  String stringFor(Token t) {
+    String ret = '';
+
+    switch (t.tokenType) {
+      case TokenType.DateTime:
+        ret = "@ ${t.literal}$linebreaker";
+        break;
+      case TokenType.Fail:
+        _pastMovement = true;
+        _performanceNeedsLoad = _performanceNeedsLoad || true;
+        String pre = (_performanceNeedsLoad || !_movementHasPerformanced)
+            ? spacer
+            : "$linebreaker$spacer";
+        ret = "$pre${t.literal}f";
+        break;
+      case TokenType.Load:
+        _pastMovement = true;
+        String pre = (_performanceNeedsLoad && !_movementHasPerformanced)
+            ? indenter
+            : "$linebreaker$indenter";
+        _movementHasPerformanced = true;
+        _performanceNeedsLoad = false;
+        ret = "$pre${t.literal}";
+        break;
+      case TokenType.MetaKey:
+        int iter = (_pastMovement) ? 2 : (_pastSession) ? 1 : 0;
+        ret = "$linebreaker${indenter * iter}# ${t.literal}:";
+        break;
+      case TokenType.MetaValue:
+        ret = "$spacer${t.literal}";
+        break;
+      case TokenType.Movement:
+        _pastSession = true;
+        _pastMovement = false;
+        _movementHasPerformanced = false;
+        _performanceNeedsLoad = false;
+        String pre = (t.literal.startsWith(RegExp(r'\d'))) ? "'" : '';
+        ret = "${linebreaker * 2}$pre${t.literal}:";
+        break;
+      case TokenType.Note:
+        int iter = (_pastMovement) ? 2 : (_pastSession) ? 1 : 0;
+        ret = "$linebreaker${indenter * iter}*$spacer${t.literal}";
+        break;
+      case TokenType.Rep:
+        _pastMovement = true;
+        _performanceNeedsLoad = _performanceNeedsLoad || true;
+        String pre = (_performanceNeedsLoad || !_movementHasPerformanced)
+            ? spacer
+            : "$linebreaker$spacer";
+        ret = "$pre${t.literal}r";
+        break;
+      case TokenType.Set:
+        _pastMovement = true;
+        _performanceNeedsLoad = _performanceNeedsLoad || true;
+        String pre = (_performanceNeedsLoad || !_movementHasPerformanced)
+            ? spacer
+            : "$linebreaker$spacer";
+        ret = "$pre${t.literal}s";
+        break;
+      case TokenType.SupersetMovement:
+        _pastSession = true;
+        _pastMovement = false;
+        _performanceNeedsLoad = false;
+        String pre = (t.literal.startsWith(RegExp(r'\d'))) ? "'" : '';
+        ret = "${linebreaker * 2}+$spacer$pre${t.literal}:";
+        break;
     }
 
-    return output.toString();
+    return ret;
   }
-
-  @override
-  void amountDuringDate(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
-
-  @override
-  void amountDuringIdle(TokenLiteral tokenLiteral) {
-    _addLinebreak();
-    _addSpace(2);
-    _addLiteral(tokenLiteral);
-  }
-
-  @override
-  void amountDuringMovementMetadataKey(TokenLiteral tokenLiteral) =>
-      _addLiteral(tokenLiteral);
-
-  @override
-  void amountDuringMovementMetadataValue(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral);
-
-  @override
-  void amountDuringMovementName(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral);
-
-  @override
-  void amountDuringMovementNote(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral);
-
-  @override
-  void amountDuringPerformance(TokenLiteral tokenLiteral) {
-    _addLinebreak();
-    if (tokenLiteral.isAmount ||
-        Performance.bodyweightKeywords.contains(tokenLiteral.literal)) {
-      _addSpace(2);
-    }
-    _addLiteral(tokenLiteral);
-  }
-
-  @override
-  void amountDuringPerformanceMetadataKey(TokenLiteral tokenLiteral) =>
-      _addLiteral(tokenLiteral);
-
-  @override
-  void amountDuringPerformanceMetadataValue(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral);
-
-  @override
-  void amountDuringPerformanceNote(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral);
-
-  @override
-  void amountDuringSessionMetadataKey(TokenLiteral tokenLiteral) =>
-      _addLiteral(tokenLiteral);
-
-  @override
-  void amountDuringSessionMetadataValue(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral);
-
-  @override
-  void amountDuringSessionNote(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral);
-
-  @override
-  void beginDate() => output.write('@ ');
-
-  @override
-  void beginMovementMetadata() {
-    _addLinebreak();
-    _addSpace(2);
-    output.write('#');
-  }
-
-  @override
-  void beginMovementName(TokenLiteral tokenLiteral) {
-    _addLinebreak();
-    _addLinebreak();
-    _addLiteral(tokenLiteral);
-  }
-
-  @override
-  void beginMovementNote() {
-    _addLinebreak();
-    _addSpace(2);
-    output.write('*');
-  }
-
-  @override
-  void beginPerformanceMetadata() {
-    _addLinebreak();
-    _addSpace(4);
-    output.write('#');
-  }
-
-  @override
-  void beginPerformanceNote() {
-    _addLinebreak();
-    _addSpace(4);
-    output.write('*');
-  }
-
-  @override
-  void beginSessionMetadata() {
-    _addLinebreak();
-    output.write('#');
-  }
-
-  @override
-  void beginSessionNote() {
-    _addLinebreak();
-    output.write('*');
-  }
-
-  @override
-  void encounteredDash(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
-
-  @override
-  void encounteredEof() {}
-
-  @override
-  void encounteredFailures(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral, 'f');
-
-  @override
-  void encounteredReps(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral, 'r');
-
-  @override
-  void encounteredPlus(TokenLiteral tokenLiteral) {
-    _addLinebreak();
-    _addRightPad(tokenLiteral);
-  }
-
-  @override
-  void encounteredSets(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral, 's');
-
-  // NOTE: Investigate context on this.
-  @override
-  void encounteredWord(TokenLiteral tokenLiteral) => _addLiteral(tokenLiteral);
-
-  @override
-  void endDate() {}
-
-  @override
-  void endMovementMetadataKey() => output.write(':');
-
-  @override
-  void endMovementMetadataValue() {}
-
-  @override
-  void endMovementName() => output.write(':');
-
-  @override
-  void endMovementNote() {}
-
-  @override
-  void endPerformance() {}
-
-  @override
-  void endPerformanceMetadataKey() => output.write(':');
-
-  @override
-  void endPerformanceMetadataValue() {}
-
-  @override
-  void endPerformanceNote() {}
-
-  @override
-  void endSessionMetadataKey() => output.write(':');
-
-  @override
-  void endSessionMetadataValue() {}
-
-  @override
-  void endSessionNote() {}
-
-  @override
-  void wordDuringDate(TokenLiteral tokenLiteral) {
-    _addLinebreak();
-    _addLiteral(tokenLiteral);
-  }
-
-  @override
-  void wordDuringMetadataKey(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral);
-
-  @override
-  void wordDuringMetadataValue(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral);
-
-  @override
-  void wordDuringMovementName(TokenLiteral tokenLiteral) =>
-      _addLeftPad(tokenLiteral);
-
-  @override
-  void wordDuringNote(TokenLiteral tokenLiteral) => _addLeftPad(tokenLiteral);
-
-  @override
-  void wordDuringPerformance(TokenLiteral tokenLiteral) {
-    _addLinebreak();
-    _addLiteral(tokenLiteral);
-  }
-
-  void _addLeftPad(TokenLiteral tokenLiteral, [append = '']) =>
-      output.write(' ${tokenLiteral.literal}${append}');
-
-  void _addLinebreak() => output.write('\r\n');
-
-  void _addLiteral(TokenLiteral tokenLiteral) =>
-      output.write(tokenLiteral.literal);
-
-  void _addRightPad(TokenLiteral tokenLiteral) =>
-      output.write('${tokenLiteral.literal} ');
-
-  void _addSpace([int count = 1]) => output.write(' ' * count);
 }

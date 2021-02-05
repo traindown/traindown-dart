@@ -45,12 +45,12 @@ void main() {
   });
 
   group('volume', () {
-    test('computes volume as successfulReps * load * repeat', () {
+    test('computes volume as successfulReps * load * sets', () {
       Performance performance =
-          Performance(reps: 10, fails: 5, repeat: 5, load: 4);
+          Performance(reps: 10, fails: 5, sets: 5, load: 4);
       expect(performance.volume, equals(100));
 
-      performance = Performance(reps: 5, fails: 5, repeat: 5, load: 4);
+      performance = Performance(reps: 5, fails: 5, sets: 5, load: 4);
       expect(performance.volume, equals(0));
     });
   });
@@ -59,7 +59,7 @@ void main() {
     test('builds summary string', () {
       Performance performance = Performance(reps: 10);
       expect(performance.toString(),
-          equals('1 unknown unit for 1 sets of 10 reps.'));
+          equals('unknown load unknown unit for 1.0 sets of 10.0 reps.'));
     });
   });
 
@@ -83,10 +83,10 @@ void main() {
       expect(performance.wasTouched, equals(true));
     });
 
-    test('touch repeat', () {
+    test('touch sets', () {
       Performance performance = Performance();
       expect(performance.wasTouched, equals(false));
-      performance.repeat = 9000;
+      performance.sets = 9000;
       expect(performance.wasTouched, equals(true));
     });
 

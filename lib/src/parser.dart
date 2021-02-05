@@ -1,300 +1,211 @@
-import 'package:traindown/src/evented_parser.dart';
-import 'package:traindown/src/metadata.dart';
-import 'package:traindown/src/movement.dart';
-import 'package:traindown/src/performance.dart';
-import 'package:traindown/src/scanner.dart';
-import 'package:traindown/src/token.dart';
+import "package:traindown/src/lexer.dart";
+import "package:traindown/src/token.dart";
 
-class Parser extends EventedParser {
-  bool hasParsed = false;
-  Metadata metadata = Metadata();
-  List<Movement> movements = [];
-  DateTime occurred = DateTime.now();
-  Scanner scanner;
+class Parser {
+  Lexer lexer;
 
-  final StringBuffer _dateBuffer = StringBuffer();
-  final StringBuffer _keyBuffer = StringBuffer();
-  final StringBuffer _nameBuffer = StringBuffer();
-  final StringBuffer _noteBuffer = StringBuffer();
-  final StringBuffer _valueBuffer = StringBuffer();
-
-  Movement _currentMovement;
-  Performance _currentPerformance;
-
-  bool _shouldSuperset = false;
-
-  Parser(Scanner scanner) : super(scanner);
-  Parser.for_file(String filename) : super.for_file(filename);
-  Parser.for_string(String string) : super.for_string(string);
-
-  void parse() => call();
-
-  Performance _newPerformance() {
-    String unit = 'unknown unit';
-    for (Metadata scope in [_currentMovement.metadata, metadata]) {
-      for (String unitKeyword in Performance.unitKeywords) {
-        if (scope.kvps.containsKey(unitKeyword)) {
-          unit = scope.kvps[unitKeyword];
-          break;
-        }
-      }
-      if (unit != 'unknown unit') break;
-    }
-
-    return Performance(unit: unit);
+  Parser(String source) {
+    lexer = Lexer(source, idleState);
   }
 
-  @override
-  void amountDuringDate(TokenLiteral tokenLiteral) =>
-      _dateBuffer.write(tokenLiteral.literal);
-
-  @override
-  void amountDuringIdle(TokenLiteral tokenLiteral) {}
-
-  @override
-  void amountDuringMovementMetadataKey(TokenLiteral tokenLiteral) =>
-      _keyBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void amountDuringMovementMetadataValue(TokenLiteral tokenLiteral) =>
-      _valueBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void amountDuringMovementName(TokenLiteral tokenLiteral) =>
-      _nameBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void amountDuringMovementNote(TokenLiteral tokenLiteral) =>
-      _noteBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void amountDuringPerformance(TokenLiteral tokenLiteral) {
-    if (_currentPerformance.load != 0) {
-      endPerformance();
-    }
-
-    if (tokenLiteral.isWord) {
-      if (Performance.bodyweightKeywords.contains(tokenLiteral.literal)) {
-        _currentPerformance.load = 1;
-        _currentPerformance.unit = 'bodyweight';
-      } else {
-        wordDuringPerformance(tokenLiteral);
-      }
-    }
-
-    if (tokenLiteral.isAmount) {
-      _currentPerformance.load = num.tryParse(tokenLiteral.literal);
-    }
-  }
-
-  @override
-  void amountDuringPerformanceMetadataKey(TokenLiteral tokenLiteral) =>
-      _keyBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void amountDuringPerformanceMetadataValue(TokenLiteral tokenLiteral) =>
-      _valueBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void amountDuringPerformanceNote(TokenLiteral tokenLiteral) =>
-      _noteBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void amountDuringSessionMetadataKey(TokenLiteral tokenLiteral) =>
-      _keyBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void amountDuringSessionMetadataValue(TokenLiteral tokenLiteral) =>
-      _valueBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void amountDuringSessionNote(TokenLiteral tokenLiteral) =>
-      _noteBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void beginDate() => _dateBuffer.clear();
-
-  @override
-  void beginMovementName(TokenLiteral tokenLiteral) {
-    if (_currentPerformance != null) {
-      endPerformance();
-    }
-
-    if (_currentMovement != null) {
-      movements.add(_currentMovement);
-    }
-
-    _nameBuffer.clear();
-
-    if (tokenLiteral.isPlus) {
-      _shouldSuperset = true;
-    } else {
-      _nameBuffer.write('${tokenLiteral.literal}');
-    }
-  }
-
-  @override
-  void beginMovementMetadata() {
-    _keyBuffer.clear();
-    _valueBuffer.clear();
-  }
-
-  @override
-  void beginMovementNote() => _noteBuffer.clear();
-
-  @override
-  void beginPerformanceMetadata() {
-    _keyBuffer.clear();
-    _valueBuffer.clear();
-  }
-
-  @override
-  void beginPerformanceNote() => _noteBuffer.clear();
-
-  @override
-  void beginSessionMetadata() {
-    _keyBuffer.clear();
-    _valueBuffer.clear();
-  }
-
-  @override
-  void beginSessionNote() => _noteBuffer.clear();
-
-  @override
-  void encounteredDash(TokenLiteral tokenLiteral) =>
-      _dateBuffer.write(tokenLiteral.literal);
-
-  @override
-  void encounteredEof() {
-    endPerformance();
-    movements.add(_currentMovement);
-  }
-
-  @override
-  void encounteredFailures(TokenLiteral tokenLiteral) =>
-      _currentPerformance.fails = num.tryParse(tokenLiteral.literal);
-
-  @override
-  void encounteredReps(TokenLiteral tokenLiteral) =>
-      _currentPerformance.reps = num.tryParse(tokenLiteral.literal);
-
-  @override
-  void encounteredPlus(TokenLiteral tokenLiteral) => _shouldSuperset = true;
-
-  @override
-  void encounteredSets(TokenLiteral tokenLiteral) =>
-      _currentPerformance.repeat = num.tryParse(tokenLiteral.literal);
-
-  // NOTE: noop
-  @override
-  void encounteredWord(TokenLiteral tokenLiteral) {}
-
-  @override
-  void endDate() {
-    DateTime parsedDate = DateTime.tryParse(_dateBuffer.toString().trim());
-
-    if (parsedDate != null) {
-      occurred = parsedDate;
-    }
-  }
-
-  @override
-  void endMovementName() {
-    String name = _nameBuffer.toString().trimRight();
-    _currentMovement = Movement(name);
-    _currentMovement.superSetted = _shouldSuperset;
-    _currentPerformance = _newPerformance();
-    _shouldSuperset = false;
-  }
-
-  // NOTE: noop
-  @override
-  void endMovementMetadataKey() {}
-
-  @override
-  void endMovementMetadataValue() {
-    String key = _keyBuffer.toString().trimRight();
-    String value = _valueBuffer.toString().trimRight();
-    _currentMovement.addKVP(key, value);
-  }
-
-  @override
-  void endMovementNote() {
-    String note = _noteBuffer.toString().trimRight();
-    _currentMovement.addNote(note);
-  }
-
-  @override
-  void endPerformance() {
-    if (_currentPerformance.wasTouched) {
-      _currentMovement.performances.add(_currentPerformance);
-    }
-    _currentPerformance = _newPerformance();
-  }
-
-  // NOTE: noop
-  @override
-  void endPerformanceMetadataKey() {}
-
-  @override
-  void endPerformanceMetadataValue() {
-    String key = _keyBuffer.toString().trimRight();
-    String value = _valueBuffer.toString().trimRight();
-
-    if (Performance.unitKeywords.contains(key)) {
-      _currentPerformance.unit = value;
-    } else {
-      _currentPerformance.addKVP(key, value);
-    }
-  }
-
-  @override
-  void endPerformanceNote() {
-    String note = _noteBuffer.toString().trimRight();
-    _currentPerformance.addNote(note);
-  }
-
-  // NOTE: noop
-  @override
-  void endSessionMetadataKey() {}
-
-  @override
-  void endSessionMetadataValue() {
-    String key = _keyBuffer.toString().trimRight();
-    String value = _valueBuffer.toString().trimRight();
-
-    metadata.addKVP(key, value);
-  }
-
-  @override
-  void endSessionNote() {
-    String note = _noteBuffer.toString().trimRight();
-    metadata.addNote(note);
-  }
-
-  @override
-  void wordDuringDate(TokenLiteral tokenLiteral) =>
-      _dateBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void wordDuringMetadataKey(TokenLiteral tokenLiteral) =>
-      _keyBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void wordDuringMetadataValue(TokenLiteral tokenLiteral) =>
-      _valueBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void wordDuringMovementName(TokenLiteral tokenLiteral) =>
-      _nameBuffer.write(' ${tokenLiteral.literal} ');
-
-  @override
-  void wordDuringNote(TokenLiteral tokenLiteral) =>
-      _noteBuffer.write('${tokenLiteral.literal} ');
-
-  @override
-  void wordDuringPerformance(TokenLiteral tokenLiteral) {
-    endPerformance();
-    beginMovementName(tokenLiteral);
+  // TODO: Error handling
+  List<Token> tokens() {
+    lexer.run();
+    return lexer.tokens;
   }
 }
+
+Function idleState(Lexer lexer) {
+  String chr = lexer.peek();
+
+  if (chr == Token.EOF) {
+    return null;
+  }
+
+  if (isWhitespace(chr) || isLineTerminator(chr)) {
+    lexer.next();
+    lexer.ignore();
+
+    return idleState;
+  }
+
+  switch (chr) {
+    case "@":
+      return dateTimeState;
+    case "#":
+      return metaKeyState;
+    case "*":
+      return noteState;
+    default:
+      return valueState;
+  }
+}
+
+Function dateTimeState(Lexer lexer) {
+  lexer.take(["@", " "]);
+  lexer.ignore();
+
+  String chr = lexer.next();
+
+  while (!isLineTerminator(chr)) {
+    chr = lexer.next();
+  }
+
+  lexer.rewind();
+  lexer.emit(TokenType.DateTime);
+
+  return idleState;
+}
+
+Function metaKeyState(Lexer lexer) {
+  lexer.take(["#", " "]);
+  lexer.ignore();
+
+  String chr = lexer.next();
+
+  while (chr != ":") {
+    chr = lexer.next();
+  }
+
+  lexer.rewind();
+  lexer.emit(TokenType.MetaKey);
+
+  return metaValueState;
+}
+
+Function metaValueState(Lexer lexer) {
+  lexer.take([":", " "]);
+  lexer.ignore();
+
+  String chr = lexer.next();
+
+  while (!isLineTerminator(chr)) {
+    chr = lexer.next();
+  }
+
+  lexer.rewind();
+  lexer.emit(TokenType.MetaValue);
+
+  return idleState;
+}
+
+Function movementState(Lexer lexer) {
+  bool superset = false;
+
+  String chr = lexer.next();
+
+  if (chr == "+") {
+    superset = true;
+    lexer.take([" "]);
+    lexer.ignore();
+    chr = lexer.next();
+  }
+
+  if (chr == "'") {
+    lexer.ignore();
+    chr = lexer.next();
+  }
+
+  while (chr != ":") {
+    chr = lexer.next();
+  }
+
+  lexer.rewind();
+
+  if (superset) {
+    lexer.emit(TokenType.SupersetMovement);
+  } else {
+    lexer.emit(TokenType.Movement);
+  }
+
+  lexer.take([":"]);
+  lexer.ignore();
+
+  return idleState;
+}
+
+Function noteState(Lexer lexer) {
+  lexer.take(["*", " "]);
+  lexer.ignore();
+
+  String chr = lexer.next();
+
+  while (!isLineTerminator(chr)) {
+    chr = lexer.next();
+  }
+
+  lexer.rewind();
+  lexer.emit(TokenType.Note);
+
+  return idleState;
+}
+
+Function numberState(Lexer lexer) {
+  lexer.take(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."]);
+
+  switch (lexer.peek()) {
+    case "f":
+    case "F":
+      lexer.emit(TokenType.Fail);
+      break;
+    case "r":
+    case "R":
+      lexer.emit(TokenType.Rep);
+      break;
+    case "s":
+    case "S":
+      lexer.emit(TokenType.Set);
+      break;
+    default:
+      lexer.emit(TokenType.Load);
+  }
+
+  lexer.take(["f", "F", "r", "R", "s", "S"]);
+  lexer.ignore();
+
+  return idleState;
+}
+
+Function valueState(Lexer lexer) {
+  String chr = lexer.next();
+
+  if (chr == "+" || chr == "'") {
+    lexer.rewind();
+    return movementState;
+  }
+
+  if (int.tryParse(chr) != null) {
+    return numberState;
+  }
+
+  if (chr != "b" && chr != "B") {
+    lexer.rewind();
+    return movementState;
+  }
+
+  String p = lexer.peek();
+
+  if (p != "w" && p != "W") {
+    lexer.rewind();
+    return movementState;
+  }
+
+  while (!isWhitespace(chr)) {
+    chr = lexer.next();
+  }
+
+  lexer.rewind();
+  lexer.emit(TokenType.Load);
+
+  return idleState;
+}
+
+bool isLineTerminator(String chr) {
+  if (chr == Token.EOF || chr == ";" || chr == "\n" || chr == "\r") {
+    return true;
+  }
+
+  return false;
+}
+
+bool isWhitespace(String chr) => chr.trim().isEmpty;

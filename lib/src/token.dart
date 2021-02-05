@@ -1,59 +1,77 @@
-class Token {
-  static const AMOUNT = "Amount";
-  static const AT = "At";
-  static const COLON = "Colon";
-  static const DASH = "Dash";
-  static const EOF = "EOF";
-  static const FAILS = "Fails";
-  static const ILLEGAL = "Illegal";
-  static const LINEBREAK = "Linebreak";
-  static const REPS = "Reps";
-  static const PLUS = "Plus";
-  static const POUND = "Pound";
-  static const SETS = "Sets";
-  static const STAR = "Star";
-  static const WHITESPACE = "Whitespace";
-  static const WORD = "Word";
+enum TokenType {
+  DateTime,
+  Fail,
+  Load,
+  MetaKey,
+  MetaValue,
+  Movement,
+  Note,
+  Rep,
+  Set,
+  SupersetMovement,
 }
 
-class TokenLiteral {
-  int col = 0;
-  int line = 0;
+class Token {
+  static final String EOF = r"\0";
+
   String literal;
-  String token;
+  final TokenType _token;
 
-  TokenLiteral(this.token, this.literal, [this.line, this.col]);
-
-  TokenLiteral.eof() {
-    literal = "";
-    token = Token.EOF;
-  }
-
-  TokenLiteral.illegal() {
-    literal = "";
-    token = Token.ILLEGAL;
-  }
-
-  bool get isAmount => token == Token.AMOUNT;
-  bool get isAt => token == Token.AT;
-  bool get isColon => token == Token.COLON;
-  bool get isDash => token == Token.DASH;
-  bool get isEmpty => token == Token.LINEBREAK || token == Token.WHITESPACE;
-  bool get isEOF => token == Token.EOF;
-  bool get isFails => token == Token.FAILS;
-  bool get isIllegal => token == Token.ILLEGAL;
-  bool get isLinebreak => token == Token.LINEBREAK;
-  bool get isPlus => token == Token.PLUS;
-  bool get isPound => token == Token.POUND;
-  bool get isReps => token == Token.REPS;
-  bool get isSets => token == Token.SETS;
-  bool get isStar => token == Token.STAR;
-  bool get isWhitespace => token == Token.WHITESPACE;
-  bool get isWord => token == Token.WORD;
+  Token(this._token, this.literal);
 
   @override
-  bool operator ==(tl) => tl.token == token && tl.literal == literal;
+  bool operator ==(t) => t.token == token && t.literal == literal;
 
   @override
-  String toString() => "$token: $literal at line $line column $col";
+  String toString() => "[$token] $literal";
+
+  TokenType get tokenType => _token;
+
+  String get token {
+    String title = "Invalid";
+
+    switch (_token) {
+      case TokenType.DateTime:
+        title = "Date / Time";
+        break;
+      case TokenType.Fail:
+        title = "Fails";
+        break;
+      case TokenType.Load:
+        title = "Load";
+        break;
+      case TokenType.MetaKey:
+        title = "Metadata Key";
+        break;
+      case TokenType.MetaValue:
+        title = "Metadata Value";
+        break;
+      case TokenType.Movement:
+        title = "Movement";
+        break;
+      case TokenType.Note:
+        title = "Note";
+        break;
+      case TokenType.Rep:
+        title = "Reps";
+        break;
+      case TokenType.Set:
+        title = "Sets";
+        break;
+      case TokenType.SupersetMovement:
+        title = "Superset Movement";
+        break;
+    }
+
+    return title;
+  }
+
+  bool get isMovement =>
+      _token == TokenType.Movement || _token == TokenType.SupersetMovement;
+
+  bool get isPerformance =>
+      _token == TokenType.Load ||
+      _token == TokenType.Fail ||
+      _token == TokenType.Rep ||
+      _token == TokenType.Set;
 }
