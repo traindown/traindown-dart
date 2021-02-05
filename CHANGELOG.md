@@ -1,3 +1,6 @@
+## 2.0.0
+- Upgrade to language spec version 1.2.1
+
 ## 1.8.0
 
 - Removed auto colon insertion in order to support numbers in names and notes.
