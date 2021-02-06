@@ -1,3 +1,5 @@
+import 'package:traindown/src/presenters/console_presenter.dart';
+import 'package:traindown/src/presenters/json_presenter.dart';
 import 'package:traindown/src/formatter.dart';
 import 'package:traindown/src/parser.dart';
 import 'package:traindown/src/session.dart';
@@ -36,5 +38,27 @@ void main() {
 
   Session session = Session(parser.tokens());
 
+  // Here is just the default toString of a session.
   print(session);
+
+  // We also have an assortment of pre-made presenters as well as a base class
+  // that you can use to build your own!
+
+  ConsolePresenter cp = ConsolePresenter(session);
+
+  // And here is what it likes to present.
+
+  print("An example of a text based presenter\n");
+  print(cp.present());
+  print('\n\n---\n\n');
+
+  // There is also JSON available.
+
+  JsonPresenter jp = JsonPresenter(session);
+
+  // Which spits out
+
+  print("And here is some JSON\n");
+  print(jp.present());
+  print('\n\n---\n\n');
 }

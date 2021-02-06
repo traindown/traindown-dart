@@ -1,10 +1,10 @@
 import "package:traindown/src/movement.dart";
-import "package:traindown/src/parser.dart";
 import "package:traindown/src/performance.dart";
 import "package:traindown/src/presenter.dart";
+import "package:traindown/src/session.dart";
 
 class HtmlPresenter extends Presenter {
-  HtmlPresenter(Parser parser) : super(parser);
+  HtmlPresenter(Session session) : super(session);
 
   @override
   StringBuffer initString() {
@@ -16,7 +16,7 @@ class HtmlPresenter extends Presenter {
   }
 
   @override
-  void writeMetadata() {
+  void writeMetadata(StringBuffer result) {
     result.write("<h2>Metadata</h2>");
 
     if (kvps.entries.isEmpty) {
@@ -35,7 +35,7 @@ class HtmlPresenter extends Presenter {
   }
 
   @override
-  void writeMovements() {
+  void writeMovements(StringBuffer result) {
     result.write("<h2>Movements</h2>");
     result.write(
         "<table><thead><tr><th>Movement</th><th>Load</th><th>Unit</th><th>Sets</th><th>Reps</th></tr></thead><tbody>");
@@ -54,7 +54,7 @@ class HtmlPresenter extends Presenter {
 
       for (Performance p in movement.performances) {
         StringBuffer perfRows = StringBuffer(
-            "<tr ${rowClass()}><td>${p.load}</td><td>${p.unit}</td><td>${p.repeat}</td><td>${p.reps}</td></tr>");
+            "<tr ${rowClass()}><td>${p.load}</td><td>${p.unit}</td><td>${p.sets}</td><td>${p.reps}</td></tr>");
         movementRowCount++;
 
         if (p.metadata.notes.isNotEmpty) {
@@ -91,7 +91,7 @@ class HtmlPresenter extends Presenter {
   }
 
   @override
-  void writeNotes() {
+  void writeNotes(StringBuffer result) {
     result.write("<h2>Notes</h2>");
 
     if (notes.isEmpty) {

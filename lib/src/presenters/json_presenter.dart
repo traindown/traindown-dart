@@ -1,13 +1,13 @@
 import "dart:convert";
 
-import "package:traindown/src/parser.dart";
 import "package:traindown/src/presenter.dart";
+import "package:traindown/src/session.dart";
 
 class JsonPresenter extends Presenter {
-  JsonPresenter(Parser parser) : super(parser);
+  JsonPresenter(Session session) : super(session);
 
   @override
-  String call() {
+  String present() {
     return jsonEncode(
         {"metadata": kvps, "movements": _movementsHash(), "notes": notes});
   }
@@ -20,7 +20,7 @@ class JsonPresenter extends Presenter {
           pacc.add({
             "load": performance.load,
             "reps": performance.reps,
-            "sets": performance.repeat,
+            "sets": performance.sets,
             "unit": performance.unit
           });
           return pacc;

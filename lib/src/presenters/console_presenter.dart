@@ -1,8 +1,8 @@
-import "package:traindown/src/parser.dart";
 import "package:traindown/src/presenter.dart";
+import "package:traindown/src/session.dart";
 
 class ConsolePresenter extends Presenter {
-  ConsolePresenter(Parser parser) : super(parser);
+  ConsolePresenter(Session session) : super(session);
 
   @override
   StringBuffer initString() {
@@ -16,7 +16,7 @@ class ConsolePresenter extends Presenter {
   }
 
   @override
-  void writeMetadata() {
+  void writeMetadata(StringBuffer result) {
     result.write("** Metadata **\n");
 
     if (kvps.entries.isEmpty) {
@@ -30,7 +30,7 @@ class ConsolePresenter extends Presenter {
   }
 
   @override
-  void writeMovements() {
+  void writeMovements(StringBuffer result) {
     result.write("\n\n** Movements **\n");
 
     for (var movement in movements) {
@@ -39,7 +39,7 @@ class ConsolePresenter extends Presenter {
   }
 
   @override
-  void writeNotes() {
+  void writeNotes(StringBuffer result) {
     result.write("\n** Notes **\n");
 
     if (notes.isEmpty) {

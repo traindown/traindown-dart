@@ -1,3 +1,7 @@
+## 2.1.0
+- Refactor Presenters to work with new interals
+- Update the example.dart to reflect current usage
+
 ## 2.0.1
 - Fix incorrect exports
 
