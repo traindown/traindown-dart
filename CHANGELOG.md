@@ -1,3 +1,6 @@
+## 2.0.1
+- Fix incorrect exports
+
 ## 2.0.0
 - Upgrade to language spec version 1.2.1
 
