@@ -201,7 +201,15 @@ Function valueState(Lexer lexer) {
 }
 
 bool isLineTerminator(String chr) {
-  if (chr == Token.EOF || chr == ";" || chr == "\n" || chr == "\r") {
+  List<int> codeUnits = chr.codeUnits;
+
+  if (chr == Token.EOF ||
+      // NOTE: This is a secondary test for EOF.
+      (codeUnits.isNotEmpty && codeUnits[0] == 0) ||
+      (codeUnits.isNotEmpty && codeUnits[0] == 59) ||
+      (codeUnits.isNotEmpty && codeUnits[0] == 10) ||
+      (codeUnits.isNotEmpty && codeUnits[0] == 13) ||
+      (codeUnits.length == 2 && codeUnits[0] == 13 && codeUnits[1] == 10)) {
     return true;
   }
 

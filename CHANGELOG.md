@@ -1,3 +1,6 @@
+## 2.1.2
+- Fix for poor handling of line terminators on various OSes
+
 ## 2.1.1
 Fixes for:
 - Faulty bodyweight handling

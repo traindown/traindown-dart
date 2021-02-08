@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:test/test.dart';
 
@@ -89,6 +90,76 @@ squat:
         "[Metadata Value] lbs",
         "[Movement] squat",
         "[Load] 500"
+      ];
+      Parser parser = Parser(src);
+      List<Token> tokens = parser.tokens();
+      var tokenStrs = tokens.map((t) => t.toString());
+      expect(tokenStrs, expected);
+    });
+
+    test('Failing test from iOS example 2', () {
+      List<int> bytes = [
+        64,
+        32,
+        50,
+        48,
+        50,
+        49,
+        45,
+        48,
+        50,
+        45,
+        48,
+        54,
+        13,
+        10,
+        13,
+        10,
+        35,
+        32,
+        117,
+        110,
+        105,
+        116,
+        58,
+        32,
+        108,
+        98,
+        115,
+        13,
+        10,
+        13,
+        10,
+        115,
+        113,
+        117,
+        97,
+        116,
+        58,
+        13,
+        10,
+        32,
+        32,
+        53,
+        48,
+        48,
+        13,
+        10,
+        32,
+        49,
+        48,
+        114,
+        13,
+        10
+      ];
+      String src = Utf8Codec().decode(bytes);
+      List<String> expected = [
+        "[Date / Time] 2021-02-06",
+        "[Metadata Key] unit",
+        "[Metadata Value] lbs",
+        "[Movement] squat",
+        "[Load] 500",
+        "[Reps] 10",
       ];
       Parser parser = Parser(src);
       List<Token> tokens = parser.tokens();
