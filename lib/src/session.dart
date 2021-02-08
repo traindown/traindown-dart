@@ -13,7 +13,9 @@ class Session extends Metadatable {
   Performance _currentPerformance;
   Metadatable _currentTarget;
 
-  Session(this.tokens) {
+  double defaultBW;
+
+  Session(this.tokens, {this.defaultBW = 100}) {
     _currentTarget = this;
     _build();
   }
@@ -29,7 +31,10 @@ class Session extends Metadatable {
     tokens.forEach((t) {
       switch (t.tokenType) {
         case TokenType.DateTime:
-          occurred = DateTime.tryParse(t.literal);
+          DateTime maybeOccurred = DateTime.tryParse(t.literal);
+          if (maybeOccurred != null) {
+            occurred = maybeOccurred;
+          }
           break;
         case TokenType.Fail:
           _currentPerformance ??= _newPerformance();
@@ -43,7 +48,29 @@ class Session extends Metadatable {
             _currentPerformance = _newPerformance();
           }
 
-          _currentPerformance.load = double.parse(t.literal);
+          if (t.literal.startsWith(RegExp(r'[bB][wW]'))) {
+            double baseAmount =
+                double.tryParse(metadata.kvps[t.literal.substring(0, 2)]);
+            baseAmount ??= defaultBW;
+
+            if (t.literal.length > 2) {
+              String bwLoad = t.literal.substring(2);
+              String dir = bwLoad.substring(0, 1);
+              double ld = double.parse(bwLoad.substring(1));
+
+              // NOTE: Do NOT use mirrors for this.
+              if (dir == '+') {
+                _currentPerformance.load = baseAmount + ld;
+              } else {
+                _currentPerformance.load = baseAmount - ld;
+              }
+            } else {
+              _currentPerformance.load = baseAmount;
+            }
+          } else {
+            _currentPerformance.load = double.parse(t.literal);
+          }
+
           _currentTarget = _currentPerformance;
           break;
         case TokenType.MetaKey:
@@ -55,6 +82,10 @@ class Session extends Metadatable {
           break;
         case TokenType.Movement:
         case TokenType.SupersetMovement:
+          if (_currentPerformance?.load != null) {
+            _currentMovement.performances.add(_currentPerformance);
+            _currentPerformance = _newPerformance();
+          }
           if (_currentMovement != null) {
             movements.add(_currentMovement);
           }

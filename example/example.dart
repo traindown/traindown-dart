@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:traindown/src/presenters/console_presenter.dart';
 import 'package:traindown/src/presenters/json_presenter.dart';
 import 'package:traindown/src/formatter.dart';
@@ -60,5 +62,22 @@ void main() {
 
   print("And here is some JSON\n");
   print(jp.present());
+  print('\n\n---\n\n');
+
+  // You can also read a file with little effort
+
+  File file = File("./example/example.traindown");
+  String src = file.readAsStringSync();
+  Parser fileParser = Parser(src);
+  Session fileSession = Session(fileParser.tokens());
+
+  // And using our handy presenter again
+
+  ConsolePresenter fcp = ConsolePresenter(fileSession);
+
+  // We see some awesomeness!
+
+  print("A longer example presented for the console\n");
+  print(fcp.present());
   print('\n\n---\n\n');
 }
