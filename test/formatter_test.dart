@@ -6,8 +6,10 @@ import "package:traindown/src/formatter.dart";
 import "package:traindown/src/parser.dart";
 
 final String expected = """
-@ 1/1/2021 1:23pm
+@ 2020-01-01 1:23pm
 
+# unit: lbs
+# bw: 230
 # session meta key 1: session meta "value" 1
 # session meta key '2': session meta value 2
 # 3rd session meta key: 3rd session meta value
@@ -29,7 +31,7 @@ movement 1:
   202 2r
   203 2s
   204 2r 2s
-  205 2f
+  205 2r 2f
 
 Third movement:
   301

@@ -1,14 +1,15 @@
 @ 2020-01-01 1:23pm
 
+# unit: lbs
+# bw: 230
+
 # session meta key 1: session meta "value" 1
 # session meta key '2': session meta value 2
 # 3rd session meta key: 3rd session meta value
+
 * session note 1
 * 2nd session note
 * "Third" session note
-
-# unit: lbs
-# bw: 230
 
 movement 1: 100 101.1; 102
 
