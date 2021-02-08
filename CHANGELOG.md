@@ -1,3 +1,9 @@
+## 2.1.1
+Fixes for:
+- Faulty bodyweight handling
+- Grace in handling dates (still needs work)
+- Correct performance attribution
+
 ## 2.1.0
 - Refactor Presenters to work with new interals
 - Update the example.dart to reflect current usage
