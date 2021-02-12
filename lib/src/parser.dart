@@ -63,7 +63,7 @@ Function metaKeyState(Lexer lexer) {
 
   String chr = lexer.next();
 
-  while (chr != ":") {
+  while (!isColonTerminator(chr)) {
     chr = lexer.next();
   }
 
@@ -94,6 +94,10 @@ Function movementState(Lexer lexer) {
 
   String chr = lexer.next();
 
+  if (chr == Token.EOF) {
+    return null;
+  }
+
   if (chr == "+") {
     superset = true;
     lexer.take([" "]);
@@ -106,7 +110,7 @@ Function movementState(Lexer lexer) {
     chr = lexer.next();
   }
 
-  while (chr != ":") {
+  while (!isColonTerminator(chr)) {
     chr = lexer.next();
   }
 
@@ -199,6 +203,8 @@ Function valueState(Lexer lexer) {
 
   return idleState;
 }
+
+bool isColonTerminator(String chr) => chr == ":" || chr == Token.EOF;
 
 bool isLineTerminator(String chr) {
   List<int> codeUnits = chr.codeUnits;

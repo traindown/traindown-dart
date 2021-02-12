@@ -1,3 +1,5 @@
+@Timeout(Duration(seconds: 15))
+
 import 'dart:convert';
 import 'dart:io';
 import 'package:test/test.dart';
@@ -160,6 +162,37 @@ squat:
         "[Movement] squat",
         "[Load] 500",
         "[Reps] 10",
+      ];
+      Parser parser = Parser(src);
+      List<Token> tokens = parser.tokens();
+      var tokenStrs = tokens.map((t) => t.toString());
+      expect(tokenStrs, expected);
+    });
+
+    test('Incomplete movement', () {
+      String src = """
+          @ 2020-01-01 1:23pm
+
+          Movement""";
+      List<String> expected = [
+        "[Date / Time] 2020-01-01 1:23pm",
+        "[Movement] Movement"
+      ];
+      Parser parser = Parser(src);
+      List<Token> tokens = parser.tokens();
+      var tokenStrs = tokens.map((t) => t.toString());
+      expect(tokenStrs, expected);
+    });
+
+    test('Incomplete metakey', () {
+      String src = """
+          @ 2020-01-01 1:23pm
+
+          # Meta key""";
+      List<String> expected = [
+        "[Date / Time] 2020-01-01 1:23pm",
+        "[Metadata Key] Meta key",
+        "[Metadata Value] ",
       ];
       Parser parser = Parser(src);
       List<Token> tokens = parser.tokens();
