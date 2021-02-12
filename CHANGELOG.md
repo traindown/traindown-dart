@@ -1,3 +1,6 @@
+## 2.1.3
+- Fix for lexer looping when colons were missing on incomplete data
+
 ## 2.1.2
 - Fix for poor handling of line terminators on various OSes
 
