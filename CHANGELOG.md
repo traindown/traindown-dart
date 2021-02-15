@@ -1,3 +1,6 @@
+## 2.1.4
+- Fix for incorrect unit attribution on multimovement sessions
+
 ## 2.1.3
 - Fix for lexer looping when colons were missing on incomplete data
 

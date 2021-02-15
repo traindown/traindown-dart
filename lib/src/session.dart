@@ -84,7 +84,7 @@ class Session extends Metadatable {
         case TokenType.SupersetMovement:
           if (_currentPerformance?.load != null) {
             _currentMovement.performances.add(_currentPerformance);
-            _currentPerformance = _newPerformance();
+            _currentPerformance = _newPerformance(skipMovementUnit: true);
           }
           if (_currentMovement != null) {
             movements.add(_currentMovement);
@@ -116,19 +116,24 @@ class Session extends Metadatable {
     }
   }
 
-  Performance _newPerformance() {
-    String unit = 'unknown unit';
-    for (Metadata scope in [
-      _currentMovement?.metadata ?? Metadata(),
-      metadata
-    ]) {
+  Performance _newPerformance({bool skipMovementUnit = false}) {
+    String unit = Performance.unknownUnit;
+
+    List<Metadata> scopes = [metadata];
+
+    if (!skipMovementUnit) {
+      scopes.insert(0, _currentMovement?.metadata ?? Metadata());
+    }
+
+    for (Metadata scope in scopes) {
       for (String unitKeyword in Performance.unitKeywords) {
         if (scope.kvps.containsKey(unitKeyword)) {
           unit = scope.kvps[unitKeyword];
           break;
         }
       }
-      if (unit != 'unknown unit') break;
+
+      if (unit != Performance.unknownUnit) break;
     }
 
     return Performance(unit: unit);

@@ -22,12 +22,14 @@ class Performance extends Metadatable {
     'Unit',
   ];
 
+  static const unknownUnit = "unknown unit";
+
   Performance(
       {double fails = 0,
       double load = -1,
       double sets = 1,
       double reps = 1,
-      String unit = 'unknown unit'})
+      String unit = unknownUnit})
       : _fails = fails,
         _load = load < 0 ? null : load,
         _sets = sets,
