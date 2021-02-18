@@ -1,6 +1,5 @@
 import "package:traindown/src/movement.dart";
 import "package:traindown/src/session.dart";
-import "package:traindown/src/token.dart";
 
 abstract class Presenter {
   Session session;

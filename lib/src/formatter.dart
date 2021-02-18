@@ -52,7 +52,11 @@ class Formatter {
         ret = "$pre${t.literal}";
         break;
       case TokenType.MetaKey:
-        int iter = (_pastMovement) ? 2 : (_pastSession) ? 1 : 0;
+        int iter = (_pastMovement)
+            ? 2
+            : (_pastSession)
+                ? 1
+                : 0;
         ret = "$linebreaker${indenter * iter}# ${t.literal}:";
         break;
       case TokenType.MetaValue:
@@ -67,7 +71,11 @@ class Formatter {
         ret = "${linebreaker * 2}$pre${t.literal}:";
         break;
       case TokenType.Note:
-        int iter = (_pastMovement) ? 2 : (_pastSession) ? 1 : 0;
+        int iter = (_pastMovement)
+            ? 2
+            : (_pastSession)
+                ? 1
+                : 0;
         ret = "$linebreaker${indenter * iter}*$spacer${t.literal}";
         break;
       case TokenType.Rep:

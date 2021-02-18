@@ -1,3 +1,6 @@
+## 2.1.5
+- Clean up of files per pub.dev
+
 ## 2.1.4
 - Fix for incorrect unit attribution on multimovement sessions
 
