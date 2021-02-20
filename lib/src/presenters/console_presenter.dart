@@ -1,6 +1,7 @@
 import "package:traindown/src/presenter.dart";
 import "package:traindown/src/session.dart";
 
+/// Turns a Session into a string that is decent for terminal output.
 class ConsolePresenter extends Presenter {
   ConsolePresenter(Session session) : super(session);
 

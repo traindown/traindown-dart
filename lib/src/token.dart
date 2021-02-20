@@ -11,7 +11,11 @@ enum TokenType {
   SupersetMovement,
 }
 
+/// A Token has a type and a literal. It is the intermediate form of the source
+/// that is used by things like the Formatter or Session to understand how
+/// to interpret the source.
 class Token {
+  /// Null terminator
   static final String EOF = "\x00";
 
   String literal;
@@ -19,6 +23,7 @@ class Token {
 
   Token(this._token, this.literal);
 
+  /// Tokens are consider equivilent if both the type and the literal match.
   @override
   bool operator ==(t) => t.token == token && t.literal == literal;
 

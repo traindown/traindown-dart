@@ -3,6 +3,7 @@ import "dart:convert";
 import "package:traindown/src/presenter.dart";
 import "package:traindown/src/session.dart";
 
+/// Converts a Session into a JSON string.
 class JsonPresenter extends Presenter {
   JsonPresenter(Session session) : super(session);
 
@@ -13,10 +14,10 @@ class JsonPresenter extends Presenter {
   }
 
   List _movementsHash() {
-    return movements.fold(List(), (acc, movement) {
+    return movements.fold([], (acc, movement) {
       acc.add({
         "name": movement.name,
-        "performances": movement.performances.fold(List(), (pacc, performance) {
+        "performances": movement.performances.fold([], (pacc, performance) {
           pacc.add({
             "load": performance.load,
             "reps": performance.reps,

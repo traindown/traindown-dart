@@ -1,5 +1,7 @@
 import 'package:traindown/src/token.dart';
 
+/// Formatter takes in a list of tokens and returns a string formatted per the
+/// settings.
 class Formatter {
   String indenter, linebreaker, spacer;
 

@@ -1,6 +1,9 @@
 import "package:traindown/src/metadata.dart";
 import "package:traindown/src/performance.dart";
 
+/// Movement represents a single type of exercise or, well, movement.
+/// A Movement has many Performances and a Session can have many Movements.
+/// An example would simply be "Squats".
 class Movement extends Metadatable {
   String name;
   List<Performance> performances = [];
@@ -11,6 +14,7 @@ class Movement extends Metadatable {
     superSetted = superset;
   }
 
+  /// Volume does not currently account for differing units per Performance.
   double get volume => performances.fold(0, (acc, p) => acc + p.volume);
 
   String get _metadata {

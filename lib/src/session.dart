@@ -3,6 +3,8 @@ import 'package:traindown/src/movement.dart';
 import 'package:traindown/src/performance.dart';
 import 'package:traindown/src/token.dart';
 
+/// Session represents a single instance of training. It contains data on
+/// what was performed as well as notes and metadata.
 class Session extends Metadatable {
   List<Movement> movements = [];
   DateTime occurred = DateTime.now();

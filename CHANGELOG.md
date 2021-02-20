@@ -1,3 +1,6 @@
+### 2.1.6
+- Added basic docs for most things
+
 ## 2.1.5
 - Clean up of files per pub.dev
 

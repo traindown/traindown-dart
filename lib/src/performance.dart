@@ -1,5 +1,10 @@
 import 'package:traindown/src/metadata.dart';
 
+/// Performance represents a single expression of movement. It can be as little
+/// as a single or as much as needed. Each Performance *must* have a load
+/// otherwise it is somewhat nonsensical. Outside that, a Performance may have
+/// a count of repititions performed for the given load, a count of sets of
+/// reps, a count of failed reps, and a unit for the load.
 class Performance extends Metadatable {
   double _fails;
   double _load;
@@ -8,6 +13,7 @@ class Performance extends Metadatable {
   String _unit;
   bool _touched = false;
 
+  /// These are the special meta keywords to denote bodyweight.
   static const List<String> bodyweightKeywords = [
     'bw',
     'BW',
@@ -15,6 +21,8 @@ class Performance extends Metadatable {
     'Bodyweight'
   ];
 
+  /// These are the special meta keywords that can affect the Performance
+  /// unit. These may exist at the Session, Movement, or Performance scope.
   static const List<String> unitKeywords = [
     'u',
     'U',
@@ -22,6 +30,8 @@ class Performance extends Metadatable {
     'Unit',
   ];
 
+  /// In cases where we do not know the unit, we have a constant we can fall
+  /// back onto.
   static const unknownUnit = "unknown unit";
 
   Performance(

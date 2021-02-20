@@ -1,6 +1,8 @@
 import "package:traindown/src/lexer.dart";
 import "package:traindown/src/token.dart";
 
+/// Parser defines the rules for the Traindown language and drives the Lexer
+/// to produce a list of tokens for further processing.
 class Parser {
   Lexer lexer;
 
@@ -15,6 +17,8 @@ class Parser {
   }
 }
 
+/// This is the default state. It routes to the appropriate state for further
+/// handling.
 Function idleState(Lexer lexer) {
   String chr = lexer.peek();
 
@@ -204,8 +208,13 @@ Function valueState(Lexer lexer) {
   return idleState;
 }
 
+/// This checks for the presence of : or EOF and is used to determine
+/// movement names and metakeys. Without a catch for EOF, this has the
+/// potential to infinite loop on malformed sources.
 bool isColonTerminator(String chr) => chr == ":" || chr == Token.EOF;
 
+/// Line termination is a critical piece to parsing Traindown. Here we look
+/// for the explicit codepoints that indicate EOL.
 bool isLineTerminator(String chr) {
   List<int> codeUnits = chr.codeUnits;
 
