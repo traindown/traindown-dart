@@ -1,4 +1,9 @@
-### 2.1.6
+## 2.2.0
+- Added the concept of unit officially to both Session and Movement.
+- Altered the underlying logic for the unit API on Performance.
+- **NOTE** Special meta constants now live in Metadata (where they should).
+
+## 2.1.6
 - Added basic docs for most things
 
 ## 2.1.5
