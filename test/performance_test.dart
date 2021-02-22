@@ -13,16 +13,16 @@ void main() {
         performance.addKVP('your', 'mom');
         expect(performance.metadata.kvps.isNotEmpty, equals(true));
         expect(performance.metadata.kvps['your'], equals('mom'));
+        expect(performance.wasTouched, equals(true));
       });
     });
 
-    group('with a unit kvp', () {
-      Performance.unitKeywords.forEach((unitKey) {
-        test('with $unitKey', () {
-          performance.addKVP(unitKey, 'lbs');
-          expect(performance.metadata.kvps.isEmpty, equals(true));
-          expect(performance.unit, equals('lbs'));
-        });
+    group('setting the unit', () {
+      test('it sets and marks touched', () {
+        performance.unit = 'your mom';
+        expect(performance.metadata.kvps.isNotEmpty, equals(true));
+        expect(performance.unit, equals('your mom'));
+        expect(performance.wasTouched, equals(true));
       });
     });
   });

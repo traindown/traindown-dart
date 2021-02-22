@@ -10,49 +10,47 @@ class Performance extends Metadatable {
   double _load;
   double _sets;
   double _reps;
-  String _unit;
   bool _touched = false;
 
-  /// These are the special meta keywords to denote bodyweight.
-  static const List<String> bodyweightKeywords = [
-    'bw',
-    'BW',
-    'bodyweight',
-    'Bodyweight'
-  ];
-
-  /// These are the special meta keywords that can affect the Performance
-  /// unit. These may exist at the Session, Movement, or Performance scope.
-  static const List<String> unitKeywords = [
-    'u',
-    'U',
-    'unit',
-    'Unit',
-  ];
-
-  /// In cases where we do not know the unit, we have a constant we can fall
-  /// back onto.
-  static const unknownUnit = "unknown unit";
+  static List<String> attrs = ['fails', 'load', 'sets', 'reps'];
 
   Performance(
       {double fails = 0,
       double load = -1,
       double sets = 1,
       double reps = 1,
-      String unit = unknownUnit})
+      String unit = Metadata.unknownUnit})
       : _fails = fails,
         _load = load < 0 ? null : load,
         _sets = sets,
-        _reps = reps,
-        _unit = unit;
+        _reps = reps {
+          if (unit != Metadata.unknownUnit) {
+            this.unit = unit;
+          }
+        }
+
+  void operator []=(String attr, double value) {
+    if (!attrs.contains(attr)) throw 'Invalid attr';
+
+    switch(attr) {
+      case 'fails':
+        _fails = value;
+        break;
+      case 'load':
+        _load = value;
+        break;
+      case 'sets':
+        _sets = value;
+        break;
+      case 'reps':
+        _reps = value;
+        break;
+    };
+  }
 
   @override
   void addKVP(String key, String value) {
-    if (unitKeywords.contains(key)) {
-      _unit = value;
-    } else {
-      super.addKVP(key, value);
-    }
+    super.addKVP(key, value);
     _touched = true;
   }
 
@@ -122,10 +120,10 @@ class Performance extends Metadatable {
     return '$_summary$_metadata$_notes';
   }
 
-  String get unit => _unit;
+  @override
   set unit(String newUnit) {
+    super.unit = newUnit;
     _touched = true;
-    _unit = newUnit;
   }
 
   double get volume => successfulReps * load * sets;

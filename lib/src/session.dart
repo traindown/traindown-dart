@@ -15,11 +15,22 @@ class Session extends Metadatable {
   Performance _currentPerformance;
   Metadatable _currentTarget;
 
+  /// Useful to set as a config option in your app.
   double defaultBW;
 
-  Session(this.tokens, {this.defaultBW = 100}) {
+  Session(this.tokens, {this.defaultBW = 100, String unit = Metadata.unknownUnit}) {
     _currentTarget = this;
+    unit = unit;
     _build();
+  }
+
+  /// Adds a Movement and ensures the units align.
+  void addMovement(Movement movement) {
+    if (movement.unit == Metadata.unknownUnit) {
+      movement.unit = unit;
+    }
+
+    movements.add(movement);
   }
 
   @override
@@ -33,47 +44,13 @@ class Session extends Metadatable {
     tokens.forEach((t) {
       switch (t.tokenType) {
         case TokenType.DateTime:
-          DateTime maybeOccurred = DateTime.tryParse(t.literal);
-          if (maybeOccurred != null) {
-            occurred = maybeOccurred;
-          }
+          _handleDateTime(t.literal);
           break;
         case TokenType.Fail:
-          _currentPerformance ??= _newPerformance();
-          _currentPerformance.fails = double.parse(t.literal);
+          _handlePerformanceAttribute('fails', t.literal);
           break;
         case TokenType.Load:
-          _currentPerformance ??= _newPerformance();
-
-          if (_currentPerformance?.load != null) {
-            _currentMovement.performances.add(_currentPerformance);
-            _currentPerformance = _newPerformance();
-          }
-
-          if (t.literal.startsWith(RegExp(r'[bB][wW]'))) {
-            double baseAmount =
-                double.tryParse(metadata.kvps[t.literal.substring(0, 2)]);
-            baseAmount ??= defaultBW;
-
-            if (t.literal.length > 2) {
-              String bwLoad = t.literal.substring(2);
-              String dir = bwLoad.substring(0, 1);
-              double ld = double.parse(bwLoad.substring(1));
-
-              // NOTE: Do NOT use mirrors for this.
-              if (dir == '+') {
-                _currentPerformance.load = baseAmount + ld;
-              } else {
-                _currentPerformance.load = baseAmount - ld;
-              }
-            } else {
-              _currentPerformance.load = baseAmount;
-            }
-          } else {
-            _currentPerformance.load = double.parse(t.literal);
-          }
-
-          _currentTarget = _currentPerformance;
+          _handleLoad(t.literal);
           break;
         case TokenType.MetaKey:
           _currentMeta = t.literal;
@@ -84,60 +61,83 @@ class Session extends Metadatable {
           break;
         case TokenType.Movement:
         case TokenType.SupersetMovement:
-          if (_currentPerformance?.load != null) {
-            _currentMovement.performances.add(_currentPerformance);
-            _currentPerformance = _newPerformance(skipMovementUnit: true);
-          }
-          if (_currentMovement != null) {
-            movements.add(_currentMovement);
-          }
-          _currentMovement =
-              Movement(t.literal, t.tokenType == TokenType.SupersetMovement);
-          _currentTarget = _currentMovement;
+          _handleMovement(t.literal, t.tokenType == TokenType.SupersetMovement);
           break;
         case TokenType.Note:
           _currentTarget.addNote(t.literal);
           break;
         case TokenType.Rep:
-          _currentPerformance ??= _newPerformance();
-          _currentPerformance.reps = double.parse(t.literal);
+          _handlePerformanceAttribute('reps', t.literal);
           break;
         case TokenType.Set:
-          _currentPerformance ??= _newPerformance();
-          _currentPerformance.sets = double.parse(t.literal);
+          _handlePerformanceAttribute('sets', t.literal);
           break;
       }
     });
 
-    if (_currentPerformance?.load != null) {
-      _currentMovement.performances.add(_currentPerformance);
-    }
-
-    if (_currentMovement != null) {
-      movements.add(_currentMovement);
-    }
+    // NOTE: Always remember to store the dangling Movement.
+    _storeMovement();
   }
 
-  Performance _newPerformance({bool skipMovementUnit = false}) {
-    String unit = Performance.unknownUnit;
+  void _handleDateTime(String literal) {
+    DateTime maybeOccurred = DateTime.tryParse(literal);
+    if (maybeOccurred != null) occurred = maybeOccurred;
+  }
 
-    List<Metadata> scopes = [metadata];
+  void _handleLoad(String literal) {
+    _currentPerformance ??= Performance();
 
-    if (!skipMovementUnit) {
-      scopes.insert(0, _currentMovement?.metadata ?? Metadata());
+    if (_currentPerformance?.load != null) {
+      _currentMovement.addPerformance(_currentPerformance);
+      _currentPerformance = Performance();
     }
 
-    for (Metadata scope in scopes) {
-      for (String unitKeyword in Performance.unitKeywords) {
-        if (scope.kvps.containsKey(unitKeyword)) {
-          unit = scope.kvps[unitKeyword];
-          break;
+    if (literal.startsWith(RegExp(r'[bB][wW]'))) {
+      double baseAmount = double.tryParse(metadata.kvps[literal.substring(0, 2)]);
+      baseAmount ??= defaultBW;
+
+      if (literal.length > 2) {
+        String bwLoad = literal.substring(2);
+        String dir = bwLoad.substring(0, 1);
+        double ld = double.parse(bwLoad.substring(1));
+
+        // NOTE: Do NOT use mirrors for this.
+        if (dir == '+') {
+          _currentPerformance.load = baseAmount + ld;
+        } else {
+          _currentPerformance.load = baseAmount - ld;
         }
-      }
 
-      if (unit != Performance.unknownUnit) break;
+      } else {
+        _currentPerformance.load = baseAmount;
+      }
+    } else {
+      _currentPerformance.load = double.parse(literal);
     }
 
-    return Performance(unit: unit);
+    _currentTarget = _currentPerformance;
+  }
+
+  // NOTE: Make sure to add the Movement first and retain the pointer to
+  // it such that the added Performance picks up the cascade of units, if
+  // applicable.
+  void _handleMovement(String literal, bool superset) {
+    _storeMovement();
+    _currentMovement = Movement(literal, superset: superset, unit: unit);
+    _currentTarget = _currentMovement;
+  }
+
+  void _handlePerformanceAttribute(String attr, String literal) {
+    _currentPerformance ??= Performance();
+    _currentPerformance[attr] = double.parse(literal);
+  }
+
+  void _storeMovement() {
+    if (_currentMovement != null) addMovement(_currentMovement);
+
+    if (_currentPerformance?.load != null) {
+      _currentMovement.addPerformance(_currentPerformance);
+      _currentPerformance = Performance();
+    }
   }
 }

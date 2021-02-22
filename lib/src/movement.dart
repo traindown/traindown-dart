@@ -9,9 +9,19 @@ class Movement extends Metadatable {
   List<Performance> performances = [];
   bool superSetted = false;
 
-  Movement(String initName, [bool superset = false]) {
+  Movement(String initName, {bool superset = false, String unit = Metadata.unknownUnit}) {
     name = initName.trim();
     superSetted = superset;
+    unit = unit;
+  }
+
+  /// Adds a Performance and ensures the units align.
+  void addPerformance(Performance performance) {
+    if (performance.unit == Metadata.unknownUnit) {
+      performance.unit = unit;
+    }
+
+    performances.add(performance);
   }
 
   /// Volume does not currently account for differing units per Performance.
