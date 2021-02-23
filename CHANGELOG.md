@@ -1,3 +1,8 @@
+## 2.2.1
+- Cleaned out unneccessary internals.
+- Deprecated Performance.wasTouched.
+- Added stress test for Session.
+
 ## 2.2.0
 - Added the concept of unit officially to both Session and Movement.
 - Altered the underlying logic for the unit API on Performance.
