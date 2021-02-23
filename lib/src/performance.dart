@@ -6,98 +6,66 @@ import 'package:traindown/src/metadata.dart';
 /// a count of repititions performed for the given load, a count of sets of
 /// reps, a count of failed reps, and a unit for the load.
 class Performance extends Metadatable {
-  double _fails;
-  double _load;
-  double _sets;
-  double _reps;
-  bool _touched = false;
+  double fails;
+  double load;
+  double sets;
+  double reps;
 
+  /// List of getters/setters on the class used for dynamic access without
+  /// the use of Mirrors.
   static List<String> attrs = ['fails', 'load', 'sets', 'reps'];
 
   Performance(
-      {double fails = 0,
-      double load = -1,
-      double sets = 1,
-      double reps = 1,
-      String unit = Metadata.unknownUnit})
-      : _fails = fails,
-        _load = load < 0 ? null : load,
-        _sets = sets,
-        _reps = reps {
-          if (unit != Metadata.unknownUnit) {
-            this.unit = unit;
-          }
-        }
+      {this.fails = 0,
+      this.load = -1,
+      this.sets = 1,
+      this.reps = 1,
+      String unit = Metadata.unknownUnit}) {
+    load = load < 0 ? null : load;
+    if (unit != Metadata.unknownUnit) this.unit = unit;
+  }
 
+  /// Simple accessors that do not require Mirrors.
   void operator []=(String attr, double value) {
     if (!attrs.contains(attr)) throw 'Invalid attr';
 
-    switch(attr) {
+    switch (attr) {
       case 'fails':
-        _fails = value;
+        fails = value;
         break;
       case 'load':
-        _load = value;
+        load = value;
         break;
       case 'sets':
-        _sets = value;
+        sets = value;
         break;
       case 'reps':
-        _reps = value;
+        reps = value;
         break;
-    };
-  }
-
-  @override
-  void addKVP(String key, String value) {
-    super.addKVP(key, value);
-    _touched = true;
-  }
-
-  double get fails => _fails;
-  set fails(double newFails) {
-    _touched = true;
-    _fails = newFails;
-  }
-
-  double get load => _load;
-  set load(double newLoad) {
-    _touched = true;
-    _load = newLoad;
+    }
+    ;
   }
 
   String get _metadata {
-    if (metadata.kvps.entries.isEmpty) {
+    if (kvps.entries.isEmpty) {
       return '';
     }
     StringBuffer ret = StringBuffer();
-    for (var mapEntry in metadata.kvps.entries) {
+    for (var mapEntry in kvps.entries) {
       ret.write('    ${mapEntry.key}: ${mapEntry.value}\n');
     }
     return '\n$ret\n';
   }
 
   String get _notes {
-    if (metadata.notes.isEmpty) {
+    if (notes.isEmpty) {
       return '';
     }
     StringBuffer ret = StringBuffer();
-    for (var note in metadata.notes) {
+    for (var note in notes) {
       ret.write('    - $note\n');
     }
     return '\n$ret\n';
-  }
-
-  double get sets => _sets;
-  set sets(double newSets) {
-    _touched = true;
-    _sets = newSets;
-  }
-
-  double get reps => _reps;
-  set reps(double newReps) {
-    _touched = true;
-    _reps = newReps;
   }
 
   double get successfulReps => reps - fails;
@@ -116,16 +84,7 @@ class Performance extends Metadatable {
   }
 
   @override
-  String toString() {
-    return '$_summary$_metadata$_notes';
-  }
-
-  @override
-  set unit(String newUnit) {
-    super.unit = newUnit;
-    _touched = true;
-  }
+  String toString() => '$_summary$_metadata$_notes';
 
   double get volume => successfulReps * load * sets;
-  bool get wasTouched => _touched;
 }

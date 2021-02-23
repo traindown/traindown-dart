@@ -5,7 +5,7 @@ class Metadata {
   /// These are the special meta keywords to denote bodyweight.
   static const List<String> bodyweightKeywords = [
     'bodyweight',
-    'Bodyweight'
+    'Bodyweight',
     'bw',
     'BW',
   ];
@@ -28,6 +28,9 @@ class Metadata {
 
   /// Add a note.
   void addNote(String note) => notes.add(note);
+
+  /// Set the value for the given key.
+  void setKVP(String key, String value) => kvps[key] = value;
 
   @override
   String toString() {
@@ -61,36 +64,32 @@ class Metadata {
 /// at each scope of a Traindown document.
 abstract class Metadatable {
   Metadata metadata = Metadata();
-  String _unit;
-
-  /// Unit provides the unit value for the special meta if it exists
-  String get unit {
-    if (_unit != null) return _unit;
-
-    String u = Metadata.unknownUnit;
-
-    for (String unitKeyword in Metadata.unitKeywords) {
-      if (metadata.kvps.containsKey(unitKeyword)) {
-        u = metadata.kvps[unitKeyword];
-        break;
-      }
-    }
-
-    _unit = u;
-
-    return u;
-  }
-
-  /// Sets both the metadata and the unit cache. Good times.
-  set unit(String newUnit) => addKVP(Metadata.unitKeywords.first, newUnit);
+  String unit = Metadata.unknownUnit;
 
   /// Adds the key value pair to the KVPs.
   void addKVP(String key, String value) {
-    metadata.kvps[key] = value;
-
-    if (Metadata.unitKeywords.contains(key)) _unit = value;
+    if (Metadata.unitKeywords.contains(key)) {
+      unit = value;
+    } else {
+      metadata.addKVP(key, value);
+    }
   }
 
   /// Adds a note.
   void addNote(String note) => metadata.notes.add(note);
+
+  /// Convenience access to kvps.
+  Map<String, String> get kvps => metadata.kvps;
+
+  /// Convenience access to notes.
+  List<String> get notes => metadata.notes;
+
+  /// Sets the value for the given key.
+  void setKVP(String key, String value) {
+    if (Metadata.unitKeywords.contains(key)) {
+      unit = value;
+    } else {
+      metadata.setKVP(key, value);
+    }
+  }
 }

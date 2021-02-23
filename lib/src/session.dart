@@ -18,16 +18,19 @@ class Session extends Metadatable {
   /// Useful to set as a config option in your app.
   double defaultBW;
 
-  Session(this.tokens, {this.defaultBW = 100, String unit = Metadata.unknownUnit}) {
+  Session(this.tokens,
+      {this.defaultBW = 100, String unit = Metadata.unknownUnit}) {
     _currentTarget = this;
     unit = unit;
     _build();
   }
 
-  /// Adds a Movement and ensures the units align.
+  /// Adds a Movement and ensures the units align at all levels. Care taken in
+  /// case a Movement is rehomed.
   void addMovement(Movement movement) {
     if (movement.unit == Metadata.unknownUnit) {
       movement.unit = unit;
+      movement.performances.forEach((p) => p.unit = unit);
     }
 
     movements.add(movement);
@@ -56,7 +59,7 @@ class Session extends Metadatable {
           _currentMeta = t.literal;
           break;
         case TokenType.MetaValue:
-          _currentTarget.addKVP(_currentMeta, t.literal);
+          _currentTarget.setKVP(_currentMeta, t.literal);
           _currentMeta = null;
           break;
         case TokenType.Movement:
@@ -93,7 +96,8 @@ class Session extends Metadatable {
     }
 
     if (literal.startsWith(RegExp(r'[bB][wW]'))) {
-      double baseAmount = double.tryParse(metadata.kvps[literal.substring(0, 2)]);
+      double baseAmount =
+          double.tryParse(metadata.kvps[literal.substring(0, 2)]);
       baseAmount ??= defaultBW;
 
       if (literal.length > 2) {
@@ -107,7 +111,6 @@ class Session extends Metadatable {
         } else {
           _currentPerformance.load = baseAmount - ld;
         }
-
       } else {
         _currentPerformance.load = baseAmount;
       }
@@ -132,6 +135,8 @@ class Session extends Metadatable {
     _currentPerformance[attr] = double.parse(literal);
   }
 
+  // NOTE: Store the Movement first to pick up any unit that needs to be passed
+  // on down, then store the Performance.
   void _storeMovement() {
     if (_currentMovement != null) addMovement(_currentMovement);
 

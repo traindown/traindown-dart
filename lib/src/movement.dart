@@ -9,7 +9,8 @@ class Movement extends Metadatable {
   List<Performance> performances = [];
   bool superSetted = false;
 
-  Movement(String initName, {bool superset = false, String unit = Metadata.unknownUnit}) {
+  Movement(String initName,
+      {bool superset = false, String unit = Metadata.unknownUnit}) {
     name = initName.trim();
     superSetted = superset;
     unit = unit;
