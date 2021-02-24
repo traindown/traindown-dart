@@ -172,6 +172,60 @@ void main() {
       expect(session.movements[1].performances[0].unit, "not lbs");
     });
 
+    test('iOS pathological case with units round 2', () {
+      List<Token> tokens = [
+        Token(TokenType.DateTime, "2021-02-23"),
+        Token(TokenType.MetaKey, "unit"),
+        Token(TokenType.MetaValue, "lbs"),
+        Token(TokenType.MetaKey, "bw"),
+        Token(TokenType.MetaValue, "230"),
+        Token(TokenType.MetaKey, "day"),
+        Token(TokenType.MetaValue, "de lower"),
+        Token(TokenType.Movement, "squat"),
+        Token(TokenType.MetaKey, "box height"),
+        Token(TokenType.MetaValue, "15\""),
+        Token(TokenType.MetaKey, "chains"),
+        Token(TokenType.MetaValue, "120lbs"),
+        Token(TokenType.MetaKey, "stances"),
+        Token(TokenType.MetaValue, "wide, med, narrow"),
+        Token(TokenType.MetaKey, "rest"),
+        Token(TokenType.MetaValue, "45 seconds"),
+        Token(TokenType.Load, "135"),
+        Token(TokenType.Rep, "5"),
+        Token(TokenType.Load, "205"),
+        Token(TokenType.Rep, "5"),
+        Token(TokenType.Load, "275"),
+        Token(TokenType.Rep, "2"),
+        Token(TokenType.Load, "305"),
+        Token(TokenType.Rep, "2"),
+        Token(TokenType.Set, "9"),
+      ];
+
+      Session session = Session(tokens);
+
+      expect(session.unit, equals("lbs"));
+      expect(session.movements.length, 1);
+      expect(session.movements[0].name, "squat");
+      expect(session.movements[0].unit, session.unit);
+      expect(session.movements[0].performances.length, 4);
+      expect(session.movements[0].performances[0].load, 135);
+      expect(session.movements[0].performances[0].unit, session.unit);
+      expect(session.movements[0].performances[0].sets, 1);
+      expect(session.movements[0].performances[0].reps, 5);
+      expect(session.movements[0].performances[1].load, 205);
+      expect(session.movements[0].performances[1].unit, session.unit);
+      expect(session.movements[0].performances[1].sets, 1);
+      expect(session.movements[0].performances[1].reps, 5);
+      expect(session.movements[0].performances[2].load, 275);
+      expect(session.movements[0].performances[2].unit, session.unit);
+      expect(session.movements[0].performances[2].sets, 1);
+      expect(session.movements[0].performances[2].reps, 2);
+      expect(session.movements[0].performances[3].load, 305);
+      expect(session.movements[0].performances[3].unit, session.unit);
+      expect(session.movements[0].performances[3].sets, 9);
+      expect(session.movements[0].performances[3].reps, 2);
+    });
+
     const String unit = "your mom";
 
     Metadata.unitKeywords.forEach((uk) {
