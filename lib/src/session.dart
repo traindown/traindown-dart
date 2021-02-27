@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:traindown/src/metadata.dart';
 import 'package:traindown/src/movement.dart';
+import 'package:traindown/src/parser.dart';
 import 'package:traindown/src/performance.dart';
 import 'package:traindown/src/token.dart';
 
@@ -23,6 +26,19 @@ class Session extends Metadatable {
     _currentTarget = this;
     unit = unit;
     _build();
+  }
+
+  factory Session.from_file(File file,
+      {double defaultBW = 100, String unit = Metadata.unknownUnit}) {
+    String src = file.readAsStringSync();
+    Parser fileParser = Parser(src);
+    return Session(fileParser.tokens(), defaultBW: defaultBW, unit: unit);
+  }
+
+  factory Session.from_path(String path,
+      {double defaultBW = 100, String unit = Metadata.unknownUnit}) {
+    File file = File(path);
+    return Session.from_file(file, defaultBW: defaultBW, unit: unit);
   }
 
   /// Adds a Movement and ensures the units align at all levels. Care taken in
