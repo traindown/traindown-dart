@@ -1,3 +1,6 @@
+## 2.3.1
+- Made sure to export Inspector...
+
 ## 2.3.0
 - Added Inspector: A tool for inspecting a collection of Sessions.
 - Bumped min SDK to 2.2.0 to support Set literal usage.
