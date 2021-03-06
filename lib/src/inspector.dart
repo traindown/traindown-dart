@@ -1,10 +1,9 @@
 import 'dart:io';
 
-//import 'package:traindown/src/metadata.dart';
+import 'package:traindown/src/metadata.dart';
 import 'package:traindown/src/movement.dart';
-//import 'package:traindown/src/performance.dart';
+import 'package:traindown/src/performance.dart';
 import 'package:traindown/src/session.dart';
-//import 'package:traindown/src/token.dart';
 
 /// A search result that contains a DateTime and a Movement.
 class MovementSearchResult {
@@ -12,6 +11,9 @@ class MovementSearchResult {
   Movement movement;
   MovementSearchResult(this.occurred, this.movement);
 }
+
+/// Scope levels useful for querying
+enum TraindownScope { session, movement, performance }
 
 /// Inspector provides tools for analyzing Sessions.
 class Inspector {
@@ -48,6 +50,14 @@ class Inspector {
     return Inspector.from_files(files);
   }
 
+  /// Stack rank of scopes in terms of depth priority.
+  static const Map<TraindownScope, int> ScopePriority = {
+    TraindownScope.session: 0,
+    TraindownScope.movement: 1,
+    TraindownScope.performance: 2
+  };
+
+  /// Filters out non Traindown files.
   bool validFile(File file) {
     bool valid = false;
 
@@ -59,6 +69,42 @@ class Inspector {
     }
 
     return valid;
+  }
+
+  /// Map keyed by string that contains all seen values of the given key.
+  Map<String, Set<String>> metadataByKey(
+      [TraindownScope scope = TraindownScope.session]) {
+    Map<String, Set<String>> result = {};
+
+    for (Session session in sessions) {
+      Metadata metadata = session.metadata;
+      for (String key in metadata.kvps.keys) {
+        result[key] ??= <String>{};
+        result[key].add(metadata.kvps[key]);
+      }
+
+      if (ScopePriority[scope] > ScopePriority[TraindownScope.session]) {
+        for (Movement movement in session.movements) {
+          metadata = movement.metadata;
+          for (String key in metadata.kvps.keys) {
+            result[key] ??= <String>{};
+            result[key].add(metadata.kvps[key]);
+          }
+
+          if (ScopePriority[scope] > ScopePriority[TraindownScope.movement]) {
+            for (Performance performance in movement.performances) {
+              metadata = performance.metadata;
+              for (String key in metadata.kvps.keys) {
+                result[key] ??= <String>{};
+                result[key].add(metadata.kvps[key]);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    return result;
   }
 
   /// List of unique Movement names in the Sessions.
@@ -77,6 +123,36 @@ class Inspector {
               (m) => m.name.toLowerCase().contains(movementName.toLowerCase()))
           .forEach(
               (m) => result.add(MovementSearchResult(session.occurred, m)));
+    }
+
+    return result;
+  }
+
+  /// List of Sessions matching the search criteria.
+  /// [metaLike] will match against all key value pairs provided in a case
+  /// insensitve manner.
+  // TODO: Add date filters
+  List<Session> sessionQuery({Map<String, String> metaLike = const {}}) {
+    List<Session> result = sessions;
+
+    if (metaLike.isNotEmpty) {
+      metaLike = metaLike.map((k, v) => MapEntry(k.toLowerCase(), v));
+      result = result.where((s) {
+        if (s.kvps.isEmpty) return false;
+        Map<String, String> lowerMeta =
+            s.kvps.map((k, v) => MapEntry(k.toLowerCase(), v));
+
+        bool match = false;
+        for (String key in lowerMeta.keys) {
+          if (match) break;
+          if (!metaLike.keys.contains(key)) continue;
+
+          match = (metaLike[key] ?? "NOPE").toLowerCase() ==
+              (lowerMeta[key] ?? "YUP").toLowerCase();
+        }
+
+        return match;
+      }).toList();
     }
 
     return result;

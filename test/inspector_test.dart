@@ -33,6 +33,44 @@ void main() {
     });
   });
 
+  group('metadataByKey', () {
+    List<File> files = [File('./example/example.traindown')];
+    Inspector subject = Inspector.from_files(files);
+
+    Map<String, Set<String>> expected = {
+      "bw": {"230"},
+      "session meta key 1": {"session meta \"value\" 1"},
+      "session meta key '2'": {"session meta value 2"},
+      "3rd session meta key": {"3rd session meta value"},
+    };
+
+    test('Session scope', () {
+      Map<String, Set<String>> meta = subject.metadataByKey();
+      expect(meta.length, 4);
+      expect(meta, equals(expected));
+    });
+
+    test('Movement scope', () {
+      expected["2nd movement meta key 1"] = {"2nd movement meta value 1"};
+      expected["Movement 2 meta key 2"] = {"Movement 2 meta key 2"};
+      Map<String, Set<String>> meta =
+          subject.metadataByKey(TraindownScope.movement);
+      expect(meta.length, 6);
+      expect(meta, equals(expected));
+    });
+
+    test('Performance scope', () {
+      expected["2nd movement meta key 1"] = {"2nd movement meta value 1"};
+      expected["Movement 2 meta key 2"] = {"Movement 2 meta key 2"};
+      expected["302 meta key 1"] = {"302 meta value 1"};
+      expected["Meta key 2 for 302"] = {"Meta value 2 for 302"};
+      Map<String, Set<String>> meta =
+          subject.metadataByKey(TraindownScope.performance);
+      expect(meta.length, 8);
+      expect(meta, equals(expected));
+    });
+  });
+
   group('movementNames', () {
     test('Basic use', () {
       List<File> files = [File('./example/example.traindown')];
@@ -80,6 +118,99 @@ void main() {
 
       expect(movementNames.length, 1);
       expect(movementNames[0], equals('squat'));
+    });
+  });
+
+  group('sessionQuery', () {
+    List<Token> tokens1 = [
+      Token(TokenType.DateTime, "2020-01-01"),
+      Token(TokenType.MetaKey, "Your"),
+      Token(TokenType.MetaValue, "Mom"),
+      Token(TokenType.MetaKey, "Foo"),
+      Token(TokenType.MetaValue, "Bar"),
+    ];
+    Session session1 = Session(tokens1);
+
+    List<Token> tokens2 = [
+      Token(TokenType.DateTime, "2021-01-01"),
+      Token(TokenType.MetaKey, "Your"),
+      Token(TokenType.MetaValue, "Mom"),
+      Token(TokenType.MetaKey, "Bar"),
+      Token(TokenType.MetaValue, "Baz"),
+    ];
+    Session session2 = Session(tokens2);
+
+    Inspector subject = Inspector([session1, session2]);
+
+    test('One kvp that does not match key or value', () {
+      expect(subject.sessionQuery(metaLike: {"test": "test"}), equals([]));
+    });
+
+    test('One kvp that does match key but not value', () {
+      expect(subject.sessionQuery(metaLike: {"Your": "test"}), equals([]));
+    });
+
+    test('One kvp that does match key and value on single', () {
+      List<Session> results = subject.sessionQuery(metaLike: {"Foo": "Bar"});
+      expect(results.length, 1);
+      expect(results.contains(session1), true);
+    });
+
+    test('One kvp that does match key and value on multiple', () {
+      List<Session> results = subject.sessionQuery(metaLike: {"Your": "Mom"});
+      expect(results.length, 2);
+      expect(results.contains(session1), true);
+      expect(results.contains(session2), true);
+    });
+
+    test('One kvp that does match key and value on single case insensitive key',
+        () {
+      List<Session> results = subject.sessionQuery(metaLike: {"FOO": "Bar"});
+      expect(results.length, 1);
+      expect(results.contains(session1), true);
+    });
+
+    test(
+        'One kvp that does match key and value on multiple case insensitive key',
+        () {
+      List<Session> results = subject.sessionQuery(metaLike: {"YOUR": "Mom"});
+      expect(results.length, 2);
+      expect(results.contains(session1), true);
+      expect(results.contains(session2), true);
+    });
+
+    test(
+        'One kvp that does match key and value on single case insensitive value',
+        () {
+      List<Session> results = subject.sessionQuery(metaLike: {"Foo": "BAR"});
+      expect(results.length, 1);
+      expect(results.contains(session1), true);
+    });
+
+    test(
+        'One kvp that does match key and value on multiple case insensitive value',
+        () {
+      List<Session> results = subject.sessionQuery(metaLike: {"Your": "MOM"});
+      expect(results.length, 2);
+      expect(results.contains(session1), true);
+      expect(results.contains(session2), true);
+    });
+
+    test(
+        'One kvp that does match key and value on single case insensitive key and value',
+        () {
+      List<Session> results = subject.sessionQuery(metaLike: {"FOO": "BAR"});
+      expect(results.length, 1);
+      expect(results.contains(session1), true);
+    });
+
+    test(
+        'One kvp that does match key and value on multiple case insensitive key and value',
+        () {
+      List<Session> results = subject.sessionQuery(metaLike: {"YOUR": "MOM"});
+      expect(results.length, 2);
+      expect(results.contains(session1), true);
+      expect(results.contains(session2), true);
     });
   });
 

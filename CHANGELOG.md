@@ -1,3 +1,7 @@
+## 2.3.0
+- Added Inspector: A tool for inspecting a collection of Sessions.
+- Bumped min SDK to 2.2.0 to support Set literal usage.
+
 ## 2.2.1
 - Cleaned out unneccessary internals.
 - Deprecated Performance.wasTouched.
