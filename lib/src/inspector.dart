@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:traindown/src/formatter.dart';
 import 'package:traindown/src/metadata.dart';
 import 'package:traindown/src/movement.dart';
 import 'package:traindown/src/performance.dart';
@@ -20,7 +21,9 @@ class Inspector {
   List<Session> sessions;
   List<String> _extensions = ['.traindown'];
 
-  Inspector(this.sessions, [this._extensions]);
+  Inspector(this.sessions, [this._extensions]) {
+    sessions.sort((a, b) => b.occurred.compareTo(a.occurred));
+  }
 
   /// Convenience constructor for slurping up files.
   factory Inspector.from_files(List<File> files,
@@ -32,6 +35,8 @@ class Inspector {
         inspector.sessions.add(Session.from_file(file));
       }
     }
+
+    inspector.sessions.sort((a, b) => b.occurred.compareTo(a.occurred));
 
     return inspector;
   }
@@ -69,6 +74,20 @@ class Inspector {
     }
 
     return valid;
+  }
+
+  /// Export all Sessions as a single Traindown string. Good for dumping
+  /// and sharing.
+  String export(
+      {String indenter = '  ',
+      String linebreaker = '\r\n',
+      String spacer = ' '}) {
+    Formatter formatter =
+        Formatter(indenter: indenter, linebreaker: linebreaker, spacer: spacer);
+    StringBuffer buffer = StringBuffer();
+    sessions.forEach((s) => buffer
+        .write('${formatter.format(s.tokens)}${formatter.linebreaker * 2}'));
+    return buffer.toString().trim();
   }
 
   /// Map keyed by string that contains all seen values of the given key.

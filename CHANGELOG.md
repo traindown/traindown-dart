@@ -1,3 +1,6 @@
+## 2.4.0
+- Added #export to Inspector for easy dumping and sharing of datasets.
+
 ## 2.3.1
 - Made sure to export Inspector...
 

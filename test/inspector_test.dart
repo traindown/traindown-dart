@@ -225,4 +225,41 @@ void main() {
       expect(subject.validFile(File('./example/example.traindown')), false);
     });
   });
+
+  group('export', () {
+    test('It concats all the strings like a boss', () {
+      List<Token> tokens1 = [
+        Token(TokenType.DateTime, "2020-01-01"),
+        Token(TokenType.MetaKey, "Your"),
+        Token(TokenType.MetaValue, "Mom"),
+        Token(TokenType.MetaKey, "Foo"),
+        Token(TokenType.MetaValue, "Bar"),
+      ];
+      Session session1 = Session(tokens1);
+
+      List<Token> tokens2 = [
+        Token(TokenType.DateTime, "2021-01-01"),
+        Token(TokenType.MetaKey, "Your"),
+        Token(TokenType.MetaValue, "Mom"),
+        Token(TokenType.MetaKey, "Bar"),
+        Token(TokenType.MetaValue, "Baz"),
+      ];
+      Session session2 = Session(tokens2);
+
+      Inspector subject = Inspector([session1, session2]);
+
+      String expected = """
+@ 2021-01-01
+
+# Your: Mom
+# Bar: Baz
+
+@ 2020-01-01
+
+# Your: Mom
+# Foo: Bar""";
+
+      expect(subject.export(linebreaker: '\n'), expected);
+    });
+  });
 }
