@@ -34,7 +34,12 @@ class Formatter {
 
     switch (t.tokenType) {
       case TokenType.DateTime:
-        ret = "@ ${t.literal}$linebreaker";
+        String sessionPad = "";
+        if (_pastSession) {
+          _reset();
+          sessionPad = linebreaker + linebreaker;
+        }
+        ret = "$sessionPad@ ${t.literal}$linebreaker";
         break;
       case TokenType.Fail:
         _pastMovement = true;

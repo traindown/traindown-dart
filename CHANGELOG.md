@@ -1,3 +1,6 @@
+## 2.4.1
+- Fixed handling of formatting on multi session files.
+
 ## 2.4.0
 - Added #export to Inspector for easy dumping and sharing of datasets.
 
