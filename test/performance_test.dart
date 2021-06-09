@@ -4,7 +4,7 @@ import "package:traindown/src/performance.dart";
 
 void main() {
   group('addKVP', () {
-    Performance performance;
+    late Performance performance;
 
     setUp(() => performance = Performance());
 

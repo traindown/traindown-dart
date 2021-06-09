@@ -6,7 +6,7 @@ void main() {
   group('Tokens and their Strings', () {
     test('They align', () {
       TokenType.values.forEach((tt) {
-        String label = Token.StringTokenType[tt];
+        String label = Token.StringTokenType[tt]!;
         expect(Token.TokenTypeString[label], equals(tt));
       });
     });

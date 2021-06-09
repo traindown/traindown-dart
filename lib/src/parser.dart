@@ -4,7 +4,7 @@ import "package:traindown/src/token.dart";
 /// Parser defines the rules for the Traindown language and drives the Lexer
 /// to produce a list of tokens for further processing.
 class Parser {
-  Lexer lexer;
+  late Lexer lexer;
 
   Parser(String source) {
     lexer = Lexer(source, idleState);
@@ -19,7 +19,7 @@ class Parser {
 
 /// This is the default state. It routes to the appropriate state for further
 /// handling.
-Function idleState(Lexer lexer) {
+Function? idleState(Lexer lexer) {
   String chr = lexer.peek();
 
   if (chr == Token.EOF) {
@@ -93,7 +93,7 @@ Function metaValueState(Lexer lexer) {
   return idleState;
 }
 
-Function movementState(Lexer lexer) {
+Function? movementState(Lexer lexer) {
   bool superset = false;
 
   String chr = lexer.next();

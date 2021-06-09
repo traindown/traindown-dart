@@ -12,10 +12,10 @@ class Lexer {
   int position = 0;
   int start = 0;
 
-  Characters source;
-  Function state;
-  List<Token> tokens;
-  VCR vcr;
+  late Characters source;
+  late Function? state;
+  late List<Token> tokens;
+  late VCR vcr;
 
   Lexer(String src, Function initialState) {
     source = Characters(src.trim());
@@ -95,7 +95,7 @@ class Lexer {
   /// so that it may produce a list of tokens.
   bool run() {
     while (state != null) {
-      state = state(this);
+      state = state!(this);
     }
 
     return true;

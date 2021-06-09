@@ -1,5 +1,6 @@
 import "dart:convert";
 
+import "package:traindown/src/performance.dart";
 import "package:traindown/src/presenter.dart";
 import "package:traindown/src/session.dart";
 
@@ -17,16 +18,19 @@ class JsonPresenter extends Presenter {
     return movements.fold([], (acc, movement) {
       acc.add({
         "name": movement.name,
-        "performances": movement.performances.fold([], (pacc, performance) {
+        "performances": movement.performances.fold([],
+            (List<dynamic> pacc, Performance performance) {
           pacc.add({
             "load": performance.load,
             "reps": performance.reps,
             "sets": performance.sets,
             "unit": performance.unit
           });
+
           return pacc;
         })
       });
+
       return acc;
     });
   }

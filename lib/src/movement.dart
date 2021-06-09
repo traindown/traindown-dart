@@ -5,7 +5,7 @@ import "package:traindown/src/performance.dart";
 /// A Movement has many Performances and a Session can have many Movements.
 /// An example would simply be "Squats".
 class Movement extends Metadatable {
-  String name;
+  late String name;
   List<Performance> performances = [];
   bool superSetted = false;
 

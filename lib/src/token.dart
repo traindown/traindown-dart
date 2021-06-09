@@ -71,7 +71,7 @@ class Token {
   static List<Token> tokensFromString(String tokensString) {
     return tokensString.split(",").map((pair) {
       List<String> tuple = pair.split("]");
-      TokenType tokenType = TokenTypeString[tuple.first.trim().substring(1)];
+      TokenType tokenType = TokenTypeString[tuple.first.trim().substring(1)]!;
       String literal = tuple.last.trim();
       return Token(tokenType, literal);
     }).toList();
@@ -79,7 +79,8 @@ class Token {
 
   /// Tokens are consider equivilent if both the type and the literal match.
   @override
-  bool operator ==(t) => t.tokenType == tokenType && t.literal == literal;
+  bool operator ==(t) =>
+      (t as Token).tokenType == tokenType && t.literal == literal;
 
   @override
   String toString() => "[${StringTokenType[tokenType]}] $literal";

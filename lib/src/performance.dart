@@ -7,7 +7,7 @@ import 'package:traindown/src/metadata.dart';
 /// reps, a count of failed reps, and a unit for the load.
 class Performance extends Metadatable {
   double fails;
-  double load;
+  double? load;
   double sets;
   double reps;
 
@@ -21,7 +21,7 @@ class Performance extends Metadatable {
       this.sets = 1,
       this.reps = 1,
       String unit = Metadata.unknownUnit}) {
-    load = load < 0 ? null : load;
+    load = load! < 0 ? null : load;
     if (unit != Metadata.unknownUnit) this.unit = unit;
   }
 
@@ -86,5 +86,5 @@ class Performance extends Metadatable {
   @override
   String toString() => '$_summary$_metadata$_notes';
 
-  double get volume => successfulReps * load * sets;
+  double get volume => successfulReps * load! * sets;
 }

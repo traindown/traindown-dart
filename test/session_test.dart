@@ -119,12 +119,12 @@ void main() {
       expect(movement4.performances[1].unit, equals("401 unit"));
       expect(movement4.performances[1].reps, 1.0);
       expect(movement4.performances[1].sets, 1.0);
-      expect(movement4.performances[2].load, double.parse(session.kvps['bw']));
+      expect(movement4.performances[2].load, double.parse(session.kvps['bw']!));
       expect(movement4.performances[2].unit, equals(movement4.unit));
       expect(movement4.performances[2].reps, 1.0);
       expect(movement4.performances[2].sets, 1.0);
-      expect(
-          movement4.performances[3].load, double.parse(session.kvps['bw']) + 4);
+      expect(movement4.performances[3].load,
+          double.parse(session.kvps['bw']!) + 4);
       expect(movement4.performances[3].unit, equals(movement4.unit));
       expect(movement4.performances[3].reps, 1.0);
       expect(movement4.performances[3].sets, 1.0);

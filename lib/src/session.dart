@@ -9,14 +9,14 @@ import 'package:traindown/src/token.dart';
 /// Session represents a single instance of training. It contains data on
 /// what was performed as well as notes and metadata.
 class Session extends Metadatable {
-  List<Movement> movements = [];
-  DateTime occurred = DateTime.now();
-  List<Token> tokens = [];
+  late List<Movement> movements = [];
+  late DateTime occurred = DateTime.now();
+  late List<Token> tokens = [];
 
-  String _currentMeta;
-  Movement _currentMovement;
-  Performance _currentPerformance;
-  Metadatable _currentTarget;
+  String? _currentMeta;
+  Movement? _currentMovement;
+  Performance? _currentPerformance;
+  Metadatable? _currentTarget;
 
   /// Useful to set as a config option in your app.
   double defaultBW;
@@ -75,7 +75,7 @@ class Session extends Metadatable {
           _currentMeta = t.literal;
           break;
         case TokenType.MetaValue:
-          _currentTarget.setKVP(_currentMeta, t.literal);
+          _currentTarget!.setKVP(_currentMeta!, t.literal);
           _currentMeta = null;
           break;
         case TokenType.Movement:
@@ -83,7 +83,7 @@ class Session extends Metadatable {
           _handleMovement(t.literal, t.tokenType == TokenType.SupersetMovement);
           break;
         case TokenType.Note:
-          _currentTarget.addNote(t.literal);
+          _currentTarget!.addNote(t.literal);
           break;
         case TokenType.Rep:
           _handlePerformanceAttribute('reps', t.literal);
@@ -99,7 +99,7 @@ class Session extends Metadatable {
   }
 
   void _handleDateTime(String literal) {
-    DateTime maybeOccurred = DateTime.tryParse(literal);
+    DateTime? maybeOccurred = DateTime.tryParse(literal);
     if (maybeOccurred != null) occurred = maybeOccurred;
   }
 
@@ -107,13 +107,13 @@ class Session extends Metadatable {
     _currentPerformance ??= Performance();
 
     if (_currentPerformance?.load != null) {
-      _currentMovement.addPerformance(_currentPerformance);
+      _currentMovement!.addPerformance(_currentPerformance!);
       _currentPerformance = Performance();
     }
 
     if (literal.startsWith(RegExp(r'[bB][wW]'))) {
-      double baseAmount =
-          double.tryParse(metadata.kvps[literal.substring(0, 2)]);
+      double? baseAmount =
+          double.tryParse(metadata.kvps[literal.substring(0, 2)]!);
       baseAmount ??= defaultBW;
 
       if (literal.length > 2) {
@@ -123,15 +123,15 @@ class Session extends Metadatable {
 
         // NOTE: Do NOT use mirrors for this.
         if (dir == '+') {
-          _currentPerformance.load = baseAmount + ld;
+          _currentPerformance!.load = baseAmount + ld;
         } else {
-          _currentPerformance.load = baseAmount - ld;
+          _currentPerformance!.load = baseAmount - ld;
         }
       } else {
-        _currentPerformance.load = baseAmount;
+        _currentPerformance!.load = baseAmount;
       }
     } else {
-      _currentPerformance.load = double.parse(literal);
+      _currentPerformance!.load = double.parse(literal);
     }
 
     _currentTarget = _currentPerformance;
@@ -148,17 +148,19 @@ class Session extends Metadatable {
 
   void _handlePerformanceAttribute(String attr, String literal) {
     _currentPerformance ??= Performance();
-    _currentPerformance[attr] = double.parse(literal);
+    _currentPerformance![attr] = double.parse(literal);
   }
 
   // NOTE: Store the Movement first to pick up any unit that needs to be passed
   // on down, then store the Performance.
   void _storeMovement() {
-    if (_currentMovement != null) addMovement(_currentMovement);
+    if (_currentMovement != null) {
+      addMovement(_currentMovement!);
 
-    if (_currentPerformance?.load != null) {
-      _currentMovement.addPerformance(_currentPerformance);
-      _currentPerformance = Performance();
+      if (_currentPerformance?.load != null) {
+        _currentMovement!.addPerformance(_currentPerformance!);
+        _currentPerformance = Performance();
+      }
     }
   }
 }

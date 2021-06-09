@@ -19,9 +19,9 @@ enum TraindownScope { session, movement, performance }
 /// Inspector provides tools for analyzing Sessions.
 class Inspector {
   List<Session> sessions;
-  List<String> _extensions = ['.traindown'];
+  List<String> _extensions;
 
-  Inspector(this.sessions, [this._extensions]) {
+  Inspector(this.sessions, [this._extensions = const ['.traindown']]) {
     sessions.sort((a, b) => b.occurred.compareTo(a.occurred));
   }
 
@@ -99,23 +99,23 @@ class Inspector {
       Metadata metadata = session.metadata;
       for (String key in metadata.kvps.keys) {
         result[key] ??= <String>{};
-        result[key].add(metadata.kvps[key]);
+        result[key]!.add(metadata.kvps[key]!);
       }
 
-      if (ScopePriority[scope] > ScopePriority[TraindownScope.session]) {
+      if (ScopePriority[scope]! > ScopePriority[TraindownScope.session]!) {
         for (Movement movement in session.movements) {
           metadata = movement.metadata;
           for (String key in metadata.kvps.keys) {
             result[key] ??= <String>{};
-            result[key].add(metadata.kvps[key]);
+            result[key]!.add(metadata.kvps[key]!);
           }
 
-          if (ScopePriority[scope] > ScopePriority[TraindownScope.movement]) {
+          if (ScopePriority[scope]! > ScopePriority[TraindownScope.movement]!) {
             for (Performance performance in movement.performances) {
               metadata = performance.metadata;
               for (String key in metadata.kvps.keys) {
                 result[key] ??= <String>{};
-                result[key].add(metadata.kvps[key]);
+                result[key]!.add(metadata.kvps[key]!);
               }
             }
           }
