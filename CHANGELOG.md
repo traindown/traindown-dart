@@ -1,3 +1,6 @@
+## 2.5.0
+- Refactor to support Null Safety.
+
 ## 2.4.1
 - Fixed handling of formatting on multi session files.
 
