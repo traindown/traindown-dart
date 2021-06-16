@@ -10,6 +10,9 @@ class Formatter {
   bool _movementHasPerformanced = false;
   bool _performanceNeedsLoad = false;
 
+  /// [indenter] specifies the type of indentation used. Default 2 spaces.
+  /// [linebreaker] is added at the end of every new line. Default \r\n.
+  /// [spacer] is the character(s) used between
   Formatter(
       {this.indenter = '  ', this.linebreaker = '\r\n', this.spacer = ' '});
 
