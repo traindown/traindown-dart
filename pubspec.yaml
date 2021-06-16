@@ -1,7 +1,7 @@
 name: traindown
 description: A language to help athletes express their training. Inspired by Markdown.
 homepage: https://www.traindown.com/
-version: 2.5.0
+version: 3.0.0
 environment:
   sdk: ">=2.12.0 <3.0.0"
 dependencies:

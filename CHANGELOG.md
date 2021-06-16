@@ -1,3 +1,11 @@
+## 3.0.0
+- **BREAKING** Relocated all IO operations on Session and Inspector to SessionIO.
+- Migrate Session.from_file to SessionIO.sessionFromFile.
+- Migrate Session.from_path to SessionIO.sessionFromPath.
+- Migrate Inspector.from_files to SessionIO.inspectorFromFiles.
+- Migrate Inspector.from_directory to SessionIO.inspectorFromDirectory.
+- Update docs.
+
 ## 2.5.0
 - Refactor to support Null Safety.
 
