@@ -10,3 +10,6 @@ export "src/presenters/html_presenter.dart";
 export "src/presenters/json_presenter.dart";
 export "src/session.dart";
 export "src/token.dart";
+
+/// To enable a JS target, we conditionally add the IO bits here.
+export "" if (dart.library.io) "src/session_io.dart";
