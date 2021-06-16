@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:traindown/src/formatter.dart';
 import 'package:traindown/src/metadata.dart';
 import 'package:traindown/src/movement.dart';
 import 'package:traindown/src/performance.dart';
@@ -19,40 +16,9 @@ enum TraindownScope { session, movement, performance }
 /// Inspector provides tools for analyzing Sessions.
 class Inspector {
   List<Session> sessions;
-  List<String> _extensions;
 
-  Inspector(this.sessions, [this._extensions = const ['.traindown']]) {
+  Inspector(this.sessions) {
     sessions.sort((a, b) => b.occurred.compareTo(a.occurred));
-  }
-
-  /// Convenience constructor for slurping up files.
-  factory Inspector.from_files(List<File> files,
-      [extensions = const ['.traindown']]) {
-    Inspector inspector = Inspector([], extensions);
-
-    for (File file in files) {
-      if (inspector.validFile(file)) {
-        inspector.sessions.add(Session.from_file(file));
-      }
-    }
-
-    inspector.sessions.sort((a, b) => b.occurred.compareTo(a.occurred));
-
-    return inspector;
-  }
-
-  /// Convenience constructor for slurping up a directory.
-  factory Inspector.from_directory(Directory directory,
-      [extensions = const ['.traindown']]) {
-    List<File> files = [];
-
-    for (FileSystemEntity file in directory.listSync()) {
-      if (file is File) {
-        files.add(file);
-      }
-    }
-
-    return Inspector.from_files(files);
   }
 
   /// Stack rank of scopes in terms of depth priority.
@@ -61,34 +27,6 @@ class Inspector {
     TraindownScope.movement: 1,
     TraindownScope.performance: 2
   };
-
-  /// Filters out non Traindown files.
-  bool validFile(File file) {
-    bool valid = false;
-
-    for (String ext in _extensions) {
-      if (file.path.endsWith(ext)) {
-        valid = true;
-        break;
-      }
-    }
-
-    return valid;
-  }
-
-  /// Export all Sessions as a single Traindown string. Good for dumping
-  /// and sharing.
-  String export(
-      {String indenter = '  ',
-      String linebreaker = '\r\n',
-      String spacer = ' '}) {
-    Formatter formatter =
-        Formatter(indenter: indenter, linebreaker: linebreaker, spacer: spacer);
-    StringBuffer buffer = StringBuffer();
-    sessions.forEach((s) => buffer
-        .write('${formatter.format(s.tokens)}${formatter.linebreaker * 2}'));
-    return buffer.toString().trim();
-  }
 
   /// Map keyed by string that contains all seen values of the given key.
   Map<String, Set<String>> metadataByKey(
