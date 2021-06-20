@@ -1,3 +1,8 @@
+## 3.1.0
+- Deprecated all IO operations.
+- Please refer to the tests to see examples on manually performing IO.
+
+
 ## 3.0.0
 - **BREAKING** Relocated all IO operations on Session and Inspector to SessionIO.
 - Migrate Session.from_file to SessionIO.sessionFromFile.
