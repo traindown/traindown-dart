@@ -1,3 +1,4 @@
+import 'package:traindown/src/formatter.dart';
 import 'package:traindown/src/metadata.dart';
 import 'package:traindown/src/movement.dart';
 import 'package:traindown/src/performance.dart';
@@ -27,6 +28,22 @@ class Inspector {
     TraindownScope.movement: 1,
     TraindownScope.performance: 2
   };
+
+  /// Export all Sessions as a single Traindown string. Good for dumping
+  /// and sharing.
+  ///
+  /// For details on the optional parameters, see Formatter.
+  String export(
+      {String indenter = '  ',
+      String linebreaker = '\r\n',
+      String spacer = ' '}) {
+    Formatter formatter =
+        Formatter(indenter: indenter, linebreaker: linebreaker, spacer: spacer);
+    StringBuffer buffer = StringBuffer();
+    sessions.forEach((s) => buffer
+        .write('${formatter.format(s.tokens)}${formatter.linebreaker * 2}'));
+    return buffer.toString().trim();
+  }
 
   /// Map keyed by string that contains all seen values of the given key.
   Map<String, Set<String>> metadataByKey(

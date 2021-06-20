@@ -3,8 +3,8 @@ import 'dart:io';
 import 'package:test/test.dart';
 
 import 'package:traindown/src/inspector.dart';
+import 'package:traindown/src/parser.dart';
 import 'package:traindown/src/session.dart';
-import 'package:traindown/src/session_io.dart';
 import 'package:traindown/src/token.dart';
 
 void main() {
@@ -23,8 +23,12 @@ void main() {
   });
 
   group('metadataByKey', () {
-    List<File> files = [File('./example/example.traindown')];
-    Inspector subject = SessionIO.inspectorFromFiles(files);
+    File file = File("./example/example.traindown");
+    String src = file.readAsStringSync();
+    Parser parser = Parser(src);
+    Session session = Session(parser.tokens());
+
+    Inspector subject = Inspector([session]);
 
     Map<String, Set<String>> expected = {
       "bw": {"230"},
@@ -62,8 +66,13 @@ void main() {
 
   group('movementNames', () {
     test('Basic use', () {
-      List<File> files = [File('./example/example.traindown')];
-      Inspector subject = SessionIO.inspectorFromFiles(files);
+      File file = File("./example/example.traindown");
+      String src = file.readAsStringSync();
+      Parser parser = Parser(src);
+      Session session = Session(parser.tokens());
+
+      Inspector subject = Inspector([session]);
+
       List<String> movementNames = subject.movementNames;
       expect(movementNames.length, 5);
       expect(movementNames[0], equals('movement 1'));
