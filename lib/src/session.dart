@@ -132,7 +132,14 @@ class Session extends Metadatable {
 
   void _handlePerformanceAttribute(String attr, String literal) {
     _currentPerformance ??= Performance();
-    _currentPerformance![attr] = double.parse(literal);
+    // TODO: Enums
+    if (attr == 'reps' && _currentPerformance!.reps == null) {
+      _currentPerformance![attr] = double.parse(literal);
+    } else if (_currentPerformance!.load != 0.0) {
+      _currentPerformance![attr] += double.parse(literal);
+    } else {
+      _currentPerformance![attr] = double.parse(literal);
+    }
   }
 
   // NOTE: Store the Movement first to pick up any unit that needs to be passed

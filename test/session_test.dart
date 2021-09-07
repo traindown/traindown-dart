@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-
 import 'package:traindown/src/metadata.dart';
 import 'package:traindown/src/movement.dart';
 import 'package:traindown/src/parser.dart';
@@ -33,7 +32,7 @@ void main() {
       Parser fileParser = Parser(src);
       Session session = Session(fileParser.tokens());
 
-      expect(session.movements.length, 5);
+      expect(session.movements.length, 6);
       expect(session.kvps.length, 4);
       expect(session.notes.length, 3);
 
@@ -68,6 +67,7 @@ void main() {
       expect(movement2.performances[0].sets, 1.0);
       expect(movement2.performances[1].load, 202.0);
       expect(movement2.performances[1].unit, equals(session.unit));
+      print(movement2);
       expect(movement2.performances[1].reps, 2.0);
       expect(movement2.performances[1].sets, 1.0);
       expect(movement2.performances[2].load, 203.0);
@@ -140,6 +140,26 @@ void main() {
       expect(movement5.performances[0].fails, 5.0);
       expect(movement5.performances[0].reps, 5.0);
       expect(movement5.performances[0].sets, 5.0);
+
+      Movement movement6 = session.movements[5];
+
+      expect(movement6.kvps.length, 0);
+      expect(movement6.notes.length, 0);
+
+      print(movement6);
+      expect(movement6.performances.length, 2);
+
+      expect(movement5.performances[0].load, 500);
+      expect(movement5.performances[0].unit, equals(session.unit));
+      expect(movement5.performances[0].fails, 0.0);
+      expect(movement5.performances[0].reps, 10.0);
+      expect(movement5.performances[0].sets, 1.0);
+
+      expect(movement5.performances[1].load, 500);
+      expect(movement5.performances[1].unit, equals(session.unit));
+      expect(movement5.performances[1].fails, 0.0);
+      expect(movement5.performances[1].reps, 5.0);
+      expect(movement5.performances[1].sets, 1.0);
     });
 
     test('iOS pathological case with units', () {

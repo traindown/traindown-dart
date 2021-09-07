@@ -1,9 +1,8 @@
 import "dart:io";
 
-import "package:test/test.dart";
-
-import "package:traindown/src/formatter.dart";
-import "package:traindown/src/parser.dart";
+import "package:test/test.dart" show expect, test;
+import "package:traindown/src/formatter.dart" show Formatter;
+import "package:traindown/src/parser.dart" show Parser;
 
 final String expected = """
 @ 2020-01-01 1:23pm
@@ -49,7 +48,9 @@ Third movement:
   bw
   bw+4
 
-Fifth movement: 5r 5f 5s  500""";
+Fifth movement: 5r 5f 5s  500
+
+Sixth movement: 500 10r 5r""";
 
 void main() {
   test("Stress test", () {

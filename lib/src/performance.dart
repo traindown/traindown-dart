@@ -26,6 +26,25 @@ class Performance extends Metadatable {
   }
 
   /// Simple accessors that do not require Mirrors.
+  double operator [](String attr) {
+    if (!attrs.contains(attr)) throw 'Invalid attr';
+
+    switch (attr) {
+      case 'fails':
+        return fails;
+      case 'load':
+        return (load == null) ? 0.0 : load!;
+      case 'sets':
+        return sets;
+      case 'reps':
+        return reps;
+      default:
+        return 0.0;
+    }
+    ;
+  }
+
+  /// Simple accessors that do not require Mirrors.
   void operator []=(String attr, double value) {
     if (!attrs.contains(attr)) throw 'Invalid attr';
 

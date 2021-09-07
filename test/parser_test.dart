@@ -1,9 +1,8 @@
 @Timeout(Duration(seconds: 15))
-
 import 'dart:convert';
 import 'dart:io';
-import 'package:test/test.dart';
 
+import 'package:test/test.dart';
 import 'package:traindown/src/parser.dart';
 import 'package:traindown/src/token.dart';
 
@@ -72,6 +71,10 @@ void main() {
         "[Fails] 5",
         "[Sets] 5",
         "[Load] 500",
+        "[Movement] Sixth movement",
+        "[Load] 500",
+        "[Reps] 10",
+        "[Reps] 5",
       ];
       Parser parser = Parser(src);
       List<Token> tokens = parser.tokens();
@@ -193,6 +196,25 @@ squat:
         "[Date / Time] 2020-01-01 1:23pm",
         "[Metadata Key] Meta key",
         "[Metadata Value] ",
+      ];
+      Parser parser = Parser(src);
+      List<Token> tokens = parser.tokens();
+      var tokenStrs = tokens.map((t) => t.toString());
+      expect(tokenStrs, expected);
+    });
+
+    test('Rep repeat', () {
+      String src = """
+          @ 2020-01-01 1:23pm
+
+          squat: 500 10r 8r 2r""";
+      List<String> expected = [
+        "[Date / Time] 2020-01-01 1:23pm",
+        "[Movement] squat",
+        "[Load] 500",
+        "[Reps] 10",
+        "[Reps] 8",
+        "[Reps] 2",
       ];
       Parser parser = Parser(src);
       List<Token> tokens = parser.tokens();

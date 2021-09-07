@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:test/test.dart';
-
 import 'package:traindown/src/inspector.dart';
 import 'package:traindown/src/parser.dart';
 import 'package:traindown/src/session.dart';
@@ -74,12 +73,13 @@ void main() {
       Inspector subject = Inspector([session]);
 
       List<String> movementNames = subject.movementNames;
-      expect(movementNames.length, 5);
+      expect(movementNames.length, 6);
       expect(movementNames[0], equals('movement 1'));
       expect(movementNames[1], equals('2nd movement'));
       expect(movementNames[2], equals('third movement'));
       expect(movementNames[3], equals('4th movement'));
       expect(movementNames[4], equals('fifth movement'));
+      expect(movementNames[5], equals('sixth movement'));
     });
 
     test('Deduper pooper with identical', () {
