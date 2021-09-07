@@ -1,4 +1,5 @@
 export "src/formatter.dart";
+export "src/importer.dart";
 export "src/inspector.dart";
 export "src/metadata.dart";
 export "src/movement.dart";
