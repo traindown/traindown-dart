@@ -1,3 +1,6 @@
+## 3.2.0
+- Add Importer class to help sync devices.
+
 ## 3.1.0
 - Deprecated all IO operations.
 - Please refer to the tests to see examples on manually performing IO.
