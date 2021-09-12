@@ -226,6 +226,19 @@ void main() {
       expect(session.movements[0].performances[3].reps, 2);
     });
 
+    test('Pathological Desktop case 1', () {
+      String src = """@ 2020-07-04 
+
+        # unit: lbs 
+        * shit sleep for weeks.""";
+
+      Parser parser = Parser(src);
+      List<Token> tokens = parser.tokens();
+
+      Session session = Session(tokens);
+      expect(session.occurred, equals(DateTime.tryParse("2020-07-04")));
+    });
+
     const String unit = "your mom";
 
     Metadata.unitKeywords.forEach((uk) {
