@@ -83,7 +83,8 @@ class Session extends Metadatable {
   }
 
   void _handleDateTime(String literal) {
-    DateTime? maybeOccurred = DateTime.tryParse(literal);
+    // TODO: Use a more flexible date/time parsing library.
+    DateTime? maybeOccurred = DateTime.tryParse(literal.trim());
     if (maybeOccurred != null) occurred = maybeOccurred;
   }
 

@@ -1,3 +1,6 @@
+## 3.2.1
+- [FIX] Handle whitespace in date/time Strings better.
+
 ## 3.2.0
 - Add Importer class to help sync devices.
 

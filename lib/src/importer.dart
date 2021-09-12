@@ -11,7 +11,6 @@ class Importer {
   String input;
 
   Importer(this.input) {
-    print(input);
     sessionTexts =
         input.split("@").skip(1).map((sessionText) => "@$sessionText").toList();
     _parseSessions();
